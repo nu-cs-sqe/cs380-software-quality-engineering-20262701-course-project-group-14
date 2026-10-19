@@ -1,5 +1,7 @@
 # EXPLODING KITTEN ฅ^•ﻌ•^ฅ
 
+[![Gradle Build](https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/actions/workflows/main.yml)
+
 ## Contributors
 - Sifan Liu
 - Qingyang Xu
