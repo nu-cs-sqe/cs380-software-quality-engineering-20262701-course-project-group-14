@@ -1,8 +1,9 @@
-# YOUR PROJECT NAME
+# EXPLODING KITTEN ฅ^•ﻌ•^ฅ
 
 ## Contributors
-- PERSON
-- PERSON
+- Sifan Liu
+- Qingyang Xu
+- Xiaoyi Wang
 
 ## Dependencies
 - JDK 11
