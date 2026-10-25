@@ -1,11 +1,12 @@
 package domain;
 
 public class Card {
+    private final CardType type;
     public Card(CardType type) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        this.type = type;
     }
 
     public CardType getType() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return type;
     }
 }
