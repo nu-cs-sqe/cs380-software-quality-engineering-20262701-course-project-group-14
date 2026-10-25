@@ -17,7 +17,7 @@ Failed calls leave the entire deck unchanged.
 |--------|-----------------------------------------------------------------------------|---------------------------------------------------------------------------|--------------|
 | Deck03 | New deck; removeCards(EXPLODING_KITTEN, 0)                                  | Returns an empty list; size remains 56; 4 Exploding Kittens remain        | Yes          |
 | Deck04 | New deck; removeCards(EXPLODING_KITTEN, 1)                                  | Returns 1 Exploding Kitten; size becomes 55; 3 Exploding Kittens remain   | Yes          |
-| Deck05 | New deck; removeCards(EXPLODING_KITTEN, 4)                                  | Returns 4 Exploding Kittens; size becomes 52; no Exploding Kittens remain | No           |
+| Deck05 | New deck; removeCards(EXPLODING_KITTEN, 4)                                  | Returns 4 Exploding Kittens; size becomes 52; no Exploding Kittens remain | Yes          |
 | Deck06 | New deck; removeCards(EXPLODING_KITTEN, -1)                                 | Throws IllegalArgumentException; deck remains unchanged                   | No           |
 | Deck07 | New deck; removeCards(EXPLODING_KITTEN, 5)                                  | Throws IllegalArgumentException; deck remains unchanged                   | No           |
 | Deck08 | All 4 Exploding Kittens have been removed; removeCards(EXPLODING_KITTEN, 0) | Returns an empty list; size remains 52; no Exploding Kittens remain       | No           |

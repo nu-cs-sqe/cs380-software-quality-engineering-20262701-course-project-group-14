@@ -68,4 +68,28 @@ public class DeckTests {
             }
         }
     }
+
+    @Test
+    public void RemoveCards_WithAllAvailable_ReturnsAllMatchingCards() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        List<Card> removed = deck.removeCards(
+                CardType.EXPLODING_KITTEN, 4);
+
+        assertEquals(4, removed.size());
+
+        for (Card card : removed) {
+            assertEquals(CardType.EXPLODING_KITTEN, card.getType());
+        }
+
+        assertEquals(52, deck.size());
+        assertEquals(0, deck.countOf(CardType.EXPLODING_KITTEN));
+
+        for (CardType type : CardType.values()) {
+            if (type != CardType.EXPLODING_KITTEN) {
+                assertEquals(originalDeck.countOf(type), deck.countOf(type));
+            }
+        }
+    }
 }
