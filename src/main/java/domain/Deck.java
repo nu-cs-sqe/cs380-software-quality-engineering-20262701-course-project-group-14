@@ -50,7 +50,7 @@ public class Deck {
 
     // Adds the supplied cards without shuffling.
     public void addCards(List<Card> cards) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        this.cards.addAll(cards);
     }
 
     // Removes and returns the top card.

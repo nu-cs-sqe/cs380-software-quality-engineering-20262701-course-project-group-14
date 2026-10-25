@@ -184,4 +184,17 @@ public class DeckTests {
             assertEquals(originalDeck.countOf(type), deck.countOf(type));
         }
     }
+
+    @Test
+    public void AddCards_WithEmptyList_KeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+        deck.addCards(List.of());
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+    }
+
 }
