@@ -127,4 +127,24 @@ public class DeckTests {
             assertEquals(originalDeck.countOf(type), deck.countOf(type));
         }
     }
+
+    @Test
+    public void RemoveCards_WithNoneAvailableAndZeroCount_ReturnsEmptyList() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+        deck.removeCards(CardType.EXPLODING_KITTEN, 4);
+
+        List<Card> removed = deck.removeCards(
+                CardType.EXPLODING_KITTEN, 0);
+
+        assertTrue(removed.isEmpty());
+        assertEquals(52, deck.size());
+        assertEquals(0, deck.countOf(CardType.EXPLODING_KITTEN));
+
+        for (CardType type : CardType.values()) {
+            if (type != CardType.EXPLODING_KITTEN) {
+                assertEquals(originalDeck.countOf(type), deck.countOf(type));
+            }
+        }
+    }
 }
