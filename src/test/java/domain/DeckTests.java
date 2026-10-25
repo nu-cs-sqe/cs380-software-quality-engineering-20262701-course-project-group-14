@@ -111,4 +111,20 @@ public class DeckTests {
             assertEquals(originalDeck.countOf(type), deck.countOf(type));
         }
     }
+
+    @Test
+    public void RemoveCards_WithInsufficientCards_ThrowsAndKeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> deck.removeCards(CardType.EXPLODING_KITTEN, 5)
+        );
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+    }
 }
