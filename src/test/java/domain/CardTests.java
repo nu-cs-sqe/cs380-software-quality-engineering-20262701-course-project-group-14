@@ -2,7 +2,9 @@ package domain;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CardTests {
@@ -14,5 +16,13 @@ public class CardTests {
         Card card = new Card(type);
 
         assertEquals(type, card.getType());
+    }
+
+    @Test
+    public void Create_WithNullType_ThrowsNullPointerException() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new Card(null)
+        );
     }
 }
