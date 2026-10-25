@@ -5,9 +5,9 @@
 | Test Case                                    | Input: `name` | Expected output                                                  | Implemented? |
 |----------------------------------------------|---------------|------------------------------------------------------------------|--------------|
 | PL-01: Create a player with a non-empty name | `"Player 1"`  | A player is created with the name `"Player 1"` and an empty hand | :x:          |
-| PL-02: Reject an empty name                  | `""`          | Player creation is rejected                                      | :x:          |
-| PL-03: Reject a blank name                   | `"   "`       | Player creation is rejected                                      | :x:          |
-| PL-04: Reject a null name                    | `null`        | Player creation is rejected                                      | :x:          |
+| PL-02: Reject an empty name                  | `""`          | Throws `IllegalArgumentException`; no player is created          | :x:          |
+| PL-03: Reject a blank name                   | `"   "`       | Throws `IllegalArgumentException`; no player is created          | :x:          |
+| PL-04: Reject a null name                    | `null`        | Throws `NullPointerException`; no player is created              | :x:          |
 
 ### Method under test: `addCard(Card card)`
 
@@ -16,7 +16,7 @@
 | PL-05: Add a card to an empty hand                            | `[]`                                                                     | `SKIP`        | `hand = [SKIP]`                                                                                                   | :x:          |
 | PL-06: Add a card to a hand with exactly one card             | `[TACOCAT]`                                                              | `ATTACK`      | `hand = [TACOCAT, ATTACK]`                                                                                        | :x:          |
 | PL-07: Add a duplicate card to a hand at maximum size (7 → 8) | `[TACOCAT, TACOCAT, BEARD_CAT, BEARD_CAT, CATTERMELON, TACOCAT, DEFUSE]` | `DEFUSE`      | `hand = [TACOCAT, TACOCAT, BEARD_CAT, BEARD_CAT, CATTERMELON, TACOCAT, DEFUSE, DEFUSE]` (size 8, duplicates kept) | :x:          |
-| PL-08: Reject a null card                                     | `[]`                                                                     | `null`        | Adding is rejected; `hand = []`                                                                                   | :x:          |
+| PL-08: Reject a null card                                     | `[]`                                                                     | `null`        | Throws `NullPointerException`; `hand = []`                                                                        | :x:          |
 
 ### Method under test: `getHand()`
 
