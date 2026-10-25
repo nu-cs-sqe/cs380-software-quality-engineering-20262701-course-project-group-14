@@ -24,6 +24,10 @@ public class Deck {
 
     // Removes and returns the requested cards.
     public List<Card> removeCards(CardType type, int count) {
+        if (count == 0) {
+            return new ArrayList<>();
+        }
+
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

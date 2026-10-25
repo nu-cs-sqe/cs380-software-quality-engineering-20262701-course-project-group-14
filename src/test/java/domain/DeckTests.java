@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DeckTests {
     @ParameterizedTest(name = "Deck02: {0} count={1}")
@@ -34,5 +35,16 @@ public class DeckTests {
     public void Create_NewDeck_SizeReturns56() {
         Deck deck = new Deck();
         assertEquals(56, deck.size());
+    }
+    @Test
+    public void RemoveCards_WithZero_ReturnsEmptyListAndKeepsDeckUnchanged() {
+        Deck deck = new Deck();
+
+        List<Card> removed = deck.removeCards(
+                CardType.EXPLODING_KITTEN, 0);
+
+        assertTrue(removed.isEmpty());
+        assertEquals(56, deck.size());
+        assertEquals(4, deck.countOf(CardType.EXPLODING_KITTEN));
     }
 }
