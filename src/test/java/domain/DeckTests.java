@@ -168,4 +168,20 @@ public class DeckTests {
             }
         }
     }
+
+    @Test
+    public void RemoveCards_WithNullType_ThrowsAndKeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        assertThrows(NullPointerException.class,
+                () -> deck.removeCards(null, 1)
+        );
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+    }
 }

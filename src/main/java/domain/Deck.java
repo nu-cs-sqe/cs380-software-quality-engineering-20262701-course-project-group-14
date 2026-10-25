@@ -3,6 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class Deck {
     private final List<Card> cards = new ArrayList<>();
@@ -25,6 +26,7 @@ public class Deck {
 
     // Removes and returns the requested cards.
     public List<Card> removeCards(CardType type, int count) {
+        Objects.requireNonNull(type, "Card type must not be null");
         if (count < 0) {
             throw new IllegalArgumentException("Count must not be negative");
         }
