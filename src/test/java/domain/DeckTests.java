@@ -147,4 +147,25 @@ public class DeckTests {
             }
         }
     }
+
+    @Test
+    public void RemoveCards_WithNoneAvailableAndOneRequested_Throws() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+        deck.removeCards(CardType.EXPLODING_KITTEN, 4);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> deck.removeCards(CardType.EXPLODING_KITTEN, 1)
+        );
+
+        assertEquals(52, deck.size());
+        assertEquals(0, deck.countOf(CardType.EXPLODING_KITTEN));
+
+        for (CardType type : CardType.values()) {
+            if (type != CardType.EXPLODING_KITTEN) {
+                assertEquals(originalDeck.countOf(type), deck.countOf(type));
+            }
+        }
+    }
 }
