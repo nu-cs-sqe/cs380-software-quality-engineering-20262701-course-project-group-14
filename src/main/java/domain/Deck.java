@@ -2,6 +2,7 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 public class Deck {
     private final List<Card> cards = new ArrayList<>();
@@ -24,11 +25,19 @@ public class Deck {
 
     // Removes and returns the requested cards.
     public List<Card> removeCards(CardType type, int count) {
-        if (count == 0) {
-            return new ArrayList<>();
+        List<Card> removed = new ArrayList<>();
+        Iterator<Card> iterator = cards.iterator();
+
+        while (iterator.hasNext() && removed.size() < count) {
+            Card card = iterator.next();
+
+            if (card.getType() == type) {
+                removed.add(card);
+                iterator.remove();
+            }
         }
 
-        throw new UnsupportedOperationException("Not implemented yet");
+        return removed;
     }
 
     // Adds the supplied cards without shuffling.

@@ -36,6 +36,7 @@ public class DeckTests {
         Deck deck = new Deck();
         assertEquals(56, deck.size());
     }
+
     @Test
     public void RemoveCards_WithZero_ReturnsEmptyListAndKeepsDeckUnchanged() {
         Deck deck = new Deck();
@@ -46,5 +47,25 @@ public class DeckTests {
         assertTrue(removed.isEmpty());
         assertEquals(56, deck.size());
         assertEquals(4, deck.countOf(CardType.EXPLODING_KITTEN));
+    }
+
+    @Test
+    public void RemoveCards_WithOne_ReturnsEmptyListAndKeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck deck2 = new Deck();
+
+        List<Card> removed = deck.removeCards(
+                CardType.EXPLODING_KITTEN, 1
+        );
+        assertEquals(1, removed.size());
+        assertEquals(CardType.EXPLODING_KITTEN, removed.get(0).getType());
+        assertEquals(55, deck.size());
+        assertEquals(3, deck.countOf(CardType.EXPLODING_KITTEN));
+
+        for (CardType type : CardType.values()) {
+            if (type != CardType.EXPLODING_KITTEN) {
+                assertEquals(deck2.countOf(type), deck.countOf(type));
+            }
+        }
     }
 }
