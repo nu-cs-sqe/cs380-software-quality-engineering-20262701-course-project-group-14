@@ -23,3 +23,20 @@ Failed calls leave the entire deck unchanged.
 | Deck08 | All 4 Exploding Kittens have been removed; removeCards(EXPLODING_KITTEN, 0) | Returns an empty list; size remains 52; no Exploding Kittens remain       | Yes          |
 | Deck09 | All 4 Exploding Kittens have been removed; removeCards(EXPLODING_KITTEN, 1) | Throws IllegalArgumentException; deck remains unchanged                   | Yes          |
 | Deck10 | New deck; removeCards(null, 1)                                              | Throws NullPointerException; deck remains unchanged                       | Yes          |
+
+### Method under test: addCards(List<Card> cards)
+
+Adding cards does not shuffle the deck.
+Existing cards remain unchanged.
+Invalid input leaves the entire deck unchanged.
+Later changes to the supplied list do not affect the deck.
+
+| ID     | State of the system / Input                                                              | Expected output                                                                    | Implemented? |
+|--------|------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|--------------|
+| Deck11 | New deck; add an empty list                                                              | Size remains 56; all type counts remain unchanged                                  | No           |
+| Deck12 | Remove all 4 Exploding Kittens, then add back 1 of them                                  | Size becomes 53; 1 Exploding Kitten is present; other type counts remain unchanged | No           |
+| Deck13 | Remove all 4 Exploding Kittens, then add all 4 back                                      | Size returns to 56; all original type counts are restored                          | No           |
+| Deck14 | Remove every card, then add one Defuse                                                   | Size becomes 1; Defuse count is 1; all other type counts are 0                     | No           |
+| Deck15 | New deck; addCards(null)                                                                 | Throws NullPointerException; deck remains unchanged                                | No           |
+| Deck16 | New deck; add a list containing a valid Card followed by null                            | Throws NullPointerException; deck remains unchanged                                | No           |
+| Deck17 | Remove all 4 Exploding Kittens; add the returned mutable list back; then clear that list | Deck still contains 56 cards, including 4 Exploding Kittens                        | No           |
