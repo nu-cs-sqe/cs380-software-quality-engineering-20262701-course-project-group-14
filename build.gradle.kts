@@ -1,5 +1,7 @@
 plugins {
     id("java")
+    id("application")
+    id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 group = "nu.csse.sqe"
@@ -18,6 +20,15 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(11)
     }
+}
+
+javafx {
+    version = "17.0.10"
+    modules = listOf("javafx.controls")
+}
+
+application {
+    mainClass.set("ui.MainApp")
 }
 
 tasks.compileJava {
