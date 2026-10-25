@@ -25,6 +25,10 @@ public class Deck {
 
     // Removes and returns the requested cards.
     public List<Card> removeCards(CardType type, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException(
+                    "Count must not be negative");
+        }
         List<Card> removed = new ArrayList<>();
         Iterator<Card> iterator = cards.iterator();
 

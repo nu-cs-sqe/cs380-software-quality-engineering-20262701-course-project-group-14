@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class DeckTests {
     @ParameterizedTest(name = "Deck02: {0} count={1}")
@@ -90,6 +92,23 @@ public class DeckTests {
             if (type != CardType.EXPLODING_KITTEN) {
                 assertEquals(originalDeck.countOf(type), deck.countOf(type));
             }
+        }
+    }
+
+    @Test
+    public void RemoveCards_WithNegativeCount_ThrowsAndKeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> deck.removeCards(CardType.EXPLODING_KITTEN, -1)
+        );
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
         }
     }
 }
