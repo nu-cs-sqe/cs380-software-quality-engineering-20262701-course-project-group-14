@@ -49,6 +49,13 @@ public class Deck {
 
     //Returns the number of cards of the specified type.
     public int countOf(CardType type) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        int count = 0;
+
+        for (Card card : cards) {
+            if (card.getType() == type) {
+                count++;
+            }
+        }
+        return count;
     }
 }
