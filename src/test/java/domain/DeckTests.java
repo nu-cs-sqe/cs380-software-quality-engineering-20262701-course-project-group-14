@@ -8,8 +8,19 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class DeckTests {
+    private Deck createEmptyDeck() {
+        Deck deck = new Deck();
+
+        for (CardType type : CardType.values()) {
+            deck.removeCards(type, deck.countOf(type));
+        }
+
+        return deck;
+    }
     @ParameterizedTest(name = "Deck02: {0} count={1}")
     @CsvSource({
             "EXPLODING_KITTEN, 4",
@@ -304,6 +315,35 @@ public class DeckTests {
 
         for (CardType type : CardType.values()) {
             assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+    }
+
+    @Test
+    public void DrawCard_FromEmptyDeck_ThrowsNoSuchElementException() {
+        Deck deck = createEmptyDeck();
+
+        assertThrows(NoSuchElementException.class, () -> deck.drawCard());
+
+        assertEquals(0, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(0, deck.countOf(type));
+        }
+    }
+
+    @Test
+    public void DrawCard_FromSingleCardDeck_ReturnsAndRemovesThatCard() {
+        Deck deck = createEmptyDeck();
+        Card card = new Card(CardType.DEFUSE);
+        deck.addCards(List.of(card));
+
+        Card drawn = deck.drawCard();
+
+        assertSame(card, drawn);
+        assertEquals(0, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(0, deck.countOf(type));
         }
     }
 

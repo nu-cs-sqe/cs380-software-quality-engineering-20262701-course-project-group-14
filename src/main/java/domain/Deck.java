@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.NoSuchElementException;
 
 public class Deck {
     private final List<Card> cards = new ArrayList<>();
@@ -61,7 +62,12 @@ public class Deck {
 
     // Removes and returns the top card.
     public Card drawCard() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (cards.isEmpty()) {
+            throw new NoSuchElementException(
+                    "Cannot draw from an empty deck");
+        }
+
+        return cards.remove(0);
     }
 
     // Shuffles the deck without changing its contents.
