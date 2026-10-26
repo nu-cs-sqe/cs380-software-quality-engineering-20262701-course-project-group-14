@@ -164,5 +164,19 @@ public class GameSetupControllerTests {
                 () -> controller.startGame("   ")
         );
     }
+    @Test
+    public void StartGame_WithNonNumericPlayerCount_ThrowsClearIllegalArgumentException() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.startGame("abc")
+        );
+
+        assertEquals(
+                "Player count must be a whole number between 2 and 5.",
+                exception.getMessage()
+        );
+    }
 }
 

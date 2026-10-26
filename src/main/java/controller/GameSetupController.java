@@ -11,13 +11,15 @@ public class GameSetupController {
     private static final int TOTAL_EXPLODING_KITTENS = 4;
     private static final int TOTAL_DEFUSES = 6;
     private static final int EXTRA_DEFUSES_FOR_SMALL_GAME = 2;
+    private static final String PLAYER_COUNT_ERROR_MESSAGE =
+            "Player count must be a whole number between 2 and 5.";
 
     public GameState startGame(String playerCountText) {
-        int playerCount = Integer.parseInt(playerCountText);
+        int playerCount = parsePlayerCount(playerCountText);
         if (playerCount < MINIMUM_PLAYER_COUNT
                 || playerCount > MAXIMUM_PLAYER_COUNT) {
             throw new IllegalArgumentException(
-                    "Player count must be between 2 and 5."
+                    PLAYER_COUNT_ERROR_MESSAGE
             );
         }
 
@@ -59,6 +61,16 @@ public class GameSetupController {
         deck.shuffle();
 
         return new GameState(players, deck);
+    }
+    private int parsePlayerCount(String playerCountText) {
+        try {
+            return Integer.parseInt(playerCountText);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(
+                    PLAYER_COUNT_ERROR_MESSAGE,
+                    exception
+            );
+        }
     }
     private int calculateExtraDefuseCount(int playerCount) {
         if (playerCount <= 3) {
