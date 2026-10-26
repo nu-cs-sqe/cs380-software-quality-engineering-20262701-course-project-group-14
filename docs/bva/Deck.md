@@ -72,7 +72,7 @@ This package-private constructor allows controlled randomness in tests.
 
 | ID     | State of the system / Input         | Expected output             | Implemented? |
 |--------|-------------------------------------|-----------------------------|--------------|
-| Deck26 | Construct a Deck with a null Random | Throws NullPointerException | No           |
+| Deck26 | Construct a Deck with a null Random | Throws NullPointerException | Yes          |
 
 
 

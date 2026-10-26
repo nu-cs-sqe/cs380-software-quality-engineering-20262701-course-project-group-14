@@ -465,4 +465,11 @@ public class DeckTests {
             assertEquals(1L, occurrences);
         }
     }
+    @Test
+    public void Create_WithNullRandom_ThrowsNullPointerException() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new Deck(null)
+        );
+    }
 }
