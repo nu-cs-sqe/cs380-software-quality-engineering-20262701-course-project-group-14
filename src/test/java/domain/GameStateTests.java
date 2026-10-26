@@ -40,4 +40,12 @@ public class GameStateTests {
         assertSame(deck, gameState.getDeck());
         assertSame(player1, gameState.getCurrentPlayer());
     }
+
+    // GS-03
+    @Test
+    public void Create_WithNullPlayers_ThrowsNullPointerException() {
+        Deck deck = new Deck();
+
+        assertThrows(NullPointerException.class, () -> new GameState(null, deck));
+    }
 }
