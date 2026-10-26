@@ -2,6 +2,8 @@ package domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTests {
@@ -40,5 +42,16 @@ public class PlayerTests {
                 NullPointerException.class,
                 () -> new Player(null)
         );
+    }
+
+    // PL-05
+    @Test
+    public void AddCard_ToEmptyHand_HandContainsThatCard() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+
+        player.addCard(skip);
+
+        assertEquals(List.of(skip), player.getHand());
     }
 }
