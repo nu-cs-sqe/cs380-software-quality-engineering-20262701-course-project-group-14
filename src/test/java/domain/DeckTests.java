@@ -346,5 +346,20 @@ public class DeckTests {
             assertEquals(0, deck.countOf(type));
         }
     }
+    @Test
+    public void DrawCard_FromTwoCardDeck_ReturnsCardsInOrder() {
+        Deck deck = createEmptyDeck();
+        Card first = new Card(CardType.ATTACK);
+        Card second = new Card(CardType.SKIP);
+        deck.addCards(List.of(first, second));
 
+        assertSame(first, deck.drawCard());
+        assertEquals(1, deck.size());
+        assertEquals(0, deck.countOf(CardType.ATTACK));
+        assertEquals(1, deck.countOf(CardType.SKIP));
+
+        assertSame(second, deck.drawCard());
+        assertEquals(0, deck.size());
+        assertEquals(0, deck.countOf(CardType.SKIP));
+    }
 }

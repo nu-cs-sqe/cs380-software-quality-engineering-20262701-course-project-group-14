@@ -51,7 +51,7 @@ Drawing from an empty deck throws NoSuchElementException.
 |--------|-------------------------------------------------|--------------------------------------------------------------------------------------|--------------|
 | Deck18 | Empty deck; call drawCard()                     | Throws NoSuchElementException; size remains 0                                        | Yes          |
 | Deck19 | Deck contains one Defuse; call drawCard()       | Returns that same card object; size becomes 0; all type counts become 0              | Yes          |
-| Deck20 | Empty deck; add [Attack, Skip], then draw twice | Returns Attack first and Skip second; size changes from 2 to 1 to 0                  | No           |
+| Deck20 | Empty deck; add [Attack, Skip], then draw twice | Returns Attack first and Skip second; size changes from 2 to 1 to 0                  | Yes          |
 | Deck21 | New 56-card deck; call drawCard()               | Returns a non-null card; size becomes 55; only the drawn type's count decreases by 1 | No           |
 
 
