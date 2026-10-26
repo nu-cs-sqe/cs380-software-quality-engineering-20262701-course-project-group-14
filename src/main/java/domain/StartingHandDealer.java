@@ -11,7 +11,7 @@ public class StartingHandDealer {
             throw new IllegalArgumentException(
                     "Not enough cards in the deck to deal starting hands.");
         }
-        if (playerDefuses.size() < players.size()) {
+        if (playerDefuses.size() != players.size()) {
             throw new IllegalArgumentException(
                     "The number of reserved Defuse cards must equal the number of players.");
         }
