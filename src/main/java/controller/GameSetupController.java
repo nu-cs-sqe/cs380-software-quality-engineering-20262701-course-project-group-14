@@ -63,8 +63,14 @@ public class GameSetupController {
         return new GameState(players, deck);
     }
     private int parsePlayerCount(String playerCountText) {
+        if (playerCountText == null) {
+            throw new IllegalArgumentException(
+                    PLAYER_COUNT_ERROR_MESSAGE
+            );
+        }
+
         try {
-            return Integer.parseInt(playerCountText);
+            return Integer.parseInt(playerCountText.trim());
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException(
                     PLAYER_COUNT_ERROR_MESSAGE,
