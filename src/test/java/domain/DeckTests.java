@@ -289,5 +289,22 @@ public class DeckTests {
             assertEquals(originalDeck.countOf(type), deck.countOf(type));
         }
     }
+    @Test
+    public void AddCards_WhenSourceListIsCleared_KeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        List<Card> removed = deck.removeCards(
+                CardType.EXPLODING_KITTEN, 4);
+
+        deck.addCards(removed);
+        removed.clear();
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+    }
 
 }

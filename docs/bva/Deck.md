@@ -39,4 +39,4 @@ Later changes to the supplied list do not affect the deck.
 | Deck14 | Remove every card, then add one Defuse                                                   | Size becomes 1; Defuse count is 1; all other type counts are 0                     | Yes          |
 | Deck15 | New deck; addCards(null)                                                                 | Throws NullPointerException; deck remains unchanged                                | Yes          |
 | Deck16 | New deck; add a list containing a valid Card followed by null                            | Throws NullPointerException; deck remains unchanged                                | Yes          |
-| Deck17 | Remove all 4 Exploding Kittens; add the returned mutable list back; then clear that list | Deck still contains 56 cards, including 4 Exploding Kittens                        | No           |
+| Deck17 | Remove all 4 Exploding Kittens; add the returned mutable list back; then clear that list | Deck still contains 56 cards, including 4 Exploding Kittens                        | Yes          |
