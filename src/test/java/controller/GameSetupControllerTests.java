@@ -146,5 +146,14 @@ public class GameSetupControllerTests {
                 () -> controller.startGame(null)
         );
     }
+    @Test
+    public void StartGame_WithEmptyPlayerCount_ThrowsIllegalArgumentException() {
+        GameSetupController controller = new GameSetupController();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.startGame("")
+        );
+    }
 }
 

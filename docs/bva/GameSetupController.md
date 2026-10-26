@@ -11,7 +11,7 @@
 | GSC-05 | No ready game exists; setup dependencies contain sufficient cards. | `"5"` | Returns a ready state with 5 players, 8 cards and at least 1 Defuse per player, 4 Exploding Kittens in the remaining shuffled deck, and Player 1 current. | :white_check_mark: |
 | GSC-06 | No ready game exists; setup dependencies contain sufficient cards. | `"6"` | Validation fails and no ready `GameState` is produced. | :white_check_mark: |
 | GSC-07 | No ready game exists. | `null` | Validation fails and no ready `GameState` is produced. | :white_check_mark: |
-| GSC-08 | No ready game exists. | `""` | Validation fails and no ready `GameState` is produced. | :x: |
+| GSC-08 | No ready game exists. | `""` | Validation fails and no ready `GameState` is produced. | :white_check_mark: |
 | GSC-09 | No ready game exists. | `"   "` | Validation fails and no ready `GameState` is produced. | :x: |
 | GSC-10 | No ready game exists. | `"abc"` | Validation fails with a clear message that a whole-number player count from 2 through 5 is required; no ready `GameState` is produced. | :x: |
 | GSC-11 | No ready game exists. | `"2.5"` | Validation fails with a clear message that a whole-number player count from 2 through 5 is required; no ready `GameState` is produced. | :x: |
