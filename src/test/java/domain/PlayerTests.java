@@ -23,4 +23,13 @@ public class PlayerTests {
                 () -> new Player("")
         );
     }
+
+    // PL-03
+    @Test
+    public void Create_WithBlankName_ThrowsIllegalArgumentException() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Player("   ")
+        );
+    }
 }
