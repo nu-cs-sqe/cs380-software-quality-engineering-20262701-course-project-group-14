@@ -1,0 +1,71 @@
+/* ===== Palette =====
+   night sky   #2A2060 -> #16112F   background
+   cream       #FFF1D6              borders, text
+   panel       #2B2262              card
+   amber       #FFB84D              main accent (button, focus)
+   violet      #7B68E0              secondary
+   ink         #141026              outlines
+   All "round" corners are pixel-notched with stacked rectangles.
+*/
+
+.game-setup-root {
+    -fx-background-color: linear-gradient(to bottom, #2A2060, #16112F);
+    -fx-font-family: "Menlo", "Consolas", "Courier New", monospace;
+}
+
+/* ---------- card ---------- */
+
+.setup-card {
+    -fx-background-color: #FFF1D6, #FFF1D6, #2B2262, #2B2262;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-background-radius: 0;
+    -fx-effect: dropshadow(gaussian, #0A0716, 0, 0, 8, 8);
+}
+
+/* ---------- input ---------- */
+
+.text-field {
+    -fx-background-color: #7B68E0, #7B68E0, #120E26, #120E26;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-background-radius: 0;
+    -fx-text-fill: #FFF1D6;
+    -fx-prompt-text-fill: #7B68E0;
+    -fx-highlight-fill: #FFB84D;
+    -fx-highlight-text-fill: #141026;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 14px 18px 14px 18px;
+}
+
+.text-field:focused {
+    -fx-background-color: #FFB84D, #FFB84D, #120E26, #120E26;
+}
+
+/* ---------- button ---------- */
+
+.button {
+    -fx-background-color: #141026, #141026, #D96A2B, #D96A2B, #FFB84D, #FFB84D;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 12 8, 8 4 12 4;
+    -fx-background-radius: 0;
+    -fx-padding: 12px 20px 20px 20px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #141026, #141026, #D96A2B, #D96A2B, #FFD166, #FFD166;
+}
+
+.button:pressed {
+    -fx-background-color: #141026, #141026, #D96A2B, #D96A2B, #FFB84D, #FFB84D;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 8 8, 8 4 8 4;
+    -fx-translate-y: 4px;
+}
+
+/* ---------- message ---------- */
+
+.message-label {
+    -fx-text-fill: #FF8A7A;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-min-height: 20px;
+}
