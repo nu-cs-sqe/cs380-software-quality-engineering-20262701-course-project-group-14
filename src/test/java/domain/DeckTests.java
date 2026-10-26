@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+
 
 public class DeckTests {
     private Deck createEmptyDeck() {
@@ -361,5 +364,23 @@ public class DeckTests {
         assertSame(second, deck.drawCard());
         assertEquals(0, deck.size());
         assertEquals(0, deck.countOf(CardType.SKIP));
+    }
+    @Test
+    public void DrawCard_FromNewDeck_UpdatesSizeAndTypeCounts() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        Card drawn = deck.drawCard();
+
+        assertNotNull(drawn);
+        assertEquals(55, deck.size());
+
+        for (CardType type : CardType.values()) {
+            int expected = originalDeck.countOf(type);
+            if (type == drawn.getType()) {
+                expected--;
+            }
+            assertEquals(expected, deck.countOf(type));
+        }
     }
 }
