@@ -217,4 +217,21 @@ public class DeckTests {
         }
     }
 
+    @Test
+    public void AddCards_WithMultipleCards_RestoresOriginalComposition() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        List<Card> removed = deck.removeCards(
+                CardType.EXPLODING_KITTEN, 4);
+
+        deck.addCards(removed);
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+    }
+
 }
