@@ -13,6 +13,7 @@ public class GameState {
         if (players.isEmpty()) {
             throw new IllegalArgumentException("Players must not be empty.");
         }
+        Objects.requireNonNull(deck, "Deck must not be null.");
         this.players = players;
         this.deck = deck;
     }
