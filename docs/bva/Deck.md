@@ -40,3 +40,22 @@ Later changes to the supplied list do not affect the deck.
 | Deck15 | New deck; addCards(null)                                                                 | Throws NullPointerException; deck remains unchanged                                | Yes          |
 | Deck16 | New deck; add a list containing a valid Card followed by null                            | Throws NullPointerException; deck remains unchanged                                | Yes          |
 | Deck17 | Remove all 4 Exploding Kittens; add the returned mutable list back; then clear that list | Deck still contains 56 cards, including 4 Exploding Kittens                        | Yes          |
+
+### Method under test: drawCard()
+
+The top card is removed and returned.
+addCards() appends cards to the bottom in the supplied order.
+Drawing from an empty deck throws NoSuchElementException.
+
+| ID     | State of the system / Input                     | Expected output                                                                      | Implemented? |
+|--------|-------------------------------------------------|--------------------------------------------------------------------------------------|--------------|
+| Deck18 | Empty deck; call drawCard()                     | Throws NoSuchElementException; size remains 0                                        | No           |
+| Deck19 | Deck contains one Defuse; call drawCard()       | Returns that same card object; size becomes 0; all type counts become 0              | No           |
+| Deck20 | Empty deck; add [Attack, Skip], then draw twice | Returns Attack first and Skip second; size changes from 2 to 1 to 0                  | No           |
+| Deck21 | New 56-card deck; call drawCard()               | Returns a non-null card; size becomes 55; only the drawn type's count decreases by 1 | No           |
+
+
+
+
+
+
