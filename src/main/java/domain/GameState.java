@@ -10,6 +10,9 @@ public class GameState {
 
     public GameState(List<Player> players, Deck deck) {
         Objects.requireNonNull(players, "Players must not be null.");
+        if (players.isEmpty()) {
+            throw new IllegalArgumentException("Players must not be empty.");
+        }
         this.players = players;
         this.deck = deck;
     }
