@@ -56,4 +56,12 @@ public class GameStateTests {
 
         assertThrows(IllegalArgumentException.class, () -> new GameState(List.of(), deck));
     }
+
+    // GS-05
+    @Test
+    public void Create_WithNullDeck_ThrowsNullPointerException() {
+        List<Player> players = List.of(new Player("Player 1"), new Player("Player 2"));
+
+        assertThrows(NullPointerException.class, () -> new GameState(players, null));
+    }
 }
