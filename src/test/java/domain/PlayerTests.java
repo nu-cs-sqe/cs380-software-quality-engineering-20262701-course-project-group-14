@@ -1,9 +1,8 @@
 package domain;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTests {
 
@@ -14,5 +13,14 @@ public class PlayerTests {
 
         assertEquals("Player 1", player.getName());
         assertTrue(player.getHand().isEmpty());
+    }
+
+    // PL-02
+    @Test
+    public void Create_WithEmptyName_ThrowsIllegalArgumentException() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Player("")
+        );
     }
 }
