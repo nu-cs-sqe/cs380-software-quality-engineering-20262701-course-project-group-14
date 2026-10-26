@@ -7,7 +7,7 @@
 | PL-01: Create a player with a non-empty name | `"Player 1"`  | A player is created with the name `"Player 1"` and an empty hand | :white_check_mark: |
 | PL-02: Reject an empty name                  | `""`          | Throws `IllegalArgumentException`; no player is created          | :white_check_mark: |
 | PL-03: Reject a blank name                   | `"   "`       | Throws `IllegalArgumentException`; no player is created          | :white_check_mark: |
-| PL-04: Reject a null name                    | `null`        | Throws `NullPointerException`; no player is created              | :x:                |
+| PL-04: Reject a null name                    | `null`        | Throws `NullPointerException`; no player is created              | :white_check_mark: |
 
 ### Method under test: `addCard(Card card)`
 

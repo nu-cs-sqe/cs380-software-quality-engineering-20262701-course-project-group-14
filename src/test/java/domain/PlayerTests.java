@@ -32,4 +32,13 @@ public class PlayerTests {
                 () -> new Player("   ")
         );
     }
+
+    // PL-04
+    @Test
+    public void Create_WithNullName_ThrowsNullPointerException() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new Player(null)
+        );
+    }
 }
