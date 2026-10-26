@@ -391,4 +391,17 @@ public class DeckTests {
         assertEquals(0, deck.size());
     }
 
+    @Test
+    public void Shuffle_WithOneCard_PreservesThatCard() {
+        Deck deck = createEmptyDeck();
+        Card card = new Card(CardType.DEFUSE);
+        deck.addCards(List.of(card));
+
+        deck.shuffle();
+
+        assertEquals(1, deck.size());
+        assertEquals(1, deck.countOf(CardType.DEFUSE));
+        assertSame(card, deck.drawCard());
+        assertEquals(0, deck.size());
+    }
 }
