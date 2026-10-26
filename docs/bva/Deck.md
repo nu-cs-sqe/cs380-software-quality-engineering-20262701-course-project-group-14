@@ -34,7 +34,7 @@ Later changes to the supplied list do not affect the deck.
 | ID     | State of the system / Input                                                              | Expected output                                                                    | Implemented? |
 |--------|------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|--------------|
 | Deck11 | New deck; add an empty list                                                              | Size remains 56; all type counts remain unchanged                                  | Yes          |
-| Deck12 | Remove all 4 Exploding Kittens, then add back 1 of them                                  | Size becomes 53; 1 Exploding Kitten is present; other type counts remain unchanged | No           |
+| Deck12 | Remove all 4 Exploding Kittens, then add back 1 of them                                  | Size becomes 53; 1 Exploding Kitten is present; other type counts remain unchanged | Yes          |
 | Deck13 | Remove all 4 Exploding Kittens, then add all 4 back                                      | Size returns to 56; all original type counts are restored                          | No           |
 | Deck14 | Remove every card, then add one Defuse                                                   | Size becomes 1; Defuse count is 1; all other type counts are 0                     | No           |
 | Deck15 | New deck; addCards(null)                                                                 | Throws NullPointerException; deck remains unchanged                                | No           |
