@@ -178,5 +178,19 @@ public class GameSetupControllerTests {
                 exception.getMessage()
         );
     }
+    @Test
+    public void StartGame_WithDecimalPlayerCount_ThrowsClearIllegalArgumentException() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.startGame("2.5")
+        );
+
+        assertEquals(
+                "Player count must be a whole number between 2 and 5.",
+                exception.getMessage()
+        );
+    }
 }
 
