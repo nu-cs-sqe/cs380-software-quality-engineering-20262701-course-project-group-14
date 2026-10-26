@@ -383,4 +383,12 @@ public class DeckTests {
             assertEquals(expected, deck.countOf(type));
         }
     }
+
+    @Test
+    public void Shuffle_WithEmptyDeck_KeepsDeckEmpty() {
+        Deck deck = createEmptyDeck();
+        deck.shuffle();
+        assertEquals(0, deck.size());
+    }
+
 }

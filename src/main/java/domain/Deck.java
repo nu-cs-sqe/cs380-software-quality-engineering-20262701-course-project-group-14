@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.NoSuchElementException;
+import java.util.Collections;
 
 public class Deck {
     private final List<Card> cards = new ArrayList<>();
@@ -63,8 +64,7 @@ public class Deck {
     // Removes and returns the top card.
     public Card drawCard() {
         if (cards.isEmpty()) {
-            throw new NoSuchElementException(
-                    "Cannot draw from an empty deck");
+            throw new NoSuchElementException("Cannot draw from an empty deck");
         }
 
         return cards.remove(0);
@@ -72,7 +72,7 @@ public class Deck {
 
     // Shuffles the deck without changing its contents.
     public void shuffle() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Collections.shuffle(cards);
     }
 
     //Returns the current number of cards.
@@ -83,7 +83,6 @@ public class Deck {
     //Returns the number of cards of the specified type.
     public int countOf(CardType type) {
         int count = 0;
-
         for (Card card : cards) {
             if (card.getType() == type) {
                 count++;
