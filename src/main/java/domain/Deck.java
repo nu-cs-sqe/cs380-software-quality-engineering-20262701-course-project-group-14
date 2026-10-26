@@ -4,17 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.NoSuchElementException;
+import java.util.Collections;
+import java.util.Random;
 
 public class Deck {
     private final List<Card> cards = new ArrayList<>();
+    private final Random random;
     // Creates the complete original 56-card deck without shuffling
     public Deck() {
+        this(new Random());
+    }
+
+    Deck(Random random) {
+        this.random = Objects.requireNonNull(
+                random, "Random must not be null");
+
         for (CardType type : CardType.values()) {
             int count = 4;
 
             if (type == CardType.DEFUSE) {
                 count = 6;
-            } else if (type == CardType.SEE_THE_FUTURE || type == CardType.NOPE) {
+            } else if (type == CardType.SEE_THE_FUTURE
+                    || type == CardType.NOPE) {
                 count = 5;
             }
 
@@ -50,17 +62,27 @@ public class Deck {
 
     // Adds the supplied cards without shuffling.
     public void addCards(List<Card> cards) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Objects.requireNonNull(cards, "Cards must not be null");
+
+        for (Card card : cards) {
+            Objects.requireNonNull(card, "Card must not be null");
+        }
+
+        this.cards.addAll(cards);
     }
 
     // Removes and returns the top card.
     public Card drawCard() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (cards.isEmpty()) {
+            throw new NoSuchElementException("Cannot draw from an empty deck");
+        }
+
+        return cards.remove(0);
     }
 
     // Shuffles the deck without changing its contents.
     public void shuffle() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Collections.shuffle(cards, random);
     }
 
     //Returns the current number of cards.
@@ -70,8 +92,8 @@ public class Deck {
 
     //Returns the number of cards of the specified type.
     public int countOf(CardType type) {
+        Objects.requireNonNull(type, "Card type must not be null");
         int count = 0;
-
         for (Card card : cards) {
             if (card.getType() == type) {
                 count++;
