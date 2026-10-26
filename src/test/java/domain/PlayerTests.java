@@ -96,4 +96,13 @@ public class PlayerTests {
                 player.getHand());
     }
 
+    // PL-08
+    @Test
+    public void AddCard_WithNullCard_ThrowsNullPointerExceptionAndHandStaysEmpty() {
+        Player player = new Player("Player 1");
+
+        assertThrows(NullPointerException.class, () -> player.addCard(null));
+        assertTrue(player.getHand().isEmpty());
+    }
+
 }
