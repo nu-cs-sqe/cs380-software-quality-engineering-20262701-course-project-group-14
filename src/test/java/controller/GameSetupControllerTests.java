@@ -101,5 +101,32 @@ public class GameSetupControllerTests {
                 gameState.getCurrentPlayer()
         );
     }
+    @Test
+    public void StartGame_WithMaximumPlayerCount_ReturnsReadyGameState() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startGame("5");
+
+        assertEquals(5, gameState.getPlayers().size());
+
+        for (Player player : gameState.getPlayers()) {
+            assertEquals(8, player.getHand().size());
+
+            long defuseCount = player.getHand().stream()
+                    .filter(card -> card.getType() == CardType.DEFUSE)
+                    .count();
+
+            assertTrue(defuseCount >= 1);
+        }
+
+        assertEquals(
+                4,
+                gameState.getDeck().countOf(CardType.EXPLODING_KITTEN)
+        );
+        assertSame(
+                gameState.getPlayers().get(0),
+                gameState.getCurrentPlayer()
+        );
+    }
 }
 
