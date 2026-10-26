@@ -7,7 +7,7 @@ import java.util.List;
 
 public class GameSetupController {
     private static final int MINIMUM_PLAYER_COUNT = 2;
-    private static final int MAXIMUM_IMPLEMENTED_PLAYER_COUNT = 3;
+    private static final int MAXIMUM_IMPLEMENTED_PLAYER_COUNT = 4;
     private static final int TOTAL_EXPLODING_KITTENS = 4;
     private static final int TOTAL_DEFUSES = 6;
     private static final int EXTRA_DEFUSES_FOR_SMALL_GAME = 2;
