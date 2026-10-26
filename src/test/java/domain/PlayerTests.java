@@ -54,4 +54,18 @@ public class PlayerTests {
 
         assertEquals(List.of(skip), player.getHand());
     }
+
+    // PL-06
+    @Test
+    public void AddCard_ToHandWithOneCard_AppendsCardAtEnd() {
+        Player player = new Player("Player 1");
+        Card tacocat = new Card(CardType.TACOCAT);
+        Card attack = new Card(CardType.ATTACK);
+        player.addCard(tacocat);
+
+        player.addCard(attack);
+
+        assertEquals(List.of(tacocat, attack), player.getHand());
+    }
+
 }
