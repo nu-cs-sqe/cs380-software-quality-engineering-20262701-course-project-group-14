@@ -77,4 +77,25 @@ public class StartingHandDealerTests {
         assertEquals(13, deck.size());
         assertEquals(2, playerDefuses.size());
     }
+
+    // SHD-04
+    @Test
+    public void Deal_WithOneReservedDefuseShort_ThrowsAndChangesNothing() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        List<Player> players = List.of(player1, player2);
+        Deck deck = new Deck();
+        deck.removeCards(CardType.EXPLODING_KITTEN, 4);
+        List<Card> reservedDefuses = deck.removeCards(CardType.DEFUSE, 4);
+        List<Card> playerDefuses = new ArrayList<>(reservedDefuses.subList(0, 1));
+        StartingHandDealer dealer = new StartingHandDealer();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> dealer.deal(players, deck, playerDefuses));
+
+        assertTrue(player1.getHand().isEmpty());
+        assertTrue(player2.getHand().isEmpty());
+        assertEquals(48, deck.size());
+        assertEquals(1, playerDefuses.size());
+    }
 }
