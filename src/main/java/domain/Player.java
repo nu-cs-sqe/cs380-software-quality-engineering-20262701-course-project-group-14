@@ -26,6 +26,7 @@ public class Player {
     }
 
     public void addCard(Card card) {
+        Objects.requireNonNull(card, "Card must not be null");
         hand.add(card);
     }
 }
