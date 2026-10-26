@@ -128,5 +128,14 @@ public class GameSetupControllerTests {
                 gameState.getCurrentPlayer()
         );
     }
+    @Test
+    public void StartGame_WithPlayerCountAboveMaximum_ThrowsIllegalArgumentException() {
+        GameSetupController controller = new GameSetupController();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.startGame("6")
+        );
+    }
 }
 

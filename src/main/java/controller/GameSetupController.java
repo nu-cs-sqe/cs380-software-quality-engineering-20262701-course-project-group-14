@@ -7,23 +7,17 @@ import java.util.List;
 
 public class GameSetupController {
     private static final int MINIMUM_PLAYER_COUNT = 2;
-    private static final int MAXIMUM_IMPLEMENTED_PLAYER_COUNT = 5;
+    private static final int MAXIMUM_PLAYER_COUNT = 5;
     private static final int TOTAL_EXPLODING_KITTENS = 4;
     private static final int TOTAL_DEFUSES = 6;
     private static final int EXTRA_DEFUSES_FOR_SMALL_GAME = 2;
 
     public GameState startGame(String playerCountText) {
         int playerCount = Integer.parseInt(playerCountText);
-
-        if (playerCount < MINIMUM_PLAYER_COUNT) {
+        if (playerCount < MINIMUM_PLAYER_COUNT
+                || playerCount > MAXIMUM_PLAYER_COUNT) {
             throw new IllegalArgumentException(
                     "Player count must be between 2 and 5."
-            );
-        }
-
-        if (playerCount > MAXIMUM_IMPLEMENTED_PLAYER_COUNT) {
-            throw new UnsupportedOperationException(
-                    "This player count is not implemented yet."
             );
         }
 
