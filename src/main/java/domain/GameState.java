@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public class GameState {
 
@@ -8,6 +9,7 @@ public class GameState {
     private final Deck deck;
 
     public GameState(List<Player> players, Deck deck) {
+        Objects.requireNonNull(players, "Players must not be null.");
         this.players = players;
         this.deck = deck;
     }
