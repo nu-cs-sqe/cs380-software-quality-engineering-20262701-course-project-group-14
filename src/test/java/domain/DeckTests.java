@@ -234,4 +234,26 @@ public class DeckTests {
         }
     }
 
+    @Test
+    public void AddCards_ToEmptyDeck_AddsOneCard() {
+        Deck deck = new Deck();
+
+        for (CardType type : CardType.values()) {
+            deck.removeCards(type, deck.countOf(type));
+        }
+        assertEquals(0, deck.size());
+
+        deck.addCards(List.of(new Card(CardType.DEFUSE)));
+
+        assertEquals(1, deck.size());
+
+        for (CardType type : CardType.values()) {
+            int expected = type == CardType.DEFUSE ? 1 : 0;
+            assertEquals(expected, deck.countOf(type));
+        }
+    }
+
+
+
+
 }
