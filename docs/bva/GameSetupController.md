@@ -4,7 +4,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---:|---|---|
-| GSC-01 | No ready game exists; setup dependencies contain sufficient cards. | `"1"` | Validation fails and no ready `GameState` is produced. | :x: |
+| GSC-01 | No ready game exists; setup dependencies contain sufficient cards. | `"1"` | Validation fails and no ready `GameState` is produced. | :white_check_mark: |
 | GSC-02 | No ready game exists; setup dependencies contain sufficient cards. | `"2"` | Returns a ready state with 2 players, 8 cards and at least 1 Defuse per player, 1 Exploding Kitten in the remaining shuffled deck, and Player 1 current. | :x: |
 | GSC-03 | No ready game exists; setup dependencies contain sufficient cards. | `"3"` | Returns a ready state with 3 players, 8 cards and at least 1 Defuse per player, 2 Exploding Kittens in the remaining shuffled deck, and Player 1 current. | :x: |
 | GSC-04 | No ready game exists; setup dependencies contain sufficient cards. | `"4"` | Returns a ready state with 4 players, 8 cards and at least 1 Defuse per player, 3 Exploding Kittens in the remaining shuffled deck, and Player 1 current. | :x: |
