@@ -48,4 +48,12 @@ public class GameStateTests {
 
         assertThrows(NullPointerException.class, () -> new GameState(null, deck));
     }
+
+    // GS-04
+    @Test
+    public void Create_WithEmptyPlayers_ThrowsIllegalArgumentException() {
+        Deck deck = new Deck();
+
+        assertThrows(IllegalArgumentException.class, () -> new GameState(List.of(), deck));
+    }
 }
