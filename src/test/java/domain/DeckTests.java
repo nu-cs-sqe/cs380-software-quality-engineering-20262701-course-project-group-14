@@ -430,4 +430,39 @@ public class DeckTests {
         assertSame(first, deck.drawCard());
         assertEquals(0, deck.size());
     }
+
+    @Test
+    public void Shuffle_WithFullDeck_PreservesCompositionAndCardObjects() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        List<Card> before = new ArrayList<>();
+        while (deck.size() > 0) {
+            before.add(deck.drawCard());
+        }
+        deck.addCards(before);
+
+        deck.shuffle();
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+
+        List<Card> after = new ArrayList<>();
+        while (deck.size() > 0) {
+            after.add(deck.drawCard());
+        }
+
+        assertEquals(56, after.size());
+
+        for (Card expected : before) {
+            long occurrences = after.stream()
+                    .filter(actual -> actual == expected)
+                    .count();
+
+            assertEquals(1L, occurrences);
+        }
+    }
 }
