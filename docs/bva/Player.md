@@ -11,12 +11,12 @@
 
 ### Method under test: `addCard(Card card)`
 
-| Test Case                                                     | State of the System: `hand`                                              | Input: `card` | Expected output                                                                                                   | Implemented? |
-|---------------------------------------------------------------|--------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------|--------------|
-| PL-05: Add a card to an empty hand                            | `[]`                                                                     | `SKIP`        | `hand = [SKIP]`                                                                                                   | :x:          |
-| PL-06: Add a card to a hand with exactly one card             | `[TACOCAT]`                                                              | `ATTACK`      | `hand = [TACOCAT, ATTACK]`                                                                                        | :x:          |
-| PL-07: Add a duplicate card to a hand at maximum size (7 → 8) | `[TACOCAT, TACOCAT, BEARD_CAT, BEARD_CAT, CATTERMELON, TACOCAT, DEFUSE]` | `DEFUSE`      | `hand = [TACOCAT, TACOCAT, BEARD_CAT, BEARD_CAT, CATTERMELON, TACOCAT, DEFUSE, DEFUSE]` (size 8, duplicates kept) | :x:          |
-| PL-08: Reject a null card                                     | `[]`                                                                     | `null`        | Throws `NullPointerException`; `hand = []`                                                                        | :x:          |
+| Test Case                                                     | State of the System: `hand`                                              | Input: `card` | Expected output                                                                                                   | Implemented?       |
+|---------------------------------------------------------------|--------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------|--------------------|
+| PL-05: Add a card to an empty hand                            | `[]`                                                                     | `SKIP`        | `hand = [SKIP]`                                                                                                   | :white_check_mark: |
+| PL-06: Add a card to a hand with exactly one card             | `[TACOCAT]`                                                              | `ATTACK`      | `hand = [TACOCAT, ATTACK]`                                                                                        | :x:                |
+| PL-07: Add a duplicate card to a hand at maximum size (7 → 8) | `[TACOCAT, TACOCAT, BEARD_CAT, BEARD_CAT, CATTERMELON, TACOCAT, DEFUSE]` | `DEFUSE`      | `hand = [TACOCAT, TACOCAT, BEARD_CAT, BEARD_CAT, CATTERMELON, TACOCAT, DEFUSE, DEFUSE]` (size 8, duplicates kept) | :x:                |
+| PL-08: Reject a null card                                     | `[]`                                                                     | `null`        | Throws `NullPointerException`; `hand = []`                                                                        | :x:                |
 
 ### Method under test: `getHand()`
 

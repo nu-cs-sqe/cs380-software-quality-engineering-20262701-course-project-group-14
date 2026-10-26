@@ -26,6 +26,6 @@ public class Player {
     }
 
     public void addCard(Card card) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        hand.add(card);
     }
 }
