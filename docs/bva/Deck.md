@@ -70,10 +70,10 @@ A random shuffle may produce the original order.
 
 This package-private constructor allows controlled randomness in tests.
 
-| ID     | State of the system / Input         | Expected output             | Implemented? |
-|--------|-------------------------------------|-----------------------------|--------------|
-| Deck26 | Construct a Deck with a null Random | Throws NullPointerException | Yes          |
-
+| ID     | State of the system / Input          | Expected output                                     | Implemented? |
+|--------|--------------------------------------|-----------------------------------------------------|--------------|
+| Deck26 | Construct a Deck with a null Random  | Throws NullPointerException                         | Yes          |
+| Deck27 | New deck; call countOf(null)         | Throws NullPointerException; deck remains unchanged | Yes          |
 
 
 

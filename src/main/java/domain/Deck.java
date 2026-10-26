@@ -92,6 +92,7 @@ public class Deck {
 
     //Returns the number of cards of the specified type.
     public int countOf(CardType type) {
+        Objects.requireNonNull(type, "Card type must not be null");
         int count = 0;
         for (Card card : cards) {
             if (card.getType() == type) {

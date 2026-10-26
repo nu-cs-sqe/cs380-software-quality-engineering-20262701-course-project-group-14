@@ -72,7 +72,7 @@ public class DeckTests {
     }
 
     @Test
-    public void RemoveCards_WithOne_ReturnsEmptyListAndKeepsDeckUnchanged() {
+    public void RemoveCards_WithOne_ReturnsOneMatchingCard() {
         Deck deck = new Deck();
         Deck deck2 = new Deck();
 
@@ -471,5 +471,22 @@ public class DeckTests {
                 NullPointerException.class,
                 () -> new Deck(null)
         );
+    }
+
+    @Test
+    public void CountOf_WithNullType_ThrowsAndKeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
+
+        assertThrows(
+                NullPointerException.class,
+                () -> deck.countOf(null)
+        );
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
     }
 }
