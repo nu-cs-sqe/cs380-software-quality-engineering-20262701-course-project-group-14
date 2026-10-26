@@ -7,7 +7,7 @@
 **Planning and Progress Tracking**:
 1. [done] All team members: Finalized Game Setup plan and assigned tasks
 2. [not started] Xiaoyi Wang: Game setup UI and controller, Gradle/JavaFX/CI setup (Links to PR)
-3. [not started] Sifan Liu: Card and Deck classes, confirm deck rules from reference project (Links to PR)
+3. [done] Sifan Liu: Card and Deck classes, confirm deck rules from reference project (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/11)
 4. [not started] Qingyang Xu: Player, dealer and game state, integration test, GitHub Project setup (Links to PR)
 
 # Week 5 (10/26/2026-11/01/2026)
