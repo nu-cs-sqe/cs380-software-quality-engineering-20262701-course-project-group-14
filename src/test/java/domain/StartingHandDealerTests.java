@@ -30,4 +30,28 @@ public class StartingHandDealerTests {
         assertEquals(34, deck.size());
         assertTrue(playerDefuses.isEmpty());
     }
+
+    // SHD-02
+    @Test
+    public void Deal_ToFivePlayers_EachHandHasEightCardsEndingWithDefuse() {
+        List<Player> players = List.of(
+                new Player("Player 1"),
+                new Player("Player 2"),
+                new Player("Player 3"),
+                new Player("Player 4"),
+                new Player("Player 5"));
+        Deck deck = new Deck();
+        deck.removeCards(CardType.EXPLODING_KITTEN, 4);
+        List<Card> playerDefuses = new ArrayList<>(deck.removeCards(CardType.DEFUSE, 5));
+        StartingHandDealer dealer = new StartingHandDealer();
+
+        dealer.deal(players, deck, playerDefuses);
+
+        for (Player player : players) {
+            assertEquals(8, player.getHand().size());
+            assertEquals(CardType.DEFUSE, player.getHand().get(7).getType());
+        }
+        assertEquals(12, deck.size());
+        assertTrue(playerDefuses.isEmpty());
+    }
 }
