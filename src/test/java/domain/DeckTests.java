@@ -253,7 +253,22 @@ public class DeckTests {
         }
     }
 
+    @Test
+    public void AddCards_WithNullList_ThrowsAndKeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
 
+        assertThrows(
+                NullPointerException.class,
+                () -> deck.addCards(null)
+        );
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+    }
 
 
 }
