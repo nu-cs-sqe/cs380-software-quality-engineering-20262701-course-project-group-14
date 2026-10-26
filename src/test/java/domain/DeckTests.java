@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import java.util.ArrayList;
 
 public class DeckTests {
     @ParameterizedTest(name = "Deck02: {0} count={1}")
@@ -269,6 +269,25 @@ public class DeckTests {
             assertEquals(originalDeck.countOf(type), deck.countOf(type));
         }
     }
+    @Test
+    public void AddCards_WithNullElement_ThrowsAndKeepsDeckUnchanged() {
+        Deck deck = new Deck();
+        Deck originalDeck = new Deck();
 
+        List<Card> supplied = new ArrayList<>();
+        supplied.add(new Card(CardType.DEFUSE));
+        supplied.add(null);
+
+        assertThrows(
+                NullPointerException.class,
+                () -> deck.addCards(supplied)
+        );
+
+        assertEquals(56, deck.size());
+
+        for (CardType type : CardType.values()) {
+            assertEquals(originalDeck.countOf(type), deck.countOf(type));
+        }
+    }
 
 }

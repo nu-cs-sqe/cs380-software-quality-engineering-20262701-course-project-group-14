@@ -50,6 +50,12 @@ public class Deck {
 
     // Adds the supplied cards without shuffling.
     public void addCards(List<Card> cards) {
+        Objects.requireNonNull(cards, "Cards must not be null");
+
+        for (Card card : cards) {
+            Objects.requireNonNull(card, "Card must not be null");
+        }
+
         this.cards.addAll(cards);
     }
 
