@@ -54,7 +54,25 @@ Drawing from an empty deck throws NoSuchElementException.
 | Deck20 | Empty deck; add [Attack, Skip], then draw twice | Returns Attack first and Skip second; size changes from 2 to 1 to 0                  | Yes          |
 | Deck21 | New 56-card deck; call drawCard()               | Returns a non-null card; size becomes 55; only the drawn type's count decreases by 1 | Yes          |
 
+### Method under test: shuffle()
 
+Shuffling preserves the size, type counts, and actual card objects.
+A random shuffle may produce the original order.
+
+| ID     | State of the system / Input                                                        | Expected output                                                                            | Implemented? |
+|--------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|--------------|
+| Deck22 | Empty deck; call shuffle()                                                         | Completes normally; size remains 0                                                         | No           |
+| Deck23 | Deck contains one card; call shuffle()                                             | Preserves that same card; size remains 1                                                   | No           |
+| Deck24 | Deck contains [Attack, Skip]; injected Random always returns 0 from nextInt(bound) | Under the chosen JDK 11 shuffle implementation, drawing returns Skip then Attack           | No           |
+| Deck25 | Complete 56-card deck; call shuffle()                                              | Size and all type counts remain unchanged; every original card object appears exactly once | No           |
+
+### Implementation-derived case: Deck(Random random)
+
+This package-private constructor allows controlled randomness in tests.
+
+| ID     | State of the system / Input         | Expected output             | Implemented? |
+|--------|-------------------------------------|-----------------------------|--------------|
+| Deck26 | Construct a Deck with a null Random | Throws NullPointerException | No           |
 
 
 
