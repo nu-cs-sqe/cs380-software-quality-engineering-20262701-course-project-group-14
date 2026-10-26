@@ -6,17 +6,27 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.NoSuchElementException;
 import java.util.Collections;
+import java.util.Random;
 
 public class Deck {
     private final List<Card> cards = new ArrayList<>();
+    private final Random random;
     // Creates the complete original 56-card deck without shuffling
     public Deck() {
+        this(new Random());
+    }
+
+    Deck(Random random) {
+        this.random = Objects.requireNonNull(
+                random, "Random must not be null");
+
         for (CardType type : CardType.values()) {
             int count = 4;
 
             if (type == CardType.DEFUSE) {
                 count = 6;
-            } else if (type == CardType.SEE_THE_FUTURE || type == CardType.NOPE) {
+            } else if (type == CardType.SEE_THE_FUTURE
+                    || type == CardType.NOPE) {
                 count = 5;
             }
 
@@ -72,7 +82,7 @@ public class Deck {
 
     // Shuffles the deck without changing its contents.
     public void shuffle() {
-        Collections.shuffle(cards);
+        Collections.shuffle(cards, random);
     }
 
     //Returns the current number of cards.

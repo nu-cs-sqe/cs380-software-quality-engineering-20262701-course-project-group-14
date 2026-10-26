@@ -11,18 +11,24 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import java.util.Random;
 
 
 public class DeckTests {
     private Deck createEmptyDeck() {
         Deck deck = new Deck();
-
         for (CardType type : CardType.values()) {
             deck.removeCards(type, deck.countOf(type));
         }
 
         return deck;
+    }
+    private static class ZeroRandom extends Random {
+        private static final long serialVersionUID = 1L;
+        @Override
+        public int nextInt(int bound) {
+            return 0;
+        }
     }
     @ParameterizedTest(name = "Deck02: {0} count={1}")
     @CsvSource({
@@ -402,6 +408,26 @@ public class DeckTests {
         assertEquals(1, deck.size());
         assertEquals(1, deck.countOf(CardType.DEFUSE));
         assertSame(card, deck.drawCard());
+        assertEquals(0, deck.size());
+    }
+
+    @Test
+    public void Shuffle_WithControlledRandom_ReordersTwoCards() {
+        Deck deck = new Deck(new ZeroRandom());
+
+        for (CardType type : CardType.values()) {
+            deck.removeCards(type, deck.countOf(type));
+        }
+
+        Card first = new Card(CardType.ATTACK);
+        Card second = new Card(CardType.SKIP);
+        deck.addCards(List.of(first, second));
+
+        deck.shuffle();
+
+        assertEquals(2, deck.size());
+        assertSame(second, deck.drawCard());
+        assertSame(first, deck.drawCard());
         assertEquals(0, deck.size());
     }
 }
