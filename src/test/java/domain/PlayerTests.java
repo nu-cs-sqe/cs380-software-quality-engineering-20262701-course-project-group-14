@@ -68,4 +68,32 @@ public class PlayerTests {
         assertEquals(List.of(tacocat, attack), player.getHand());
     }
 
+    // PL-07
+    @Test
+    public void AddCard_ToHandWithSevenCardsIncludingDuplicates_KeepsAllCards() {
+        Player player = new Player("Player 1");
+        Card tacocat1 = new Card(CardType.TACOCAT);
+        Card tacocat2 = new Card(CardType.TACOCAT);
+        Card beardCat1 = new Card(CardType.BEARD_CAT);
+        Card beardCat2 = new Card(CardType.BEARD_CAT);
+        Card cattermelon = new Card(CardType.CATTERMELON);
+        Card tacocat3 = new Card(CardType.TACOCAT);
+        Card defuse1 = new Card(CardType.DEFUSE);
+        Card defuse2 = new Card(CardType.DEFUSE);
+        player.addCard(tacocat1);
+        player.addCard(tacocat2);
+        player.addCard(beardCat1);
+        player.addCard(beardCat2);
+        player.addCard(cattermelon);
+        player.addCard(tacocat3);
+        player.addCard(defuse1);
+
+        player.addCard(defuse2);
+
+        assertEquals(
+                List.of(tacocat1, tacocat2, beardCat1, beardCat2,
+                        cattermelon, tacocat3, defuse1, defuse2),
+                player.getHand());
+    }
+
 }
