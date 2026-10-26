@@ -4,19 +4,23 @@ import java.util.List;
 
 public class GameState {
 
+    private final List<Player> players;
+    private final Deck deck;
+
     public GameState(List<Player> players, Deck deck) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        this.players = players;
+        this.deck = deck;
     }
 
     public List<Player> getPlayers() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return players;
     }
 
     public Deck getDeck() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return deck;
     }
 
     public Player getCurrentPlayer() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return players.get(0);
     }
 }
