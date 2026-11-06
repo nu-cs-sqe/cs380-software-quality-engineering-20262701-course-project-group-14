@@ -48,6 +48,7 @@ public class GameSetupController {
 
         return new GameState(players, deck);
     }
+
     private void validatePlayerCount(int playerCount) {
         if (playerCount < MINIMUM_PLAYER_COUNT
                 || playerCount > MAXIMUM_PLAYER_COUNT) {
@@ -56,6 +57,7 @@ public class GameSetupController {
             );
         }
     }
+
     private int parsePlayerCount(String playerCountText) {
         if (playerCountText == null) {
             throw new IllegalArgumentException(
@@ -72,6 +74,7 @@ public class GameSetupController {
             );
         }
     }
+
     private void addExtraDefusesToDeck(
             Deck deck,
             List<Card> defuses,
@@ -87,6 +90,7 @@ public class GameSetupController {
 
         deck.addCards(extraDefuses);
     }
+
     private void addExplodingKittensToDeck(
             Deck deck,
             List<Card> explodingKittens,
@@ -98,6 +102,7 @@ public class GameSetupController {
 
         deck.addCards(kittensForGame);
     }
+
     private int calculateExtraDefuseCount(int playerCount) {
         if (playerCount <= 3) {
             return EXTRA_DEFUSES_FOR_SMALL_GAME;
