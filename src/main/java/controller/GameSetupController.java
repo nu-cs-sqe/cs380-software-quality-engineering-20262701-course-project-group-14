@@ -39,10 +39,11 @@ public class GameSetupController {
         StartingHandDealer dealer = new StartingHandDealer();
         dealer.deal(players, deck, playerDefuses);
 
-        List<Card> kittensForGame = new ArrayList<>(
-                explodingKittens.subList(0, playerCount - 1)
+        addExplodingKittensToDeck(
+                deck,
+                explodingKittens,
+                playerCount
         );
-        deck.addCards(kittensForGame);
         deck.shuffle();
 
         return new GameState(players, deck);
@@ -85,6 +86,17 @@ public class GameSetupController {
         );
 
         deck.addCards(extraDefuses);
+    }
+    private void addExplodingKittensToDeck(
+            Deck deck,
+            List<Card> explodingKittens,
+            int playerCount
+    ) {
+        List<Card> kittensForGame = new ArrayList<>(
+                explodingKittens.subList(0, playerCount - 1)
+        );
+
+        deck.addCards(kittensForGame);
     }
     private int calculateExtraDefuseCount(int playerCount) {
         if (playerCount <= 3) {
