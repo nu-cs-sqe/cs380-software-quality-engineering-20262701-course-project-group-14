@@ -18,4 +18,6 @@ N/A
 ### Mutation Testing
 N/A
 ### Others
-N/A
+- `GameSetupController` does not have isolated unit tests and is
+  covered by integration tests only. See the Week 6 Instructor
+  Code Review Feedback for details.
