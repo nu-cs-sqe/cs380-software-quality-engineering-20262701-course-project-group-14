@@ -33,16 +33,7 @@ public class GameSetupController {
         List<Card> playerDefuses = new ArrayList<>(
                 defuses.subList(0, playerCount)
         );
-        int extraDefuseCount = calculateExtraDefuseCount(playerCount);
-
-        List<Card> extraDefuses = new ArrayList<>(
-                defuses.subList(
-                        playerCount,
-                        playerCount + extraDefuseCount
-                )
-        );
-
-        deck.addCards(extraDefuses);
+        addExtraDefusesToDeck(deck, defuses, playerCount);
         deck.shuffle();
 
         StartingHandDealer dealer = new StartingHandDealer();
@@ -79,6 +70,21 @@ public class GameSetupController {
                     exception
             );
         }
+    }
+    private void addExtraDefusesToDeck(
+            Deck deck,
+            List<Card> defuses,
+            int playerCount
+    ) {
+        int extraDefuseCount = calculateExtraDefuseCount(playerCount);
+        List<Card> extraDefuses = new ArrayList<>(
+                defuses.subList(
+                        playerCount,
+                        playerCount + extraDefuseCount
+                )
+        );
+
+        deck.addCards(extraDefuses);
     }
     private int calculateExtraDefuseCount(int playerCount) {
         if (playerCount <= 3) {
