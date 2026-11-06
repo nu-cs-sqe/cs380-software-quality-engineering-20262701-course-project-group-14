@@ -16,13 +16,7 @@ public class GameSetupController {
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
-        if (playerCount < MINIMUM_PLAYER_COUNT
-                || playerCount > MAXIMUM_PLAYER_COUNT) {
-            throw new IllegalArgumentException(
-                    PLAYER_COUNT_ERROR_MESSAGE
-            );
-        }
-
+        validatePlayerCount(playerCount);
         Deck deck = new Deck();
 
         List<Card> explodingKittens = deck.removeCards(
@@ -61,6 +55,14 @@ public class GameSetupController {
         deck.shuffle();
 
         return new GameState(players, deck);
+    }
+    private void validatePlayerCount(int playerCount) {
+        if (playerCount < MINIMUM_PLAYER_COUNT
+                || playerCount > MAXIMUM_PLAYER_COUNT) {
+            throw new IllegalArgumentException(
+                    PLAYER_COUNT_ERROR_MESSAGE
+            );
+        }
     }
     private int parsePlayerCount(String playerCountText) {
         if (playerCountText == null) {
