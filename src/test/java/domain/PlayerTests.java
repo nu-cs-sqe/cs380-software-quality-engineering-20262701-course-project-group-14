@@ -152,4 +152,18 @@ public class PlayerTests {
         assertThrows(NullPointerException.class, () -> player.hasCard(null));
     }
 
+    // PL-13
+    @Test
+    public void GetHand_ModifyReturnedHand_ThrowsAndHandUnchanged() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        player.addCard(skip);
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> player.getHand().add(new Card(CardType.DEFUSE))
+        );
+        assertEquals(List.of(skip), player.getHand());
+    }
+
 }
