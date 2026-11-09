@@ -31,3 +31,51 @@
 | Test Case                 | State of the System: `name` | Expected output | Implemented?         |
 |---------------------------|-----------------------------|-----------------|----------------------|
 | PL-12: Get a typical name | `"Player 1"`                | `"Player 1"`    | implemented in PL-01 |
+s
+### Method under test: `getHand()` (read-only)
+
+| Test Case                                   | State of the System: `hand` | Action                          | Expected output                                                  | Implemented? |
+|---------------------------------------------|-----------------------------|---------------------------------|------------------------------------------------------------------|--------------|
+| PL-13: Reject changes to the returned hand  | `[SKIP]`                    | `getHand().add(DEFUSE)`         | Throws `UnsupportedOperationException`; `hand = [SKIP]`          | :x:          |
+
+### Method under test: `hasCard(CardType type)`
+
+| Test Case                                  | State of the System: `hand` | Input: `type` | Expected output               | Implemented? |
+|--------------------------------------------|-----------------------------|---------------|-------------------------------|--------------|
+| PL-14: Empty hand                          | `[]`                        | `DEFUSE`      | `false`                       | :x:          |
+| PL-15: Hand contains one card of the type  | `[SKIP, DEFUSE]`            | `DEFUSE`      | `true`                        | :x:          |
+| PL-16: Hand contains two cards of the type | `[DEFUSE, SKIP, DEFUSE]`    | `DEFUSE`      | `true`                        | :x:          |
+| PL-17: Hand has cards but not the type     | `[SKIP]`                    | `DEFUSE`      | `false`                       | :x:          |
+| PL-18: Reject a null type                  | `[SKIP]`                    | `null`        | Throws `NullPointerException` | :x:          |
+
+### Method under test: `removeOne(CardType type)`
+
+| Test Case                                           | State of the System: `hand` | Input: `type` | Expected output                                                   | Implemented? |
+|-----------------------------------------------------|-----------------------------|---------------|-------------------------------------------------------------------|--------------|
+| PL-19: Remove from an empty hand                    | `[]`                        | `DEFUSE`      | Returns `Optional.empty()`; `hand = []`                           | :x:          |
+| PL-20: Remove the only card of the type             | `[SKIP, DEFUSE]`            | `DEFUSE`      | Returns the `DEFUSE` card; `hand = [SKIP]`                        | :x:          |
+| PL-21: Remove one of two cards of the type          | `[DEFUSE, SKIP, DEFUSE]`    | `DEFUSE`      | Returns one `DEFUSE` card; `hand = [SKIP, DEFUSE]`                | :x:          |
+| PL-22: Remove a type that is not in the hand        | `[SKIP]`                    | `DEFUSE`      | Returns `Optional.empty()`; `hand = [SKIP]`                       | :x:          |
+| PL-23: Reject a null type                           | `[SKIP]`                    | `null`        | Throws `NullPointerException`; `hand = [SKIP]`                    | :x:          |
+
+### Method under test: `removeAllCards()`
+
+| Test Case                                    | State of the System: `hand`                                                      | Expected output                                                     | Implemented? |
+|----------------------------------------------|----------------------------------------------------------------------------------|---------------------------------------------------------------------|--------------|
+| PL-24: Remove all cards from an empty hand   | `[]`                                                                             | Returns `[]`; `hand = []`                                           | :x:          |
+| PL-25: Remove all cards from a one-card hand | `[SKIP]`                                                                         | Returns `[SKIP]`; `hand = []`                                       | :x:          |
+| PL-26: Remove all cards from a full hand     | `[TACOCAT, TACOCAT, BEARD_CAT, BEARD_CAT, CATTERMELON, TACOCAT, DEFUSE, DEFUSE]` | Returns the same 8 cards in the same order; `hand = []`             | :x:          |
+
+### Method under test: `eliminate()`
+
+| Test Case                                     | State of the System | Expected output                       | Implemented? |
+|-----------------------------------------------|---------------------|---------------------------------------|--------------|
+| PL-27: Eliminate a player                     | not eliminated      | `isEliminated() = true`               | :x:          |
+| PL-28: Eliminating twice keeps the player out | already eliminated  | `isEliminated() = true`; no exception | :x:          |
+
+### Method under test: `isEliminated()`
+
+| Test Case                                  | State of the System | Expected output | Implemented?         |
+|--------------------------------------------|---------------------|-----------------|----------------------|
+| PL-29: A new player is not eliminated      | new player          | `false`         | :x:                  |
+| PL-30: An eliminated player is eliminated  | eliminated          | `true`          | implemented in PL-27 |
