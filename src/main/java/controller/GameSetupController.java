@@ -16,13 +16,7 @@ public class GameSetupController {
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
-        if (playerCount < MINIMUM_PLAYER_COUNT
-                || playerCount > MAXIMUM_PLAYER_COUNT) {
-            throw new IllegalArgumentException(
-                    PLAYER_COUNT_ERROR_MESSAGE
-            );
-        }
-
+        validatePlayerCount(playerCount);
         Deck deck = new Deck();
 
         List<Card> explodingKittens = deck.removeCards(
@@ -39,29 +33,31 @@ public class GameSetupController {
         List<Card> playerDefuses = new ArrayList<>(
                 defuses.subList(0, playerCount)
         );
-        int extraDefuseCount = calculateExtraDefuseCount(playerCount);
-
-        List<Card> extraDefuses = new ArrayList<>(
-                defuses.subList(
-                        playerCount,
-                        playerCount + extraDefuseCount
-                )
-        );
-
-        deck.addCards(extraDefuses);
+        addExtraDefusesToDeck(deck, defuses, playerCount);
         deck.shuffle();
 
         StartingHandDealer dealer = new StartingHandDealer();
         dealer.deal(players, deck, playerDefuses);
 
-        List<Card> kittensForGame = new ArrayList<>(
-                explodingKittens.subList(0, playerCount - 1)
+        addExplodingKittensToDeck(
+                deck,
+                explodingKittens,
+                playerCount
         );
-        deck.addCards(kittensForGame);
         deck.shuffle();
 
         return new GameState(players, deck);
     }
+
+    private void validatePlayerCount(int playerCount) {
+        if (playerCount < MINIMUM_PLAYER_COUNT
+                || playerCount > MAXIMUM_PLAYER_COUNT) {
+            throw new IllegalArgumentException(
+                    PLAYER_COUNT_ERROR_MESSAGE
+            );
+        }
+    }
+
     private int parsePlayerCount(String playerCountText) {
         if (playerCountText == null) {
             throw new IllegalArgumentException(
@@ -78,6 +74,35 @@ public class GameSetupController {
             );
         }
     }
+
+    private void addExtraDefusesToDeck(
+            Deck deck,
+            List<Card> defuses,
+            int playerCount
+    ) {
+        int extraDefuseCount = calculateExtraDefuseCount(playerCount);
+        List<Card> extraDefuses = new ArrayList<>(
+                defuses.subList(
+                        playerCount,
+                        playerCount + extraDefuseCount
+                )
+        );
+
+        deck.addCards(extraDefuses);
+    }
+
+    private void addExplodingKittensToDeck(
+            Deck deck,
+            List<Card> explodingKittens,
+            int playerCount
+    ) {
+        List<Card> kittensForGame = new ArrayList<>(
+                explodingKittens.subList(0, playerCount - 1)
+        );
+
+        deck.addCards(kittensForGame);
+    }
+
     private int calculateExtraDefuseCount(int playerCount) {
         if (playerCount <= 3) {
             return EXTRA_DEFUSES_FOR_SMALL_GAME;
