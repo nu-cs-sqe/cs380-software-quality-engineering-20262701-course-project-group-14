@@ -32,6 +32,11 @@ public class Player {
     }
 
     public boolean hasCard(CardType type) {
+        for (Card card : hand) {
+            if (card.getType() == type) {
+                return true;
+            }
+        }
         return false;
     }
 
