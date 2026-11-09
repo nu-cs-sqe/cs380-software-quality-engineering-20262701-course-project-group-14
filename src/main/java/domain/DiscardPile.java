@@ -17,6 +17,10 @@ public class DiscardPile {
     }
 
     public void discardAll(List<Card> newCards) {
+        Objects.requireNonNull(newCards, "Cards must not be null");
+        for (Card card : newCards) {
+            Objects.requireNonNull(card, "Card must not be null");
+        }
         cards.addAll(newCards);
     }
 
