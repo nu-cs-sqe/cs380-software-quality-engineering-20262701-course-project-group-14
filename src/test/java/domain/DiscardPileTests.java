@@ -69,4 +69,14 @@ public class DiscardPileTests {
 
         assertEquals(0, pile.size());
     }
+
+    // DP-07
+    @Test
+    public void DiscardAll_ListWithOneCard_SizeIsOne() {
+        DiscardPile pile = new DiscardPile();
+
+        pile.discardAll(List.of(new Card(CardType.SKIP)));
+
+        assertEquals(1, pile.size());
+    }
 }
