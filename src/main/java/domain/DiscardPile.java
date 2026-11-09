@@ -11,7 +11,7 @@ public class DiscardPile {
     }
 
     public void discard(Card card) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        cards.add(card);
     }
 
     public void discardAll(List<Card> cards) {

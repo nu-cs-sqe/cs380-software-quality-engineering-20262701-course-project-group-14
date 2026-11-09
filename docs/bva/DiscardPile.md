@@ -21,12 +21,12 @@
 
 ### Method under test: `discard(Card card)`
 
-| Test Case                                        | State of the System: pile | Input: `card` | Expected output                               | Implemented? |
-|--------------------------------------------------|---------------------------|---------------|-----------------------------------------------|--------------|
-| DP-02: Discard a card onto an empty pile         | `[]`                      | `SKIP`        | `size() = 1`                                  | :x:          |
-| DP-03: Discard a card onto a pile with one card  | `[SKIP]`                  | `DEFUSE`      | `size() = 2`                                  | :x:          |
-| DP-04: Discard a duplicate card                  | `[SKIP]`                  | `SKIP`        | `size() = 2` (duplicates kept)                | :x:          |
-| DP-05: Reject a null card                        | `[]`                      | `null`        | Throws `NullPointerException`; `size() = 0`   | :x:          |
+| Test Case                                       | State of the System: pile | Input: `card` | Expected output                             | Implemented?       |
+|-------------------------------------------------|---------------------------|---------------|---------------------------------------------|--------------------|
+| DP-02: Discard a card onto an empty pile        | `[]`                      | `SKIP`        | `size() = 1`                                | :white_check_mark: |
+| DP-03: Discard a card onto a pile with one card | `[SKIP]`                  | `DEFUSE`      | `size() = 2`                                | :x:                |
+| DP-04: Discard a duplicate card                 | `[SKIP]`                  | `SKIP`        | `size() = 2` (duplicates kept)              | :x:                |
+| DP-05: Reject a null card                       | `[]`                      | `null`        | Throws `NullPointerException`; `size() = 0` | :x:                |
 
 ### Method under test: `discardAll(List<Card> cards)`
 
