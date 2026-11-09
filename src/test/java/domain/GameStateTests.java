@@ -177,4 +177,18 @@ public class GameStateTests {
         assertEquals(AdvanceResult.ADVANCED, result);
         assertSame(player2, gameState.getCurrentPlayer());
     }
+
+    // GS-18
+    @Test
+    public void AdvanceCurrentPlayer_OnlyCurrentPlayerAlive_ReturnsOnePlayerRemains() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+        player2.eliminate();
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ONE_PLAYER_REMAINS, result);
+        assertSame(player1, gameState.getCurrentPlayer());
+    }
 }
