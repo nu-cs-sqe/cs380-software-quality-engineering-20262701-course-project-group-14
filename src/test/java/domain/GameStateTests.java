@@ -127,4 +127,20 @@ public class GameStateTests {
         assertEquals(AdvanceResult.ADVANCED, result);
         assertSame(player1, gameState.getCurrentPlayer());
     }
+
+    // GS-15
+    @Test
+    public void AdvanceCurrentPlayer_NextPlayerEliminated_SkipsToFollowingPlayer() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        Player player3 = new Player("Player 3");
+        GameState gameState = new GameState(
+                List.of(player1, player2, player3), new Deck());
+        player2.eliminate();
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ADVANCED, result);
+        assertSame(player3, gameState.getCurrentPlayer());
+    }
 }
