@@ -45,4 +45,16 @@ public class DiscardPileTests {
 
         assertEquals(2, pile.size());
     }
+
+    // DP-05
+    @Test
+    public void Discard_NullCard_ThrowsNullPointerExceptionAndPileUnchanged() {
+        DiscardPile pile = new DiscardPile();
+
+        assertThrows(
+                NullPointerException.class,
+                () -> pile.discard(null)
+        );
+        assertEquals(0, pile.size());
+    }
 }
