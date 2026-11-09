@@ -34,4 +34,15 @@ public class DiscardPileTests {
 
         assertEquals(2, pile.size());
     }
+
+    // DP-04
+    @Test
+    public void Discard_DuplicateCard_KeepsBoth() {
+        DiscardPile pile = new DiscardPile();
+        pile.discard(new Card(CardType.SKIP));
+
+        pile.discard(new Card(CardType.SKIP));
+
+        assertEquals(2, pile.size());
+    }
 }
