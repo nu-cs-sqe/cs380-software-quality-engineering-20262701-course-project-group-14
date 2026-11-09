@@ -258,4 +258,28 @@ public class PlayerTests {
         assertTrue(player.getHand().isEmpty());
     }
 
+    // PL-26
+    @Test
+    public void RemoveAllCards_FullHand_ReturnsAllCardsInOrderAndEmptiesHand() {
+        Player player = new Player("Player 1");
+        List<Card> fullHand = List.of(
+                new Card(CardType.TACOCAT),
+                new Card(CardType.TACOCAT),
+                new Card(CardType.BEARD_CAT),
+                new Card(CardType.BEARD_CAT),
+                new Card(CardType.CATTERMELON),
+                new Card(CardType.TACOCAT),
+                new Card(CardType.DEFUSE),
+                new Card(CardType.DEFUSE)
+        );
+        for (Card card : fullHand) {
+            player.addCard(card);
+        }
+
+        List<Card> removed = player.removeAllCards();
+
+        assertEquals(fullHand, removed);
+        assertTrue(player.getHand().isEmpty());
+    }
+
 }
