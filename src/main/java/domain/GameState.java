@@ -34,11 +34,16 @@ public class GameState {
     }
 
     public AdvanceResult advanceCurrentPlayer() {
+        int alivePlayers = countAlivePlayers();
+        if (alivePlayers == 0) {
+            throw new IllegalStateException("At least one player must be alive.");
+        }
+
         do {
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         } while (getCurrentPlayer().isEliminated());
 
-        if (countAlivePlayers() == 1) {
+        if (alivePlayers == 1) {
             return AdvanceResult.ONE_PLAYER_REMAINS;
         }
         return AdvanceResult.ADVANCED;
