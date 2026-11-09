@@ -37,6 +37,20 @@ public class GameState {
         do {
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         } while (getCurrentPlayer().isEliminated());
+
+        if (countAlivePlayers() == 1) {
+            return AdvanceResult.ONE_PLAYER_REMAINS;
+        }
         return AdvanceResult.ADVANCED;
+    }
+
+    private int countAlivePlayers() {
+        int alivePlayers = 0;
+        for (Player player : players) {
+            if (!player.isEliminated()) {
+                alivePlayers++;
+            }
+        }
+        return alivePlayers;
     }
 }
