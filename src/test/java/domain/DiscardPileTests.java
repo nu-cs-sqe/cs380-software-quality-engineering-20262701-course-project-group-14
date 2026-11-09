@@ -2,6 +2,8 @@ package domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DiscardPileTests {
@@ -55,6 +57,16 @@ public class DiscardPileTests {
                 NullPointerException.class,
                 () -> pile.discard(null)
         );
+        assertEquals(0, pile.size());
+    }
+
+    // DP-06
+    @Test
+    public void DiscardAll_EmptyList_SizeUnchanged() {
+        DiscardPile pile = new DiscardPile();
+
+        pile.discardAll(List.of());
+
         assertEquals(0, pile.size());
     }
 }
