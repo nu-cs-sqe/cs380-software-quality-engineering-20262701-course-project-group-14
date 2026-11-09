@@ -53,7 +53,9 @@ public class Player {
     }
 
     public List<Card> removeAllCards() {
-        return new ArrayList<>();
+        List<Card> removedCards = new ArrayList<>(hand);
+        hand.clear();
+        return removedCards;
     }
 
     public void eliminate() {

@@ -63,7 +63,7 @@
 | Test Case                                    | State of the System: `hand`                                                      | Expected output                                                     | Implemented? |
 |----------------------------------------------|----------------------------------------------------------------------------------|---------------------------------------------------------------------|--------------|
 | PL-24: Remove all cards from an empty hand   | `[]`                                                                             | Returns `[]`; `hand = []`                                           | :white_check_mark: |
-| PL-25: Remove all cards from a one-card hand | `[SKIP]`                                                                         | Returns `[SKIP]`; `hand = []`                                       | :x:          |
+| PL-25: Remove all cards from a one-card hand | `[SKIP]`                                                                         | Returns `[SKIP]`; `hand = []`                                       | :white_check_mark: |
 | PL-26: Remove all cards from a full hand     | `[TACOCAT, TACOCAT, BEARD_CAT, BEARD_CAT, CATTERMELON, TACOCAT, DEFUSE, DEFUSE]` | Returns the same 8 cards in the same order; `hand = []`             | :x:          |
 
 ### Method under test: `eliminate()`
