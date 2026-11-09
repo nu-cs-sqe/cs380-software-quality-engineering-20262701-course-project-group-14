@@ -3,6 +3,7 @@ package domain;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -164,6 +165,17 @@ public class PlayerTests {
                 () -> player.getHand().add(new Card(CardType.DEFUSE))
         );
         assertEquals(List.of(skip), player.getHand());
+    }
+
+    // PL-19
+    @Test
+    public void RemoveOne_EmptyHand_ReturnsEmptyAndHandUnchanged() {
+        Player player = new Player("Player 1");
+
+        Optional<Card> removed = player.removeOne(CardType.DEFUSE);
+
+        assertTrue(removed.isEmpty());
+        assertTrue(player.getHand().isEmpty());
     }
 
 }
