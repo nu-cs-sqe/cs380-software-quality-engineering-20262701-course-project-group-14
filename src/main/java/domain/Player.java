@@ -3,6 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Player {
 
@@ -28,5 +29,25 @@ public class Player {
     public void addCard(Card card) {
         Objects.requireNonNull(card, "Card must not be null");
         hand.add(card);
+    }
+
+    public boolean hasCard(CardType type) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public Optional<Card> removeOne(CardType type) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public List<Card> removeAllCards() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public void eliminate() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public boolean isEliminated() {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }

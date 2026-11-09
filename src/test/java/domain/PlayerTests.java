@@ -105,4 +105,12 @@ public class PlayerTests {
         assertTrue(player.getHand().isEmpty());
     }
 
+    // PL-14
+    @Test
+    public void HasCard_EmptyHand_ReturnsFalse() {
+        Player player = new Player("Player 1");
+
+        assertFalse(player.hasCard(CardType.DEFUSE));
+    }
+
 }
