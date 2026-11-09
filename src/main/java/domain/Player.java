@@ -43,6 +43,11 @@ public class Player {
     }
 
     public Optional<Card> removeOne(CardType type) {
+        for (int index = 0; index < hand.size(); index++) {
+            if (hand.get(index).getType() == type) {
+                return Optional.of(hand.remove(index));
+            }
+        }
         return Optional.empty();
     }
 
