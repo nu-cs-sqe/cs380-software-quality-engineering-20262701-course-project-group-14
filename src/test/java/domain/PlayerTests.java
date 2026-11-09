@@ -193,4 +193,21 @@ public class PlayerTests {
         assertEquals(List.of(skip), player.getHand());
     }
 
+    // PL-21
+    @Test
+    public void RemoveOne_TwoCardsOfType_RemovesOnlyOne() {
+        Player player = new Player("Player 1");
+        Card firstDefuse = new Card(CardType.DEFUSE);
+        Card skip = new Card(CardType.SKIP);
+        Card secondDefuse = new Card(CardType.DEFUSE);
+        player.addCard(firstDefuse);
+        player.addCard(skip);
+        player.addCard(secondDefuse);
+
+        Optional<Card> removed = player.removeOne(CardType.DEFUSE);
+
+        assertEquals(Optional.of(firstDefuse), removed);
+        assertEquals(List.of(skip, secondDefuse), player.getHand());
+    }
+
 }

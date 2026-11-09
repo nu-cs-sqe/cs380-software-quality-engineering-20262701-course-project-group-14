@@ -54,7 +54,7 @@
 |-----------------------------------------------------|-----------------------------|---------------|-------------------------------------------------------------------|--------------|
 | PL-19: Remove from an empty hand                    | `[]`                        | `DEFUSE`      | Returns `Optional.empty()`; `hand = []`                           | :white_check_mark: |
 | PL-20: Remove the only card of the type             | `[SKIP, DEFUSE]`            | `DEFUSE`      | Returns the `DEFUSE` card; `hand = [SKIP]`                        | :white_check_mark: |
-| PL-21: Remove one of two cards of the type          | `[DEFUSE, SKIP, DEFUSE]`    | `DEFUSE`      | Returns one `DEFUSE` card; `hand = [SKIP, DEFUSE]`                | :x:          |
+| PL-21: Remove one of two cards of the type          | `[DEFUSE, SKIP, DEFUSE]`    | `DEFUSE`      | Returns one `DEFUSE` card; `hand = [SKIP, DEFUSE]`                | :white_check_mark: |
 | PL-22: Remove a type that is not in the hand        | `[SKIP]`                    | `DEFUSE`      | Returns `Optional.empty()`; `hand = [SKIP]`                       | :x:          |
 | PL-23: Reject a null type                           | `[SKIP]`                    | `null`        | Throws `NullPointerException`; `hand = [SKIP]`                    | :x:          |
 
