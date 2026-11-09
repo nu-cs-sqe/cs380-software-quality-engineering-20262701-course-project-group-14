@@ -210,4 +210,17 @@ public class PlayerTests {
         assertEquals(List.of(skip, secondDefuse), player.getHand());
     }
 
+    // PL-22
+    @Test
+    public void RemoveOne_TypeNotInHand_ReturnsEmptyAndHandUnchanged() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        player.addCard(skip);
+
+        Optional<Card> removed = player.removeOne(CardType.DEFUSE);
+
+        assertTrue(removed.isEmpty());
+        assertEquals(List.of(skip), player.getHand());
+    }
+
 }
