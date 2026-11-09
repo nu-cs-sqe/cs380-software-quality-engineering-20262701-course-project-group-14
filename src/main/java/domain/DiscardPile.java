@@ -1,11 +1,13 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiscardPile {
 
+    private final List<Card> cards = new ArrayList<>();
+
     public DiscardPile() {
-        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public void discard(Card card) {
@@ -17,6 +19,6 @@ public class DiscardPile {
     }
 
     public int size() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return cards.size();
     }
 }

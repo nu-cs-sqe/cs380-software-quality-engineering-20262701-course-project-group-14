@@ -14,9 +14,9 @@
 
 ### Method under test: `DiscardPile()`
 
-| Test Case                          | State of the System | Expected output | Implemented? |
-|------------------------------------|---------------------|-----------------|--------------|
-| DP-01: A new discard pile is empty | none                | `size() = 0`    | :x:          |
+| Test Case                          | State of the System | Expected output | Implemented?       |
+|------------------------------------|---------------------|-----------------|--------------------|
+| DP-01: A new discard pile is empty | none                | `size() = 0`    | :white_check_mark: |
 
 
 ### Method under test: `discard(Card card)`
