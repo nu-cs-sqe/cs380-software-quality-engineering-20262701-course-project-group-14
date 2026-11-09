@@ -105,4 +105,26 @@ public class GameStateTests {
         assertEquals(AdvanceResult.ADVANCED, result);
         assertSame(player2, gameState.getCurrentPlayer());
     }
+
+    // GS-14
+    @Test
+    public void AdvanceCurrentPlayer_FromLastOfFivePlayers_WrapsToFirstPlayer() {
+        Player player1 = new Player("Player 1");
+        List<Player> players = List.of(
+                player1,
+                new Player("Player 2"),
+                new Player("Player 3"),
+                new Player("Player 4"),
+                new Player("Player 5")
+        );
+        GameState gameState = new GameState(players, new Deck());
+        for (int turn = 0; turn < 4; turn++) {
+            gameState.advanceCurrentPlayer();
+        }
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ADVANCED, result);
+        assertSame(player1, gameState.getCurrentPlayer());
+    }
 }
