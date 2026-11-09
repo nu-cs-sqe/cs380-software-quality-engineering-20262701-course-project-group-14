@@ -9,6 +9,7 @@ public class GameState {
 
     private final List<Player> players;
     private final Deck deck;
+    private int currentPlayerIndex;
 
     public GameState(List<Player> players, Deck deck) {
         Objects.requireNonNull(players, "Players must not be null.");
@@ -29,10 +30,11 @@ public class GameState {
     }
 
     public Player getCurrentPlayer() {
-        return players.get(0);
+        return players.get(currentPlayerIndex);
     }
 
     public AdvanceResult advanceCurrentPlayer() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        currentPlayerIndex++;
+        return AdvanceResult.ADVANCED;
     }
 }

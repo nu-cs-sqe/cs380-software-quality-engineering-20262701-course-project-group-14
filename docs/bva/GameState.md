@@ -46,7 +46,7 @@
 
 | Test Case                                                      | State of the System: `players` (eliminated marked with *) | Current player | Expected output                                                         | Implemented? |
 |----------------------------------------------------------------|-----------------------------------------------------------|----------------|-------------------------------------------------------------------------|--------------|
-| GS-13: Advance to the next player                              | `[P1, P2]`                                                | P1             | Returns `ADVANCED`; current player is P2                                | :x:          |
+| GS-13: Advance to the next player                              | `[P1, P2]`                                                | P1             | Returns `ADVANCED`; current player is P2                                | :white_check_mark: |
 | GS-14: Wrap around from the last player of a 5-player game     | `[P1, P2, P3, P4, P5]`                                    | P5             | Returns `ADVANCED`; current player is P1                                | :x:          |
 | GS-15: Skip an eliminated player                               | `[P1, P2*, P3]`                                           | P1             | Returns `ADVANCED`; current player is P3                                | :x:          |
 | GS-16: Wrap around and skip an eliminated player               | `[P1*, P2, P3]`                                           | P3             | Returns `ADVANCED`; current player is P2                                | :x:          |
