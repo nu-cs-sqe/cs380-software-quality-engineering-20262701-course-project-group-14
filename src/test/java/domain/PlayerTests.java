@@ -123,4 +123,15 @@ public class PlayerTests {
         assertTrue(player.hasCard(CardType.DEFUSE));
     }
 
+    // PL-16
+    @Test
+    public void HasCard_HandContainsTwoCardsOfType_ReturnsTrue() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.DEFUSE));
+        player.addCard(new Card(CardType.SKIP));
+        player.addCard(new Card(CardType.DEFUSE));
+
+        assertTrue(player.hasCard(CardType.DEFUSE));
+    }
+
 }
