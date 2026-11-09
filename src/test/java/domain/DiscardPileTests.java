@@ -79,4 +79,24 @@ public class DiscardPileTests {
 
         assertEquals(1, pile.size());
     }
+
+    // DP-08
+    @Test
+    public void DiscardAll_FullHandWithDuplicates_KeepsAllEightCards() {
+        DiscardPile pile = new DiscardPile();
+        List<Card> hand = List.of(
+                new Card(CardType.TACOCAT),
+                new Card(CardType.TACOCAT),
+                new Card(CardType.SKIP),
+                new Card(CardType.SKIP),
+                new Card(CardType.ATTACK),
+                new Card(CardType.NOPE),
+                new Card(CardType.FAVOR),
+                new Card(CardType.DEFUSE)
+        );
+
+        pile.discardAll(hand);
+
+        assertEquals(8, pile.size());
+    }
 }
