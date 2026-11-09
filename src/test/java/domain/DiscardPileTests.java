@@ -99,4 +99,18 @@ public class DiscardPileTests {
 
         assertEquals(8, pile.size());
     }
+
+    // DP-09
+    @Test
+    public void DiscardAll_OntoPileWithSameCard_KeepsAllCards() {
+        DiscardPile pile = new DiscardPile();
+        pile.discard(new Card(CardType.SKIP));
+
+        pile.discardAll(List.of(
+                new Card(CardType.SKIP),
+                new Card(CardType.ATTACK)
+        ));
+
+        assertEquals(3, pile.size());
+    }
 }
