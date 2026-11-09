@@ -31,7 +31,7 @@
 | Test Case                 | State of the System: `name` | Expected output | Implemented?         |
 |---------------------------|-----------------------------|-----------------|----------------------|
 | PL-12: Get a typical name | `"Player 1"`                | `"Player 1"`    | implemented in PL-01 |
-s
+
 ### Method under test: `getHand()` (read-only)
 
 | Test Case                                   | State of the System: `hand` | Action                          | Expected output                                                  | Implemented? |
