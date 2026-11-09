@@ -245,4 +245,17 @@ public class PlayerTests {
         assertTrue(player.getHand().isEmpty());
     }
 
+    // PL-25
+    @Test
+    public void RemoveAllCards_OneCardHand_ReturnsCardAndEmptiesHand() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        player.addCard(skip);
+
+        List<Card> removed = player.removeAllCards();
+
+        assertEquals(List.of(skip), removed);
+        assertTrue(player.getHand().isEmpty());
+    }
+
 }
