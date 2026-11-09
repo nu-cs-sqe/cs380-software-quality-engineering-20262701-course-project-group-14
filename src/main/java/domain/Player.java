@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class Player {
     }
 
     public List<Card> getHand() {
-        return hand;
+        return Collections.unmodifiableList(hand);
     }
 
     public void addCard(Card card) {

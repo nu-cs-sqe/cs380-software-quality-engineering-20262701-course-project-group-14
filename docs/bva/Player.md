@@ -36,7 +36,7 @@
 
 | Test Case                                   | State of the System: `hand` | Action                          | Expected output                                                  | Implemented? |
 |---------------------------------------------|-----------------------------|---------------------------------|------------------------------------------------------------------|--------------|
-| PL-13: Reject changes to the returned hand  | `[SKIP]`                    | `getHand().add(DEFUSE)`         | Throws `UnsupportedOperationException`; `hand = [SKIP]`          | :x:          |
+| PL-13: Reject changes to the returned hand  | `[SKIP]`                    | `getHand().add(DEFUSE)`         | Throws `UnsupportedOperationException`; `hand = [SKIP]`          | :white_check_mark: |
 
 ### Method under test: `hasCard(CardType type)`
 
