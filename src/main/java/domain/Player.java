@@ -32,7 +32,7 @@ public class Player {
     }
 
     public boolean hasCard(CardType type) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return false;
     }
 
     public Optional<Card> removeOne(CardType type) {

@@ -42,7 +42,7 @@
 
 | Test Case                                  | State of the System: `hand` | Input: `type` | Expected output               | Implemented? |
 |--------------------------------------------|-----------------------------|---------------|-------------------------------|--------------|
-| PL-14: Empty hand                          | `[]`                        | `DEFUSE`      | `false`                       | :x:          |
+| PL-14: Empty hand                          | `[]`                        | `DEFUSE`      | `false`                       | :white_check_mark: |
 | PL-15: Hand contains one card of the type  | `[SKIP, DEFUSE]`            | `DEFUSE`      | `true`                        | :x:          |
 | PL-16: Hand contains two cards of the type | `[DEFUSE, SKIP, DEFUSE]`    | `DEFUSE`      | `true`                        | :x:          |
 | PL-17: Hand has cards but not the type     | `[SKIP]`                    | `DEFUSE`      | `false`                       | :x:          |
