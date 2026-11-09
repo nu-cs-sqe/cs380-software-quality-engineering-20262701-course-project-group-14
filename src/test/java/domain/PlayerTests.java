@@ -143,4 +143,13 @@ public class PlayerTests {
         assertFalse(player.hasCard(CardType.DEFUSE));
     }
 
+    // PL-18
+    @Test
+    public void HasCard_NullType_ThrowsNullPointerException() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.SKIP));
+
+        assertThrows(NullPointerException.class, () -> player.hasCard(null));
+    }
+
 }
