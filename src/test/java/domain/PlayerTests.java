@@ -292,4 +292,14 @@ public class PlayerTests {
         assertTrue(player.isEliminated());
     }
 
+    // PL-28
+    @Test
+    public void Eliminate_AlreadyEliminated_StaysEliminated() {
+        Player player = new Player("Player 1");
+        player.eliminate();
+
+        assertDoesNotThrow(player::eliminate);
+        assertTrue(player.isEliminated());
+    }
+
 }

@@ -71,7 +71,7 @@
 | Test Case                                     | State of the System | Expected output                       | Implemented? |
 |-----------------------------------------------|---------------------|---------------------------------------|--------------|
 | PL-27: Eliminate a player                     | not eliminated      | `isEliminated() = true`               | :white_check_mark: |
-| PL-28: Eliminating twice keeps the player out | already eliminated  | `isEliminated() = true`; no exception | :x:          |
+| PL-28: Eliminating twice keeps the player out | already eliminated  | `isEliminated() = true`; no exception | :white_check_mark: |
 
 ### Method under test: `isEliminated()`
 
