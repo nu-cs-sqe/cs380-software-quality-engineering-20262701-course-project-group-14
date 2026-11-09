@@ -77,5 +77,5 @@
 
 | Test Case                                  | State of the System | Expected output | Implemented?         |
 |--------------------------------------------|---------------------|-----------------|----------------------|
-| PL-29: A new player is not eliminated      | new player          | `false`         | :x:                  |
+| PL-29: A new player is not eliminated      | new player          | `false`         | :white_check_mark:   |
 | PL-30: An eliminated player is eliminated  | eliminated          | `true`          | implemented in PL-27 |

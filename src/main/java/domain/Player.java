@@ -10,6 +10,7 @@ public class Player {
 
     private final String name;
     private final List<Card> hand = new ArrayList<>();
+    private boolean eliminated;
 
     public Player(String name) {
         Objects.requireNonNull(name, "Player name must not be null");
@@ -59,9 +60,10 @@ public class Player {
     }
 
     public void eliminate() {
+        eliminated = true;
     }
 
     public boolean isEliminated() {
-        return true;
+        return eliminated;
     }
 }
