@@ -134,4 +134,13 @@ public class PlayerTests {
         assertTrue(player.hasCard(CardType.DEFUSE));
     }
 
+    // PL-17
+    @Test
+    public void HasCard_HandWithoutType_ReturnsFalse() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.SKIP));
+
+        assertFalse(player.hasCard(CardType.DEFUSE));
+    }
+
 }
