@@ -178,4 +178,19 @@ public class PlayerTests {
         assertTrue(player.getHand().isEmpty());
     }
 
+    // PL-20
+    @Test
+    public void RemoveOne_OnlyCardOfType_ReturnsItAndRemovesIt() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        Card defuse = new Card(CardType.DEFUSE);
+        player.addCard(skip);
+        player.addCard(defuse);
+
+        Optional<Card> removed = player.removeOne(CardType.DEFUSE);
+
+        assertEquals(Optional.of(defuse), removed);
+        assertEquals(List.of(skip), player.getHand());
+    }
+
 }
