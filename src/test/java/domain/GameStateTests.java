@@ -2,6 +2,7 @@ package domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,5 +64,18 @@ public class GameStateTests {
         List<Player> players = List.of(new Player("Player 1"), new Player("Player 2"));
 
         assertThrows(NullPointerException.class, () -> new GameState(players, null));
+    }
+
+    // GS-11
+    @Test
+    public void Create_ThenChangeOriginalList_GameStatePlayersUnchanged() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        List<Player> originalPlayers = new ArrayList<>(List.of(player1, player2));
+        GameState gameState = new GameState(originalPlayers, new Deck());
+
+        originalPlayers.add(new Player("Player 3"));
+
+        assertEquals(List.of(player1, player2), gameState.getPlayers());
     }
 }
