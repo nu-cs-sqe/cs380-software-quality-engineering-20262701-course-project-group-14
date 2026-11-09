@@ -13,4 +13,14 @@ public class DiscardPileTests {
 
         assertEquals(0, pile.size());
     }
+
+    // DP-02
+    @Test
+    public void Discard_OntoEmptyPile_SizeIsOne() {
+        DiscardPile pile = new DiscardPile();
+
+        pile.discard(new Card(CardType.SKIP));
+
+        assertEquals(1, pile.size());
+    }
 }
