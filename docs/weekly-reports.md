@@ -8,7 +8,8 @@
 1. [done] All team members: Finalized Game Setup plan and assigned tasks
 2. [done] Xiaoyi Wang: Configured Gradle and JavaFX; implemented the JavaFX game setup UI, GameSetupController, BVA/TDD tests, and domain integration (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/10)
 3. [done] Sifan Liu: Card and Deck classes, confirm deck rules from reference project (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/11)
-4. [not started] Qingyang Xu: Player, dealer and game state, integration test, GitHub Project setup (Links to PR)
+4. [done] Qingyang Xu: Player, StartingHandDealer and GameState classes with BVA/TDD tests (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/12); game setup integration test (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/15); GitHub Project setup
+5. [to be discussed] Qingyang Xu, Xiaoyi Wang: No test fails if the final shuffle after adding Exploding Kittens (AC 5) is removed, because current tests only check card counts. Need a test that verifies shuffle() is called after the Exploding Kittens are added (tracked on the project board)
 
 # Week 5 (10/26/2026-11/01/2026)
 **Planning and Progress Tracking**:
