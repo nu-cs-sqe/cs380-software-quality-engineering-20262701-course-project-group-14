@@ -32,6 +32,7 @@ public class Player {
     }
 
     public boolean hasCard(CardType type) {
+        Objects.requireNonNull(type, "Card type must not be null");
         for (Card card : hand) {
             if (card.getType() == type) {
                 return true;
