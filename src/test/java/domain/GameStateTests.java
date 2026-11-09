@@ -1,6 +1,7 @@
 package domain;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -204,5 +205,19 @@ public class GameStateTests {
 
         assertEquals(AdvanceResult.ONE_PLAYER_REMAINS, result);
         assertSame(player2, gameState.getCurrentPlayer());
+    }
+
+    // GS-20
+    @Test
+    @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+    public void AdvanceCurrentPlayer_NoPlayerAlive_ThrowsAndCurrentPlayerUnchanged() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+        player1.eliminate();
+        player2.eliminate();
+
+        assertThrows(IllegalStateException.class, gameState::advanceCurrentPlayer);
+        assertSame(player1, gameState.getCurrentPlayer());
     }
 }
