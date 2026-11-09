@@ -53,7 +53,7 @@ public class Player {
     }
 
     public List<Card> removeAllCards() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return new ArrayList<>();
     }
 
     public void eliminate() {
