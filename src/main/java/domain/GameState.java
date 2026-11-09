@@ -34,7 +34,7 @@ public class GameState {
     }
 
     public AdvanceResult advanceCurrentPlayer() {
-        currentPlayerIndex++;
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         return AdvanceResult.ADVANCED;
     }
 }
