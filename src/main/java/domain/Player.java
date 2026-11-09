@@ -43,7 +43,7 @@ public class Player {
     }
 
     public Optional<Card> removeOne(CardType type) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return Optional.empty();
     }
 
     public List<Card> removeAllCards() {

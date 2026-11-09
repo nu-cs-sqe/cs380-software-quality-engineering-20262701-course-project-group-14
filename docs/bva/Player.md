@@ -52,7 +52,7 @@
 
 | Test Case                                           | State of the System: `hand` | Input: `type` | Expected output                                                   | Implemented? |
 |-----------------------------------------------------|-----------------------------|---------------|-------------------------------------------------------------------|--------------|
-| PL-19: Remove from an empty hand                    | `[]`                        | `DEFUSE`      | Returns `Optional.empty()`; `hand = []`                           | :x:          |
+| PL-19: Remove from an empty hand                    | `[]`                        | `DEFUSE`      | Returns `Optional.empty()`; `hand = []`                           | :white_check_mark: |
 | PL-20: Remove the only card of the type             | `[SKIP, DEFUSE]`            | `DEFUSE`      | Returns the `DEFUSE` card; `hand = [SKIP]`                        | :x:          |
 | PL-21: Remove one of two cards of the type          | `[DEFUSE, SKIP, DEFUSE]`    | `DEFUSE`      | Returns one `DEFUSE` card; `hand = [SKIP, DEFUSE]`                | :x:          |
 | PL-22: Remove a type that is not in the hand        | `[SKIP]`                    | `DEFUSE`      | Returns `Optional.empty()`; `hand = [SKIP]`                       | :x:          |
