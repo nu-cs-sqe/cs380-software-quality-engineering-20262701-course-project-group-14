@@ -52,7 +52,7 @@
 | GS-16: Wrap around and skip an eliminated player               | `[P1*, P2, P3]`                                           | P3             | Returns `ADVANCED`; current player is P2                                | :white_check_mark: |
 | GS-17: Advance after the current player is eliminated          | `[P1*, P2, P3]`                                           | P1             | Returns `ADVANCED`; current player is P2                                | :white_check_mark: |
 | GS-18: One player remains (the current player)                 | `[P1, P2*]`                                               | P1             | Returns `ONE_PLAYER_REMAINS`; current player is P1                      | :white_check_mark: |
-| GS-19: One player remains (another player)                     | `[P1*, P2]`                                               | P1             | Returns `ONE_PLAYER_REMAINS`; current player is P2                      | :x:          |
+| GS-19: One player remains (another player)                     | `[P1*, P2]`                                               | P1             | Returns `ONE_PLAYER_REMAINS`; current player is P2                      | :white_check_mark: |
 | GS-20: Reject advancing when no player is alive                | `[P1*, P2*]`                                              | P1             | Throws `IllegalStateException`; current player is still P1              | :x:          |
 
 ### Method under test: `getCurrentPlayer()` (after advancing)
