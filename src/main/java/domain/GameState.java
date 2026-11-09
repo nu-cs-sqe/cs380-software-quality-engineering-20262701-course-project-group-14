@@ -31,4 +31,8 @@ public class GameState {
     public Player getCurrentPlayer() {
         return players.get(0);
     }
+
+    public AdvanceResult advanceCurrentPlayer() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }

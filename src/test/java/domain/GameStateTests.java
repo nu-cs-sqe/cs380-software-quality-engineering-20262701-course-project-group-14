@@ -92,4 +92,17 @@ public class GameStateTests {
         );
         assertEquals(List.of(player1, player2), gameState.getPlayers());
     }
+
+    // GS-13
+    @Test
+    public void AdvanceCurrentPlayer_TwoPlayers_MovesToNextPlayer() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ADVANCED, result);
+        assertSame(player2, gameState.getCurrentPlayer());
+    }
 }
