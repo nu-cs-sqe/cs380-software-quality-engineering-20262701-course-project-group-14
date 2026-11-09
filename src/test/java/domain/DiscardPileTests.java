@@ -113,4 +113,16 @@ public class DiscardPileTests {
 
         assertEquals(3, pile.size());
     }
+
+    // DP-10
+    @Test
+    public void DiscardAll_NullList_ThrowsNullPointerExceptionAndPileUnchanged() {
+        DiscardPile pile = new DiscardPile();
+
+        assertThrows(
+                NullPointerException.class,
+                () -> pile.discardAll(null)
+        );
+        assertEquals(0, pile.size());
+    }
 }

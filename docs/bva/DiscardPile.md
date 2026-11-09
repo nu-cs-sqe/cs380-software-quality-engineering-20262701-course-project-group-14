@@ -36,7 +36,7 @@
 | DP-07: Discard a list with one card                    | `[]`                      | `[SKIP]`                        | `size() = 1`                                                 | :white_check_mark: |
 | DP-08: Discard a full hand with duplicates             | `[]`                      | 8 cards, e.g. `[TACOCAT, TACOCAT, SKIP, SKIP, ATTACK, NOPE, FAVOR, DEFUSE]` | `size() = 8` (duplicates kept)          | :white_check_mark: |
 | DP-09: Discard onto a pile that already has the same card | `[SKIP]`               | `[SKIP, ATTACK]`                | `size() = 3`                                                 | :white_check_mark: |
-| DP-10: Reject a null list                              | `[]`                      | `null`                          | Throws `NullPointerException`; `size() = 0`                  | :x:          |
+| DP-10: Reject a null list                              | `[]`                      | `null`                          | Throws `NullPointerException`; `size() = 0`                  | :white_check_mark: |
 | DP-11: Reject a list containing null; add nothing      | `[]`                      | `[SKIP, null]`                  | Throws `NullPointerException`; `size() = 0` (no partial add) | :x:          |
 
 ### Method under test: `size()`
