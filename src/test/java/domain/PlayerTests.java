@@ -282,4 +282,14 @@ public class PlayerTests {
         assertTrue(player.getHand().isEmpty());
     }
 
+    // PL-27
+    @Test
+    public void Eliminate_PlayerNotEliminated_BecomesEliminated() {
+        Player player = new Player("Player 1");
+
+        player.eliminate();
+
+        assertTrue(player.isEliminated());
+    }
+
 }
