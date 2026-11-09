@@ -234,4 +234,15 @@ public class PlayerTests {
         assertEquals(List.of(skip), player.getHand());
     }
 
+    // PL-24
+    @Test
+    public void RemoveAllCards_EmptyHand_ReturnsEmptyList() {
+        Player player = new Player("Player 1");
+
+        List<Card> removed = player.removeAllCards();
+
+        assertTrue(removed.isEmpty());
+        assertTrue(player.getHand().isEmpty());
+    }
+
 }
