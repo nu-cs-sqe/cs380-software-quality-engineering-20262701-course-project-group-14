@@ -223,4 +223,15 @@ public class PlayerTests {
         assertEquals(List.of(skip), player.getHand());
     }
 
+    // PL-23
+    @Test
+    public void RemoveOne_NullType_ThrowsAndHandUnchanged() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        player.addCard(skip);
+
+        assertThrows(NullPointerException.class, () -> player.removeOne(null));
+        assertEquals(List.of(skip), player.getHand());
+    }
+
 }
