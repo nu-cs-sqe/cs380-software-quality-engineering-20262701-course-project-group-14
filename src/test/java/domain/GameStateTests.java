@@ -78,4 +78,18 @@ public class GameStateTests {
 
         assertEquals(List.of(player1, player2), gameState.getPlayers());
     }
+
+    // GS-12
+    @Test
+    public void GetPlayers_ModifyReturnedList_ThrowsAndPlayersUnchanged() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> gameState.getPlayers().add(new Player("Player 3"))
+        );
+        assertEquals(List.of(player1, player2), gameState.getPlayers());
+    }
 }
