@@ -40,7 +40,7 @@
 
 | Test Case                                      | State of the System: `players` | Action                          | Expected output                                                          | Implemented? |
 |------------------------------------------------|--------------------------------|---------------------------------|--------------------------------------------------------------------------|--------------|
-| GS-12: Reject changes to the returned players  | `[Player 1, Player 2]`         | `getPlayers().add(Player 3)`    | Throws `UnsupportedOperationException`; players are `[Player 1, Player 2]` | :x:          |
+| GS-12: Reject changes to the returned players  | `[Player 1, Player 2]`         | `getPlayers().add(Player 3)`    | Throws `UnsupportedOperationException`; players are `[Player 1, Player 2]` | :white_check_mark: |
 
 ### Method under test: `advanceCurrentPlayer()`
 
