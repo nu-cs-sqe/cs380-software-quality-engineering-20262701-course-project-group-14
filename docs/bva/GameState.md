@@ -34,7 +34,7 @@
 
 | Test Case                                                   | State of the System                                           | Action                                     | Expected output                                    | Implemented? |
 |-------------------------------------------------------------|---------------------------------------------------------------|--------------------------------------------|----------------------------------------------------|--------------|
-| GS-11: Changing the original list does not change the game  | created with list `[Player 1, Player 2]`                      | add Player 3 to the original list          | `getPlayers()` is still `[Player 1, Player 2]`     | :x:          |
+| GS-11: Changing the original list does not change the game  | created with list `[Player 1, Player 2]`                      | add Player 3 to the original list          | `getPlayers()` is still `[Player 1, Player 2]`     | :white_check_mark: |
 
 ### Method under test: `getPlayers()` (read-only)
 

@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +15,7 @@ public class GameState {
             throw new IllegalArgumentException("Players must not be empty.");
         }
         Objects.requireNonNull(deck, "Deck must not be null.");
-        this.players = players;
+        this.players = new ArrayList<>(players);
         this.deck = deck;
     }
 
