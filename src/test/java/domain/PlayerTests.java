@@ -302,4 +302,12 @@ public class PlayerTests {
         assertTrue(player.isEliminated());
     }
 
+    // PL-29
+    @Test
+    public void IsEliminated_NewPlayer_ReturnsFalse() {
+        Player player = new Player("Player 1");
+
+        assertFalse(player.isEliminated());
+    }
+
 }
