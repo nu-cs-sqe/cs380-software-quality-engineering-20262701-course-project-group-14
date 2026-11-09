@@ -26,7 +26,7 @@
 | DP-02: Discard a card onto an empty pile        | `[]`                      | `SKIP`        | `size() = 1`                                | :white_check_mark: |
 | DP-03: Discard a card onto a pile with one card | `[SKIP]`                  | `DEFUSE`      | `size() = 2`                                | :white_check_mark: |
 | DP-04: Discard a duplicate card                 | `[SKIP]`                  | `SKIP`        | `size() = 2` (duplicates kept)              | :white_check_mark: |
-| DP-05: Reject a null card                       | `[]`                      | `null`        | Throws `NullPointerException`; `size() = 0` | :x:                |
+| DP-05: Reject a null card                       | `[]`                      | `null`        | Throws `NullPointerException`; `size() = 0` | :white_check_mark: |
 
 ### Method under test: `discardAll(List<Card> cards)`
 
