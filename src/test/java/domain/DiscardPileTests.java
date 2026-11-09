@@ -23,4 +23,15 @@ public class DiscardPileTests {
 
         assertEquals(1, pile.size());
     }
+
+    // DP-03
+    @Test
+    public void Discard_OntoPileWithOneCard_SizeIsTwo() {
+        DiscardPile pile = new DiscardPile();
+        pile.discard(new Card(CardType.SKIP));
+
+        pile.discard(new Card(CardType.DEFUSE));
+
+        assertEquals(2, pile.size());
+    }
 }
