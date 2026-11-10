@@ -3,6 +3,7 @@ package domain;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -103,6 +104,210 @@ public class PlayerTests {
 
         assertThrows(NullPointerException.class, () -> player.addCard(null));
         assertTrue(player.getHand().isEmpty());
+    }
+
+    // PL-14
+    @Test
+    public void HasCard_EmptyHand_ReturnsFalse() {
+        Player player = new Player("Player 1");
+
+        assertFalse(player.hasCard(CardType.DEFUSE));
+    }
+
+    // PL-15
+    @Test
+    public void HasCard_HandContainsOneCardOfType_ReturnsTrue() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.SKIP));
+        player.addCard(new Card(CardType.DEFUSE));
+
+        assertTrue(player.hasCard(CardType.DEFUSE));
+    }
+
+    // PL-16
+    @Test
+    public void HasCard_HandContainsTwoCardsOfType_ReturnsTrue() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.DEFUSE));
+        player.addCard(new Card(CardType.SKIP));
+        player.addCard(new Card(CardType.DEFUSE));
+
+        assertTrue(player.hasCard(CardType.DEFUSE));
+    }
+
+    // PL-17
+    @Test
+    public void HasCard_HandWithoutType_ReturnsFalse() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.SKIP));
+
+        assertFalse(player.hasCard(CardType.DEFUSE));
+    }
+
+    // PL-18
+    @Test
+    public void HasCard_NullType_ThrowsNullPointerException() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.SKIP));
+
+        assertThrows(NullPointerException.class, () -> player.hasCard(null));
+    }
+
+    // PL-13
+    @Test
+    public void GetHand_ModifyReturnedHand_ThrowsAndHandUnchanged() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        player.addCard(skip);
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> player.getHand().add(new Card(CardType.DEFUSE))
+        );
+        assertEquals(List.of(skip), player.getHand());
+    }
+
+    // PL-19
+    @Test
+    public void RemoveOne_EmptyHand_ReturnsEmptyAndHandUnchanged() {
+        Player player = new Player("Player 1");
+
+        Optional<Card> removed = player.removeOne(CardType.DEFUSE);
+
+        assertTrue(removed.isEmpty());
+        assertTrue(player.getHand().isEmpty());
+    }
+
+    // PL-20
+    @Test
+    public void RemoveOne_OnlyCardOfType_ReturnsItAndRemovesIt() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        Card defuse = new Card(CardType.DEFUSE);
+        player.addCard(skip);
+        player.addCard(defuse);
+
+        Optional<Card> removed = player.removeOne(CardType.DEFUSE);
+
+        assertEquals(Optional.of(defuse), removed);
+        assertEquals(List.of(skip), player.getHand());
+    }
+
+    // PL-21
+    @Test
+    public void RemoveOne_TwoCardsOfType_RemovesOnlyOne() {
+        Player player = new Player("Player 1");
+        Card firstDefuse = new Card(CardType.DEFUSE);
+        Card skip = new Card(CardType.SKIP);
+        Card secondDefuse = new Card(CardType.DEFUSE);
+        player.addCard(firstDefuse);
+        player.addCard(skip);
+        player.addCard(secondDefuse);
+
+        Optional<Card> removed = player.removeOne(CardType.DEFUSE);
+
+        assertEquals(Optional.of(firstDefuse), removed);
+        assertEquals(List.of(skip, secondDefuse), player.getHand());
+    }
+
+    // PL-22
+    @Test
+    public void RemoveOne_TypeNotInHand_ReturnsEmptyAndHandUnchanged() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        player.addCard(skip);
+
+        Optional<Card> removed = player.removeOne(CardType.DEFUSE);
+
+        assertTrue(removed.isEmpty());
+        assertEquals(List.of(skip), player.getHand());
+    }
+
+    // PL-23
+    @Test
+    public void RemoveOne_NullType_ThrowsAndHandUnchanged() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        player.addCard(skip);
+
+        assertThrows(NullPointerException.class, () -> player.removeOne(null));
+        assertEquals(List.of(skip), player.getHand());
+    }
+
+    // PL-24
+    @Test
+    public void RemoveAllCards_EmptyHand_ReturnsEmptyList() {
+        Player player = new Player("Player 1");
+
+        List<Card> removed = player.removeAllCards();
+
+        assertTrue(removed.isEmpty());
+        assertTrue(player.getHand().isEmpty());
+    }
+
+    // PL-25
+    @Test
+    public void RemoveAllCards_OneCardHand_ReturnsCardAndEmptiesHand() {
+        Player player = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        player.addCard(skip);
+
+        List<Card> removed = player.removeAllCards();
+
+        assertEquals(List.of(skip), removed);
+        assertTrue(player.getHand().isEmpty());
+    }
+
+    // PL-26
+    @Test
+    public void RemoveAllCards_FullHand_ReturnsAllCardsInOrderAndEmptiesHand() {
+        Player player = new Player("Player 1");
+        List<Card> fullHand = List.of(
+                new Card(CardType.TACOCAT),
+                new Card(CardType.TACOCAT),
+                new Card(CardType.BEARD_CAT),
+                new Card(CardType.BEARD_CAT),
+                new Card(CardType.CATTERMELON),
+                new Card(CardType.TACOCAT),
+                new Card(CardType.DEFUSE),
+                new Card(CardType.DEFUSE)
+        );
+        for (Card card : fullHand) {
+            player.addCard(card);
+        }
+
+        List<Card> removed = player.removeAllCards();
+
+        assertEquals(fullHand, removed);
+        assertTrue(player.getHand().isEmpty());
+    }
+
+    // PL-27
+    @Test
+    public void Eliminate_PlayerNotEliminated_BecomesEliminated() {
+        Player player = new Player("Player 1");
+
+        player.eliminate();
+
+        assertTrue(player.isEliminated());
+    }
+
+    // PL-28
+    @Test
+    public void Eliminate_AlreadyEliminated_StaysEliminated() {
+        Player player = new Player("Player 1");
+        player.eliminate();
+
+        assertDoesNotThrow(player::eliminate);
+        assertTrue(player.isEliminated());
+    }
+
+    // PL-29
+    @Test
+    public void IsEliminated_NewPlayer_ReturnsFalse() {
+        Player player = new Player("Player 1");
+
+        assertFalse(player.isEliminated());
     }
 
 }
