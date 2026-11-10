@@ -25,11 +25,18 @@ public final class DrawResult {
         );
     }
 
+    public static DrawResult defuseRequired() {
+        return new DrawResult(
+                DrawStatus.DEFUSE_POSITION_REQUIRED,
+                null
+        );
+    }
+
     public DrawStatus getStatus() {
         return status;
     }
 
     public Optional<CardType> getDrawnCardType() {
-        return Optional.of(drawnCardType);
+        return Optional.ofNullable(drawnCardType);
     }
 }

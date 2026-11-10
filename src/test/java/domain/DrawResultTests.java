@@ -35,4 +35,18 @@ public class DrawResultTests {
         );
     }
 
+    @Test
+    public void DefuseRequired_ReturnsRequiredStatusWithoutCardType() {
+        DrawResult result = DrawResult.defuseRequired();
+
+        assertEquals(
+                DrawStatus.DEFUSE_POSITION_REQUIRED,
+                result.getStatus()
+        );
+        assertEquals(
+                Optional.empty(),
+                result.getDrawnCardType()
+        );
+    }
+
 }

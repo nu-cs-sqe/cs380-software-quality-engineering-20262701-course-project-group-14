@@ -11,7 +11,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| DR-03 | No result exists. | None | Returns a result whose status is `DEFUSE_POSITION_REQUIRED` and whose drawn-card type is `Optional.empty()`. | :x: |
+| DR-03 | No result exists. | None | Returns a result whose status is `DEFUSE_POSITION_REQUIRED` and whose drawn-card type is `Optional.empty()`. | :white_check_mark: |
 
 ## Method under test: `playerEliminated()`
 
