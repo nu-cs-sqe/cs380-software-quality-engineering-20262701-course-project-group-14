@@ -39,4 +39,12 @@ public final class DrawResult {
     public Optional<CardType> getDrawnCardType() {
         return Optional.ofNullable(drawnCardType);
     }
+
+    public static DrawResult playerEliminated() {
+        return new DrawResult(
+                DrawStatus.PLAYER_ELIMINATED,
+                null
+        );
+    }
+
 }

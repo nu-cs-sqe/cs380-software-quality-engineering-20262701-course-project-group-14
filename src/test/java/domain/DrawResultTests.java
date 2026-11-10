@@ -49,4 +49,18 @@ public class DrawResultTests {
         );
     }
 
+    @Test
+    public void PlayerEliminated_ReturnsEliminatedStatusWithoutCardType() {
+        DrawResult result = DrawResult.playerEliminated();
+
+        assertEquals(
+                DrawStatus.PLAYER_ELIMINATED,
+                result.getStatus()
+        );
+        assertEquals(
+                Optional.empty(),
+                result.getDrawnCardType()
+        );
+    }
+
 }
