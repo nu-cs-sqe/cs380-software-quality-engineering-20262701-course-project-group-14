@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.Optional;
+import java.util.Objects;
 
 public final class DrawResult {
     private final DrawStatus status;
@@ -17,7 +18,10 @@ public final class DrawResult {
     public static DrawResult normal(CardType drawnCardType) {
         return new DrawResult(
                 DrawStatus.NORMAL_CARD_DRAWN,
-                drawnCardType
+                Objects.requireNonNull(
+                        drawnCardType,
+                        "Drawn card type must not be null."
+                )
         );
     }
 

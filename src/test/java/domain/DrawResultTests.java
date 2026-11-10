@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DrawResultTests {
 
@@ -20,4 +21,18 @@ public class DrawResultTests {
                 result.getDrawnCardType()
         );
     }
+
+    @Test
+    public void Normal_WithNullCardType_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> DrawResult.normal(null)
+        );
+
+        assertEquals(
+                "Drawn card type must not be null.",
+                exception.getMessage()
+        );
+    }
+
 }

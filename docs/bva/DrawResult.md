@@ -5,7 +5,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | DR-01 | No result exists. | `CardType.ATTACK` | Returns a result whose status is `NORMAL_CARD_DRAWN` and whose drawn-card type is `Optional.of(CardType.ATTACK)`. | :white_check_mark: |
-| DR-02 | No result exists. | `null` | Throws `NullPointerException`; no result is created. | :x: |
+| DR-02 | No result exists. | `null` | Throws `NullPointerException` with message `"Drawn card type must not be null."`; no result is created. | :white_check_mark: |
 
 ## Method under test: `defuseRequired()`
 
