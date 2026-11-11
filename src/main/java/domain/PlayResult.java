@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class PlayResult {
     private final PlayStatus status;
@@ -23,10 +24,12 @@ public final class PlayResult {
         return new PlayResult(
                 PlayStatus.CONTINUE_TURN,
                 PlayFailure.NONE,
-                revealedCards
+                Objects.requireNonNull(
+                        revealedCards,
+                        "Revealed cards must not be null."
+                )
         );
     }
-
     public PlayStatus getStatus() {
         return status;
     }
@@ -38,4 +41,6 @@ public final class PlayResult {
     public List<CardType> getRevealedCards() {
         return revealedCards;
     }
+
+
 }

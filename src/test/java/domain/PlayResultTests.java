@@ -4,6 +4,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PlayResultTests {
 
@@ -46,6 +47,19 @@ public class PlayResultTests {
         assertEquals(
                 cards,
                 result.getRevealedCards()
+        );
+    }
+
+    @Test
+    public void ContinueTurn_WithNullList_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> PlayResult.continueTurn(null)
+        );
+
+        assertEquals(
+                "Revealed cards must not be null.",
+                exception.getMessage()
         );
     }
 

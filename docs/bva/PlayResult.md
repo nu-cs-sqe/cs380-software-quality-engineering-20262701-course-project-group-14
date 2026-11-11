@@ -6,7 +6,7 @@
 |---|---|---|---|---|
 | PR-01 | No result exists. | `[]` | Returns a result with status `CONTINUE_TURN`, failure `NONE`, and an empty revealed-card list. | :white_check_mark: |
 | PR-02 | No result exists. | `[SKIP, FAVOR, SHUFFLE]` | Returns a result with status `CONTINUE_TURN`, failure `NONE`, and the three revealed card types in the same order. | :white_check_mark: |
-| PR-03 | No result exists. | `null` | Throws `NullPointerException`; no result is created. | :x: |
+| PR-03 | No result exists. | `null` | Throws `NullPointerException` with message `"Revealed cards must not be null."`; no result is created. | :white_check_mark: |
 | PR-04 | No result exists. | A list containing `null` | Throws `NullPointerException`; no result is created. | :x: |
 | PR-05 | A caller owns a mutable source list. | A mutable list containing `[SKIP, FAVOR, SHUFFLE]` | Later changes to the source list do not change the result's revealed cards. | :x: |
 
