@@ -4,7 +4,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| TE-01 | Valid turn dependencies exist. | Non-null state, discard pile, resolver, and empty effects map | Creates an engine in `ACTIONS_ALLOWED`. | :x: |
+| TE-01 | Valid turn dependencies exist. | Non-null state, discard pile, resolver, and empty effects map | Creates an engine in `ACTIONS_ALLOWED`. | :white_check_mark: |
 | TE-02 | No engine exists. | `state = null`; all other inputs valid | Throws `NullPointerException` with `"Game state must not be null."`; no engine is created. | :x: |
 | TE-03 | No engine exists. | `discardPile = null`; all other inputs valid | Throws `NullPointerException` with `"Discard pile must not be null."`; no engine is created. | :x: |
 | TE-04 | No engine exists. | `resolver = null`; all other inputs valid | Throws `NullPointerException` with `"Exploding Kitten resolver must not be null."`; no engine is created. | :x: |
@@ -49,7 +49,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| TE-26 | No Kitten is pending. | None | Returns `ACTIONS_ALLOWED`. | :x: (planned in TE-01) |
+| TE-26 | No Kitten is pending. | None | Returns `ACTIONS_ALLOWED`. | implemented in TE-01 |
 | TE-27 | A Kitten is pending. | None | Returns `AWAITING_DEFUSE_POSITION`. | :x: (planned in TE-12) |
 
 ## Method under test: `getSnapshot()`
