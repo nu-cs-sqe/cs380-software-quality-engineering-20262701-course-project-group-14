@@ -54,4 +54,12 @@ public final class PlayResult {
         return revealedCards;
     }
 
+    public static PlayResult turnEnded() {
+        return new PlayResult(
+                PlayStatus.TURN_ENDED,
+                PlayFailure.NONE,
+                new ArrayList<>()
+        );
+    }
+
 }

@@ -101,4 +101,22 @@ public class PlayResultTests {
         );
     }
 
+    @Test
+    public void TurnEnded_ReturnsEndedResultWithoutFailureOrCards() {
+        PlayResult result = PlayResult.turnEnded();
+
+        assertEquals(
+                PlayStatus.TURN_ENDED,
+                result.getStatus()
+        );
+        assertEquals(
+                PlayFailure.NONE,
+                result.getFailure()
+        );
+        assertEquals(
+                List.of(),
+                result.getRevealedCards()
+        );
+    }
+
 }

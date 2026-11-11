@@ -14,7 +14,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| PR-06 | No result exists. | None | Returns a result with status `TURN_ENDED`, failure `NONE`, and an empty revealed-card list. | :x: |
+| PR-06 | No result exists. | None | Returns a result with status `TURN_ENDED`, failure `NONE`, and an empty revealed-card list. | :white_check_mark: |
 
 ## Method under test: `rejected(PlayFailure failure)`
 
@@ -34,7 +34,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| PR-11 | A continuing or turn-ended result exists. | None | Returns `PlayFailure.NONE`. | :x: (planned in PR-01, PR-02, and PR-06) |
+| PR-11 | A continuing or turn-ended result exists. | None | Returns `PlayFailure.NONE`. | :white_check_mark: (implemented in PR-01, PR-02, and PR-06) |
 | PR-12 | A rejected result exists. | None | Returns the failure supplied to `rejected(...)` and never returns `null`. | :x: (planned in PR-07) |
 
 ## Method under test: `getRevealedCards()`

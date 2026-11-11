@@ -1,5 +1,6 @@
 package domain;
 
 public enum PlayStatus {
-    CONTINUE_TURN
+    CONTINUE_TURN,
+    TURN_ENDED
 }
