@@ -48,22 +48,22 @@ public final class GamePlayController {
 
     public void handlePlayCard(int handIndex) {
         PlayResult result = actions.playCard(handIndex);
+        showRevealedCards(result);
+        showPlayFailure(result.getFailure());
+        view.render(actions.getSnapshot());
+    }
+
+    private void showRevealedCards(PlayResult result) {
         if (!result.getRevealedCards().isEmpty()) {
             view.showFutureCards(result.getRevealedCards());
         }
-        if (result.getFailure() == PlayFailure.INVALID_HAND_INDEX) {
-            view.showMessage("play.invalid-hand-index");
+    }
+
+    private void showPlayFailure(PlayFailure failure) {
+        String messageKey = playFailureMessageKey(failure);
+        if (messageKey != null) {
+            view.showMessage(messageKey);
         }
-        if (result.getFailure() == PlayFailure.CARD_NOT_PLAYABLE) {
-            view.showMessage("play.card-not-playable");
-        }
-        if (result.getFailure() == PlayFailure.PRECONDITION_NOT_MET) {
-            view.showMessage("play.precondition-not-met");
-        }
-        if (result.getFailure() == PlayFailure.DEFUSE_RESOLUTION_REQUIRED) {
-            view.showMessage("play.defuse-required");
-        }
-        view.render(actions.getSnapshot());
     }
 
     private void requestDefusePosition(GameSnapshot snapshot) {
@@ -71,42 +71,60 @@ public final class GamePlayController {
                 0,
                 snapshot.getDeckSize()
         );
-        if (position.isPresent()) {
-            DefuseResult result = actions.resolveDefuse(
-                    position.getAsInt()
-            );
-            if (result == DefuseResult.DEFUSED) {
-                view.showMessage("defuse.success");
-                view.render(actions.getSnapshot());
-            }
-            if (result == DefuseResult.INVALID_POSITION) {
-                view.showMessage("defuse.invalid-position");
-                view.render(actions.getSnapshot());
-            }
-            if (result == DefuseResult.NOT_AWAITING_DEFUSE) {
-                view.showMessage("defuse.not-awaiting");
-                view.render(actions.getSnapshot());
-            }
-            if (result == DefuseResult.DEFUSE_NOT_FOUND) {
-                view.showMessage("defuse.not-found");
-                view.render(actions.getSnapshot());
-            }
+        if (position.isEmpty()) {
+            return;
         }
+        DefuseResult result = actions.resolveDefuse(position.getAsInt());
+        view.showMessage(defuseMessageKey(result));
+        view.render(actions.getSnapshot());
     }
 
     private String drawMessageKey(DrawResult result) {
-        if (result.getStatus() == DrawStatus.EMPTY_DECK) {
-            return "draw.empty-deck";
+        switch (result.getStatus()) {
+            case EMPTY_DECK:
+                return "draw.empty-deck";
+            case REJECTED_PENDING_DEFUSE:
+                return "draw.pending-defuse";
+            case PLAYER_ELIMINATED:
+                return "draw.player-eliminated";
+            case DEFUSE_POSITION_REQUIRED:
+                return "draw.defuse-position-required";
+            case NORMAL_CARD_DRAWN:
+                return "draw.normal-card";
+            default:
+                throw new IllegalStateException("Unknown draw status.");
         }
-        if (result.getStatus() == DrawStatus.REJECTED_PENDING_DEFUSE) {
-            return "draw.pending-defuse";
+    }
+
+    private String playFailureMessageKey(PlayFailure failure) {
+        switch (failure) {
+            case INVALID_HAND_INDEX:
+                return "play.invalid-hand-index";
+            case CARD_NOT_PLAYABLE:
+                return "play.card-not-playable";
+            case PRECONDITION_NOT_MET:
+                return "play.precondition-not-met";
+            case DEFUSE_RESOLUTION_REQUIRED:
+                return "play.defuse-required";
+            case NONE:
+                return null;
+            default:
+                throw new IllegalStateException("Unknown play failure.");
         }
-        if (result.getStatus() == DrawStatus.PLAYER_ELIMINATED) {
-            return "draw.player-eliminated";
+    }
+
+    private String defuseMessageKey(DefuseResult result) {
+        switch (result) {
+            case DEFUSED:
+                return "defuse.success";
+            case INVALID_POSITION:
+                return "defuse.invalid-position";
+            case NOT_AWAITING_DEFUSE:
+                return "defuse.not-awaiting";
+            case DEFUSE_NOT_FOUND:
+                return "defuse.not-found";
+            default:
+                throw new IllegalStateException("Unknown defuse result.");
         }
-        if (result.getStatus() == DrawStatus.DEFUSE_POSITION_REQUIRED) {
-            return "draw.defuse-position-required";
-        }
-        return "draw.normal-card";
     }
 }
