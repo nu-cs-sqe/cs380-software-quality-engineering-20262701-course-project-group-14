@@ -24,4 +24,29 @@ public class PlayResultTests {
                 result.getRevealedCards()
         );
     }
+
+    @Test
+    public void ContinueTurn_WithRevealedCards_PreservesCardOrder() {
+        List<CardType> cards = List.of(
+                CardType.SKIP,
+                CardType.FAVOR,
+                CardType.SHUFFLE
+        );
+
+        PlayResult result = PlayResult.continueTurn(cards);
+
+        assertEquals(
+                PlayStatus.CONTINUE_TURN,
+                result.getStatus()
+        );
+        assertEquals(
+                PlayFailure.NONE,
+                result.getFailure()
+        );
+        assertEquals(
+                cards,
+                result.getRevealedCards()
+        );
+    }
+
 }

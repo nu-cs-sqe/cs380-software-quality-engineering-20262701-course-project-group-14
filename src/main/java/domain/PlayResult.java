@@ -23,7 +23,7 @@ public final class PlayResult {
         return new PlayResult(
                 PlayStatus.CONTINUE_TURN,
                 PlayFailure.NONE,
-                List.of()
+                revealedCards
         );
     }
 
