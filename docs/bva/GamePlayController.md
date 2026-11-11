@@ -5,7 +5,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GPC-01 | No controller exists. | `actions = null`; valid view | Throws `NullPointerException` with `"Turn actions must not be null."`. | :white_check_mark: |
-| GPC-02 | No controller exists. | Valid actions; `view = null` | Throws `NullPointerException` with `"Game play view must not be null."`. | :x: |
+| GPC-02 | No controller exists. | Valid actions; `view = null` | Throws `NullPointerException` with `"Game play view must not be null."`. | :white_check_mark: |
 
 ## Method under test: `initialize()`
 

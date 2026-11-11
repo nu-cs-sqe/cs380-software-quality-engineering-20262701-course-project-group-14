@@ -15,6 +15,9 @@ public final class GamePlayController {
                 actions,
                 "Turn actions must not be null."
         );
-        this.view = view;
+        this.view = Objects.requireNonNull(
+                view,
+                "Game play view must not be null."
+        );
     }
 }
