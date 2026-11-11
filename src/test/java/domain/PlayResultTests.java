@@ -119,4 +119,24 @@ public class PlayResultTests {
         );
     }
 
+    @Test
+    public void Rejected_WithInvalidHandIndex_ReturnsRejectedResult() {
+        PlayResult result = PlayResult.rejected(
+                PlayFailure.INVALID_HAND_INDEX
+        );
+
+        assertEquals(
+                PlayStatus.REJECTED,
+                result.getStatus()
+        );
+        assertEquals(
+                PlayFailure.INVALID_HAND_INDEX,
+                result.getFailure()
+        );
+        assertEquals(
+                List.of(),
+                result.getRevealedCards()
+        );
+    }
+
 }

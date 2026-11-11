@@ -62,4 +62,12 @@ public final class PlayResult {
         );
     }
 
+    public static PlayResult rejected(PlayFailure failure) {
+        return new PlayResult(
+                PlayStatus.REJECTED,
+                failure,
+                new ArrayList<>()
+        );
+    }
+
 }

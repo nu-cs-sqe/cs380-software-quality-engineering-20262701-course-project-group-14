@@ -1,5 +1,6 @@
 package domain;
 
 public enum PlayFailure {
-    NONE
+    NONE,
+    INVALID_HAND_INDEX
 }
