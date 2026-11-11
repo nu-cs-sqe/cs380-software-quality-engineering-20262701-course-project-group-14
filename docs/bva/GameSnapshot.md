@@ -8,7 +8,7 @@
 | GSP-02 | A valid game has no cards in the draw pile. | Deck size `0`; all other inputs valid | Returns a snapshot whose deck size is `0`. | :white_check_mark: |
 | GSP-03 | No snapshot exists. | `currentPlayerName = null`; all other inputs valid | Throws `NullPointerException` with `"Current player name must not be null."`; no snapshot is created. | :white_check_mark: |
 | GSP-04 | No snapshot exists. | `currentPlayerHand = null`; all other inputs valid | Throws `NullPointerException` with `"Current player hand must not be null."`; no snapshot is created. | :white_check_mark: |
-| GSP-05 | No snapshot exists. | `currentPlayerHand` contains `null`; all other inputs valid | Throws `NullPointerException`; no snapshot is created. | :x: |
+| GSP-05 | No snapshot exists. | `currentPlayerHand` contains `null`; all other inputs valid | Throws `NullPointerException` with `"Current player hand must not contain null."`; no snapshot is created. | :white_check_mark: |
 | GSP-06 | No snapshot exists. | `deckSize = -1`; all other inputs valid | Throws `IllegalArgumentException`; no snapshot is created. | :x: |
 | GSP-07 | No snapshot exists. | `discardPileSize = -1`; all other inputs valid | Throws `IllegalArgumentException`; no snapshot is created. | :x: |
 | GSP-08 | No snapshot exists. | `alivePlayerCount = -1`; all other inputs valid | Throws `IllegalArgumentException`; no snapshot is created. | :x: |

@@ -35,15 +35,26 @@ public final class GameSnapshot {
             int alivePlayerCount,
             TurnPhase phase
     ) {
+        String checkedName = Objects.requireNonNull(
+                currentPlayerName,
+                "Current player name must not be null."
+        );
+        List<CardType> checkedHand = Objects.requireNonNull(
+                currentPlayerHand,
+                "Current player hand must not be null."
+        );
+
+        for (CardType card : checkedHand) {
+            if (card == null) {
+                throw new NullPointerException(
+                        "Current player hand must not contain null."
+                );
+            }
+        }
+
         return new GameSnapshot(
-                Objects.requireNonNull(
-                        currentPlayerName,
-                        "Current player name must not be null."
-                ),
-                Objects.requireNonNull(
-                        currentPlayerHand,
-                        "Current player hand must not be null."
-                ),
+                checkedName,
+                checkedHand,
                 deckSize,
                 discardPileSize,
                 alivePlayerCount,

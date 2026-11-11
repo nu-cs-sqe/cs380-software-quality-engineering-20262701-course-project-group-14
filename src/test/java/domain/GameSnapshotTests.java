@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -80,6 +81,31 @@ public class GameSnapshotTests {
 
         assertEquals(
                 "Current player hand must not be null.",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    public void Create_WithNullCardInHand_ThrowsNullPointerException() {
+        List<CardType> hand = Arrays.asList(
+                CardType.ATTACK,
+                null
+        );
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> GameSnapshot.create(
+                        "Player 1",
+                        hand,
+                        10,
+                        0,
+                        2,
+                        TurnPhase.ACTIONS_ALLOWED
+                )
+        );
+
+        assertEquals(
+                "Current player hand must not contain null.",
                 exception.getMessage()
         );
     }
