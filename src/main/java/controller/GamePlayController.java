@@ -5,6 +5,7 @@ import domain.DrawStatus;
 import domain.GameSnapshot;
 import domain.TurnActions;
 import java.util.Objects;
+import java.util.OptionalInt;
 
 public final class GamePlayController {
     private final TurnActions actions;
@@ -43,10 +44,13 @@ public final class GamePlayController {
     }
 
     private void requestDefusePosition(GameSnapshot snapshot) {
-        view.requestDefusePosition(
+        OptionalInt position = view.requestDefusePosition(
                 0,
                 snapshot.getDeckSize()
         );
+        if (position.isPresent()) {
+            actions.resolveDefuse(position.getAsInt());
+        }
     }
 
     private String drawMessageKey(DrawResult result) {

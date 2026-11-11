@@ -22,7 +22,7 @@
 | GPC-06 | `draw()` returns `REJECTED_PENDING_DEFUSE`. | None | Shows `draw.pending-defuse` and renders the unchanged snapshot. | :white_check_mark: |
 | GPC-07 | `draw()` returns `PLAYER_ELIMINATED`. | None | Shows `draw.player-eliminated` and renders the latest snapshot. | :white_check_mark: |
 | GPC-08 | `draw()` returns `DEFUSE_POSITION_REQUIRED`; position request is cancelled. | None | Shows `draw.defuse-position-required`, renders, requests range `0..deckSize`, and does not call `resolveDefuse`. | :white_check_mark: |
-| GPC-09 | `draw()` returns `DEFUSE_POSITION_REQUIRED`; a position is supplied. | None | Requests range `0..deckSize` and delegates the supplied position to `resolveDefuse`. | :x: |
+| GPC-09 | `draw()` returns `DEFUSE_POSITION_REQUIRED`; a position is supplied. | None | Requests range `0..deckSize` and delegates the supplied position to `resolveDefuse`. | :white_check_mark: |
 
 ## Method under test: `handlePlayCard(int handIndex)`
 

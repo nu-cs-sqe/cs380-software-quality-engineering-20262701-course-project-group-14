@@ -149,6 +149,23 @@ public class GamePlayControllerTests {
         assertEquals(0, actions.resolveDefuseCalls);
     }
 
+    @Test
+    public void HandleDraw_DefusePositionSupplied_DelegatesPosition() {
+        GameSnapshot snapshot = createSnapshot(6);
+        StubActions actions = new StubActions(
+                snapshot,
+                DrawResult.defuseRequired()
+        );
+        RecordingView view = new RecordingView();
+        view.positionResponse = OptionalInt.of(3);
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleDraw();
+
+        assertEquals(1, actions.resolveDefuseCalls);
+        assertEquals(3, actions.resolvedPosition);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -165,6 +182,7 @@ public class GamePlayControllerTests {
         private final DrawResult drawResult;
         private int drawCalls;
         private int resolveDefuseCalls;
+        private int resolvedPosition;
         private int snapshotCalls;
 
         private StubActions() {
@@ -197,7 +215,8 @@ public class GamePlayControllerTests {
         @Override
         public DefuseResult resolveDefuse(int position) {
             resolveDefuseCalls++;
-            throw new AssertionError("Unexpected resolveDefuse call.");
+            resolvedPosition = position;
+            return DefuseResult.DEFUSED;
         }
 
         @Override
@@ -219,6 +238,7 @@ public class GamePlayControllerTests {
         private int positionRequestCalls;
         private int requestedMinimum;
         private int requestedMaximum;
+        private OptionalInt positionResponse = OptionalInt.empty();
 
         @Override
         public void render(GameSnapshot snapshot) {
@@ -243,7 +263,7 @@ public class GamePlayControllerTests {
             positionRequestCalls++;
             requestedMinimum = minimum;
             requestedMaximum = maximum;
-            return OptionalInt.empty();
+            return positionResponse;
         }
     }
 }
