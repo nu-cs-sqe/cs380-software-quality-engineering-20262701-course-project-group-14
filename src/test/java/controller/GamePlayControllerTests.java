@@ -75,6 +75,24 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void HandleDraw_EmptyDeck_ShowsEmptyDeckMessageAndRenders() {
+        GameSnapshot snapshot = createSnapshot(0);
+        StubActions actions = new StubActions(
+                snapshot,
+                DrawResult.emptyDeck()
+        );
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleDraw();
+
+        assertEquals(1, actions.drawCalls);
+        assertEquals("draw.empty-deck", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",

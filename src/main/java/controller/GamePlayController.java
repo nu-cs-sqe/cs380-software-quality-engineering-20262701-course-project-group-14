@@ -1,5 +1,7 @@
 package controller;
 
+import domain.DrawResult;
+import domain.DrawStatus;
 import domain.TurnActions;
 import java.util.Objects;
 
@@ -26,8 +28,15 @@ public final class GamePlayController {
     }
 
     public void handleDraw() {
-        actions.draw();
-        view.showMessage("draw.normal-card");
+        DrawResult result = actions.draw();
+        view.showMessage(drawMessageKey(result));
         view.render(actions.getSnapshot());
+    }
+
+    private String drawMessageKey(DrawResult result) {
+        if (result.getStatus() == DrawStatus.EMPTY_DECK) {
+            return "draw.empty-deck";
+        }
+        return "draw.normal-card";
     }
 }
