@@ -28,7 +28,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GPC-10 | `playCard` returns `CONTINUE_TURN` without revealed cards. | Valid index | Delegates the exact index, does not show future cards, and renders the latest snapshot. | :x: |
+| GPC-10 | `playCard` returns `CONTINUE_TURN` without revealed cards. | Valid index | Delegates the exact index, does not show future cards, and renders the latest snapshot. | :white_check_mark: |
 | GPC-11 | `playCard` returns `CONTINUE_TURN` with revealed cards. | Valid index | Shows the revealed cards in order and renders the latest snapshot. | :x: |
 | GPC-12 | `playCard` returns `TURN_ENDED`. | Valid index | Renders the latest snapshot without showing a failure message. | :x: |
 | GPC-13 | `playCard` rejects with `INVALID_HAND_INDEX`. | Any index | Shows `play.invalid-hand-index` and renders. | :x: |

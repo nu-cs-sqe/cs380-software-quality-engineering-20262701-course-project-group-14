@@ -166,6 +166,23 @@ public class GamePlayControllerTests {
         assertEquals(3, actions.resolvedPosition);
     }
 
+    @Test
+    public void HandlePlay_ContinueWithoutReveal_DelegatesAndRenders() {
+        GameSnapshot snapshot = createSnapshot(8);
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.continueTurn(List.of());
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(2);
+
+        assertEquals(1, actions.playCardCalls);
+        assertEquals(2, actions.playedHandIndex);
+        assertEquals(0, view.futureCardsCalls);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -180,7 +197,10 @@ public class GamePlayControllerTests {
     private static final class StubActions implements TurnActions {
         private final GameSnapshot snapshot;
         private final DrawResult drawResult;
+        private PlayResult playResult;
         private int drawCalls;
+        private int playCardCalls;
+        private int playedHandIndex;
         private int resolveDefuseCalls;
         private int resolvedPosition;
         private int snapshotCalls;
@@ -209,7 +229,9 @@ public class GamePlayControllerTests {
 
         @Override
         public PlayResult playCard(int handIndex) {
-            throw new AssertionError("Unexpected playCard call.");
+            playCardCalls++;
+            playedHandIndex = handIndex;
+            return playResult;
         }
 
         @Override
@@ -235,6 +257,7 @@ public class GamePlayControllerTests {
         private GameSnapshot renderedSnapshot;
         private String messageKey;
         private int renderCalls;
+        private int futureCardsCalls;
         private int positionRequestCalls;
         private int requestedMinimum;
         private int requestedMaximum;
@@ -253,6 +276,7 @@ public class GamePlayControllerTests {
 
         @Override
         public void showFutureCards(List<CardType> cards) {
+            futureCardsCalls++;
         }
 
         @Override

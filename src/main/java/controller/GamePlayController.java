@@ -43,6 +43,11 @@ public final class GamePlayController {
         requestDefusePosition(actions.getSnapshot());
     }
 
+    public void handlePlayCard(int handIndex) {
+        actions.playCard(handIndex);
+        view.render(actions.getSnapshot());
+    }
+
     private void requestDefusePosition(GameSnapshot snapshot) {
         OptionalInt position = view.requestDefusePosition(
                 0,
