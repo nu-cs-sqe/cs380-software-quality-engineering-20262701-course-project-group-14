@@ -1,6 +1,5 @@
 package domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +20,7 @@ public final class GameSnapshot {
             TurnPhase phase
     ) {
         this.currentPlayerName = currentPlayerName;
-        this.currentPlayerHand = new ArrayList<>(currentPlayerHand);
+        this.currentPlayerHand = List.copyOf(currentPlayerHand);
         this.deckSize = deckSize;
         this.discardPileSize = discardPileSize;
         this.alivePlayerCount = alivePlayerCount;

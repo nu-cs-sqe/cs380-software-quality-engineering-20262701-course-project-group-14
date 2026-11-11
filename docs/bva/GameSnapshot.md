@@ -28,7 +28,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GSP-14 | A snapshot contains `[ATTACK, DEFUSE]`. | None | Returns `[ATTACK, DEFUSE]` in the same order. | implemented in GSP-01 |
-| GSP-15 | A snapshot contains a hand. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the snapshot remains unchanged. | :x: |
+| GSP-15 | A snapshot contains a hand. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the snapshot remains unchanged. | :white_check_mark: |
 
 ## Method under test: `getDeckSize()`
 

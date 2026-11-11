@@ -245,4 +245,26 @@ public class GameSnapshotTests {
 
         assertEquals(expectedHand, snapshot.getCurrentPlayerHand());
     }
+
+    @Test
+    public void GetCurrentPlayerHand_ReturnsUnmodifiableList() {
+        List<CardType> expectedHand = List.of(
+                CardType.ATTACK,
+                CardType.DEFUSE
+        );
+        GameSnapshot snapshot = GameSnapshot.create(
+                "Player 1",
+                expectedHand,
+                10,
+                0,
+                2,
+                TurnPhase.ACTIONS_ALLOWED
+        );
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> snapshot.getCurrentPlayerHand().add(CardType.SKIP)
+        );
+        assertEquals(expectedHand, snapshot.getCurrentPlayerHand());
+    }
 }
