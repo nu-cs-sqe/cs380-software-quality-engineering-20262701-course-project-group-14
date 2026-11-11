@@ -9,10 +9,20 @@ public final class EffectOutcome {
 
     EffectOutcome(boolean endsTurn, List<CardType> revealedCards) {
         this.endsTurn = endsTurn;
-        this.revealedCards = Objects.requireNonNull(
+        List<CardType> checkedCards = Objects.requireNonNull(
                 revealedCards,
                 "Revealed cards must not be null."
         );
+
+        for (CardType card : checkedCards) {
+            if (card == null) {
+                throw new NullPointerException(
+                        "Revealed cards must not contain null."
+                );
+            }
+        }
+
+        this.revealedCards = checkedCards;
     }
 
     public boolean endsTurn() {
