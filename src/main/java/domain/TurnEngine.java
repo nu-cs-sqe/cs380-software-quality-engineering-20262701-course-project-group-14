@@ -65,4 +65,13 @@ public final class TurnEngine {
                 "Non-empty draw is not implemented."
         );
     }
+
+    public PlayResult playCard(int handIndex) {
+        if (handIndex < 0) {
+            return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
+        }
+        throw new UnsupportedOperationException(
+                "Card play is not implemented."
+        );
+    }
 }

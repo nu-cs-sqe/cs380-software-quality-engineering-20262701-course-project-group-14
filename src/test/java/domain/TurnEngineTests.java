@@ -230,6 +230,30 @@ public class TurnEngineTests {
         assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
     }
 
+    @Test
+    public void PlayCard_WithNegativeIndex_ReturnsInvalidIndex() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.SKIP));
+        Deck deck = new Deck();
+        GameState state = new GameState(List.of(player), deck);
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.SKIP, new StubEffect())
+        );
+        int originalDeckSize = deck.size();
+
+        PlayResult result = engine.playCard(-1);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.INVALID_HAND_INDEX, result.getFailure());
+        assertEquals(1, player.getHand().size());
+        assertEquals(originalDeckSize, deck.size());
+        assertEquals(player, state.getCurrentPlayer());
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
