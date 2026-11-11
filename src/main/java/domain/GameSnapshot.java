@@ -58,6 +58,12 @@ public final class GameSnapshot {
             );
         }
 
+        if (discardPileSize < 0) {
+            throw new IllegalArgumentException(
+                    "Discard pile size must not be negative."
+            );
+        }
+
         return new GameSnapshot(
                 checkedName,
                 checkedHand,

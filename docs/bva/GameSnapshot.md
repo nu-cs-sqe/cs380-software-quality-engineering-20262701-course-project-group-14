@@ -10,7 +10,7 @@
 | GSP-04 | No snapshot exists. | `currentPlayerHand = null`; all other inputs valid | Throws `NullPointerException` with `"Current player hand must not be null."`; no snapshot is created. | :white_check_mark: |
 | GSP-05 | No snapshot exists. | `currentPlayerHand` contains `null`; all other inputs valid | Throws `NullPointerException` with `"Current player hand must not contain null."`; no snapshot is created. | :white_check_mark: |
 | GSP-06 | No snapshot exists. | `deckSize = -1`; all other inputs valid | Throws `IllegalArgumentException` with `"Deck size must not be negative."`; no snapshot is created. | :white_check_mark: |
-| GSP-07 | No snapshot exists. | `discardPileSize = -1`; all other inputs valid | Throws `IllegalArgumentException`; no snapshot is created. | :x: |
+| GSP-07 | No snapshot exists. | `discardPileSize = -1`; all other inputs valid | Throws `IllegalArgumentException` with `"Discard pile size must not be negative."`; no snapshot is created. | :white_check_mark: |
 | GSP-08 | No snapshot exists. | `alivePlayerCount = -1`; all other inputs valid | Throws `IllegalArgumentException`; no snapshot is created. | :x: |
 | GSP-09 | No snapshot exists. | `alivePlayerCount = 0`; all other inputs valid | Throws `IllegalArgumentException`; a snapshot must have at least one living player. | :x: |
 | GSP-10 | One player remains alive. | `alivePlayerCount = 1`; all other inputs valid | Returns a snapshot whose living-player count is `1`. | :x: |
