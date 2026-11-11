@@ -13,7 +13,7 @@
 | GSP-07 | No snapshot exists. | `discardPileSize = -1`; all other inputs valid | Throws `IllegalArgumentException` with `"Discard pile size must not be negative."`; no snapshot is created. | :white_check_mark: |
 | GSP-08 | No snapshot exists. | `alivePlayerCount = -1`; all other inputs valid | Throws `IllegalArgumentException` with `"Alive player count must be at least 1."`; no snapshot is created. | :white_check_mark: |
 | GSP-09 | No snapshot exists. | `alivePlayerCount = 0`; all other inputs valid | Throws `IllegalArgumentException` with `"Alive player count must be at least 1."`; no snapshot is created. | :white_check_mark: |
-| GSP-10 | One player remains alive. | `alivePlayerCount = 1`; all other inputs valid | Returns a snapshot whose living-player count is `1`. | :x: |
+| GSP-10 | One player remains alive. | `alivePlayerCount = 1`; all other inputs valid | Returns a snapshot whose living-player count is `1`. | :white_check_mark: |
 | GSP-11 | No snapshot exists. | `phase = null`; all other inputs valid | Throws `NullPointerException`; no snapshot is created. | :x: |
 | GSP-12 | A caller owns a mutable hand list. | A mutable hand containing `[ATTACK, DEFUSE]` | Later changes to the source list do not change the snapshot's hand. | :x: |
 
@@ -48,7 +48,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GSP-19 | A snapshot was created with `2` living players. | None | Returns `2`. | implemented in GSP-01 |
-| GSP-20 | A snapshot was created with `1` living player. | None | Returns `1`. | :x: (planned in GSP-10) |
+| GSP-20 | A snapshot was created with `1` living player. | None | Returns `1`. | implemented in GSP-10 |
 
 ## Method under test: `getPhase()`
 

@@ -189,4 +189,18 @@ public class GameSnapshotTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Create_WithOneAlivePlayer_ReturnsOneAlivePlayer() {
+        GameSnapshot snapshot = GameSnapshot.create(
+                "Player 1",
+                List.of(CardType.ATTACK),
+                10,
+                0,
+                1,
+                TurnPhase.ACTIONS_ALLOWED
+        );
+
+        assertEquals(1, snapshot.getAlivePlayerCount());
+    }
 }
