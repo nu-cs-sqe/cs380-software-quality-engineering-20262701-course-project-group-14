@@ -71,6 +71,13 @@ public final class TurnEngine {
         if (handIndex < 0 || handIndex >= handSize) {
             return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
         }
+        Card selectedCard = state.getCurrentPlayer()
+                .getHand()
+                .get(handIndex);
+        CardEffect effect = effects.get(selectedCard.getType());
+        if (effect == null) {
+            return PlayResult.rejected(PlayFailure.CARD_NOT_PLAYABLE);
+        }
         throw new UnsupportedOperationException(
                 "Card play is not implemented."
         );

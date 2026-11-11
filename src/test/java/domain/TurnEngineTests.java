@@ -276,6 +276,28 @@ public class TurnEngineTests {
         assertEquals(player, state.getCurrentPlayer());
     }
 
+    @Test
+    public void PlayCard_WithoutRegisteredEffect_ReturnsNotPlayable() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.ATTACK));
+        Deck deck = new Deck();
+        GameState state = new GameState(List.of(player), deck);
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of()
+        );
+
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.CARD_NOT_PLAYABLE, result.getFailure());
+        assertEquals(1, player.getHand().size());
+        assertEquals(player, state.getCurrentPlayer());
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
