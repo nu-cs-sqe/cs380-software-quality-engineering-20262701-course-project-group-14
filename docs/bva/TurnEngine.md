@@ -28,7 +28,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | TE-14 | Phase is `ACTIONS_ALLOWED`; hand is non-empty. | `handIndex = -1` | Returns `REJECTED` with `INVALID_HAND_INDEX`; state does not change. | :white_check_mark: |
-| TE-15 | Phase is `ACTIONS_ALLOWED`; hand size is `n`. | `handIndex = n` | Returns `REJECTED` with `INVALID_HAND_INDEX`; state does not change. | :x: |
+| TE-15 | Phase is `ACTIONS_ALLOWED`; hand size is `n`. | `handIndex = n` | Returns `REJECTED` with `INVALID_HAND_INDEX`; state does not change. | :white_check_mark: |
 | TE-16 | Phase is `AWAITING_DEFUSE_POSITION`. | Any hand index | Returns `REJECTED` with `DEFUSE_RESOLUTION_REQUIRED`; state does not change. | :x: |
 | TE-17 | Selected card has no registered effect. | A valid hand index | Returns `REJECTED` with `CARD_NOT_PLAYABLE`; state does not change. | :x: |
 | TE-18 | Selected effect is registered but `canPlay` returns `false`. | A valid hand index | Returns `REJECTED` with `PRECONDITION_NOT_MET`; state does not change. | :x: |
