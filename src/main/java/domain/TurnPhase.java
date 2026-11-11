@@ -1,5 +1,6 @@
 package domain;
 
 public enum TurnPhase {
-    ACTIONS_ALLOWED
+    ACTIONS_ALLOWED,
+    AWAITING_DEFUSE_POSITION
 }

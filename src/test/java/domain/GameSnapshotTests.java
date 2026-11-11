@@ -267,4 +267,21 @@ public class GameSnapshotTests {
         );
         assertEquals(expectedHand, snapshot.getCurrentPlayerHand());
     }
+
+    @Test
+    public void Create_AwaitingDefusePosition_ReturnsAwaitingPhase() {
+        GameSnapshot snapshot = GameSnapshot.create(
+                "Player 1",
+                List.of(CardType.DEFUSE),
+                10,
+                0,
+                2,
+                TurnPhase.AWAITING_DEFUSE_POSITION
+        );
+
+        assertEquals(
+                TurnPhase.AWAITING_DEFUSE_POSITION,
+                snapshot.getPhase()
+        );
+    }
 }

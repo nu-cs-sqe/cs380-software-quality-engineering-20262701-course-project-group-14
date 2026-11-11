@@ -55,4 +55,4 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GSP-21 | A snapshot was created in `ACTIONS_ALLOWED`. | None | Returns `ACTIONS_ALLOWED` and never returns `null`. | implemented in GSP-01 |
-| GSP-22 | A snapshot was created in `AWAITING_DEFUSE_POSITION`. | None | Returns `AWAITING_DEFUSE_POSITION`. | :x: |
+| GSP-22 | A snapshot was created in `AWAITING_DEFUSE_POSITION`. | None | Returns `AWAITING_DEFUSE_POSITION`. | :white_check_mark: |
