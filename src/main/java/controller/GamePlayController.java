@@ -87,6 +87,10 @@ public final class GamePlayController {
                 view.showMessage("defuse.not-awaiting");
                 view.render(actions.getSnapshot());
             }
+            if (result == DefuseResult.DEFUSE_NOT_FOUND) {
+                view.showMessage("defuse.not-found");
+                view.render(actions.getSnapshot());
+            }
         }
     }
 

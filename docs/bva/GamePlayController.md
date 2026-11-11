@@ -44,4 +44,4 @@
 | GPC-18 | Position is supplied; `resolveDefuse` returns `DEFUSED`. | A position in range | Shows `defuse.success` and renders the latest snapshot. | :white_check_mark: |
 | GPC-19 | Position is supplied; result is `INVALID_POSITION`. | Any position | Shows `defuse.invalid-position` and renders the still-waiting snapshot. | :white_check_mark: |
 | GPC-20 | Position is supplied; result is `NOT_AWAITING_DEFUSE`. | Any position | Shows `defuse.not-awaiting` and renders. | :white_check_mark: |
-| GPC-21 | Position is supplied; result is `DEFUSE_NOT_FOUND`. | Any position | Shows `defuse.not-found` and renders. | :x: |
+| GPC-21 | Position is supplied; result is `DEFUSE_NOT_FOUND`. | Any position | Shows `defuse.not-found` and renders. | :white_check_mark: |
