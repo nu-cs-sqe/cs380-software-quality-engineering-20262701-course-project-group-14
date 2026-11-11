@@ -52,4 +52,20 @@ public class SkipEffectTests {
         assertEquals("Deck must not be null.", exception.getMessage());
         assertEquals(originalHandSize, player.getHand().size());
     }
+
+    @Test
+    public void Play_WithValidPlayerAndDeck_EndsTurnWithoutMutation() {
+        Player player = new Player("Player 1");
+        Deck deck = new Deck();
+        int originalDeckSize = deck.size();
+        int originalHandSize = player.getHand().size();
+        SkipEffect effect = new SkipEffect();
+
+        EffectOutcome outcome = effect.play(player, deck);
+
+        assertTrue(outcome.endsTurn());
+        assertTrue(outcome.getRevealedCards().isEmpty());
+        assertEquals(originalDeckSize, deck.size());
+        assertEquals(originalHandSize, player.getHand().size());
+    }
 }

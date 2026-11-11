@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.List;
 import java.util.Objects;
 
 public final class SkipEffect implements CardEffect {
@@ -13,8 +14,6 @@ public final class SkipEffect implements CardEffect {
 
     @Override
     public EffectOutcome play(Player player, Deck deck) {
-        throw new UnsupportedOperationException(
-                "Skip effect is not implemented."
-        );
+        return new EffectOutcome(true, List.of());
     }
 }
