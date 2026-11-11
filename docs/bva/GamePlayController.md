@@ -40,7 +40,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GPC-17 | Snapshot deck size is `n`; position request is cancelled. | `OptionalInt.empty()` | Requests range `0..n`; does not call `resolveDefuse`, show a result message, or render. | :x: |
+| GPC-17 | Snapshot deck size is `n`; position request is cancelled. | `OptionalInt.empty()` | Requests range `0..n`; does not call `resolveDefuse`, show a result message, or render. | :white_check_mark: |
 | GPC-18 | Position is supplied; `resolveDefuse` returns `DEFUSED`. | A position in range | Shows `defuse.success` and renders the latest snapshot. | :x: |
 | GPC-19 | Position is supplied; result is `INVALID_POSITION`. | Any position | Shows `defuse.invalid-position` and renders the still-waiting snapshot. | :x: |
 | GPC-20 | Position is supplied; result is `NOT_AWAITING_DEFUSE`. | Any position | Shows `defuse.not-awaiting` and renders. | :x: |

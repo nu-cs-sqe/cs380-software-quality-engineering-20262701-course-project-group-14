@@ -284,6 +284,22 @@ public class GamePlayControllerTests {
         assertEquals(1, view.renderCalls);
     }
 
+    @Test
+    public void HandleChooseDefuse_Cancelled_OnlyRequestsPosition() {
+        StubActions actions = new StubActions(createSnapshot(4));
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleChooseDefusePosition();
+
+        assertEquals(1, view.positionRequestCalls);
+        assertEquals(0, view.requestedMinimum);
+        assertEquals(4, view.requestedMaximum);
+        assertEquals(0, actions.resolveDefuseCalls);
+        assertNull(view.messageKey);
+        assertEquals(0, view.renderCalls);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
