@@ -2,8 +2,6 @@ package domain;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.ArrayList;
-import java.util.Collections;
 
 public final class PlayResult {
     private final PlayStatus status;
@@ -17,7 +15,7 @@ public final class PlayResult {
     ) {
         this.status = status;
         this.failure = failure;
-        this.revealedCards = revealedCards;
+        this.revealedCards = List.copyOf(revealedCards);
     }
 
     public static PlayResult continueTurn(
@@ -39,27 +37,15 @@ public final class PlayResult {
         return new PlayResult(
                 PlayStatus.CONTINUE_TURN,
                 PlayFailure.NONE,
-                new ArrayList<>(checkedCards)
+                checkedCards
         );
-    }
-
-    public PlayStatus getStatus() {
-        return status;
-    }
-
-    public PlayFailure getFailure() {
-        return failure;
-    }
-
-    public List<CardType> getRevealedCards() {
-        return Collections.unmodifiableList(revealedCards);
     }
 
     public static PlayResult turnEnded() {
         return new PlayResult(
                 PlayStatus.TURN_ENDED,
                 PlayFailure.NONE,
-                new ArrayList<>()
+                List.of()
         );
     }
 
@@ -78,8 +64,19 @@ public final class PlayResult {
         return new PlayResult(
                 PlayStatus.REJECTED,
                 checkedFailure,
-                new ArrayList<>()
+                List.of()
         );
     }
 
+    public PlayStatus getStatus() {
+        return status;
+    }
+
+    public PlayFailure getFailure() {
+        return failure;
+    }
+
+    public List<CardType> getRevealedCards() {
+        return revealedCards;
+    }
 }
