@@ -183,6 +183,25 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void HandlePlay_ContinueWithReveal_ShowsCardsInOrder() {
+        GameSnapshot snapshot = createSnapshot(8);
+        List<CardType> revealed = List.of(
+                CardType.SKIP,
+                CardType.ATTACK
+        );
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.continueTurn(revealed);
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals(1, view.futureCardsCalls);
+        assertEquals(revealed, view.futureCards);
+        assertEquals(1, view.renderCalls);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -258,6 +277,7 @@ public class GamePlayControllerTests {
         private String messageKey;
         private int renderCalls;
         private int futureCardsCalls;
+        private List<CardType> futureCards;
         private int positionRequestCalls;
         private int requestedMinimum;
         private int requestedMaximum;
@@ -277,6 +297,7 @@ public class GamePlayControllerTests {
         @Override
         public void showFutureCards(List<CardType> cards) {
             futureCardsCalls++;
+            futureCards = cards;
         }
 
         @Override

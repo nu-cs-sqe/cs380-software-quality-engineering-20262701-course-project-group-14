@@ -3,6 +3,7 @@ package controller;
 import domain.DrawResult;
 import domain.DrawStatus;
 import domain.GameSnapshot;
+import domain.PlayResult;
 import domain.TurnActions;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -44,7 +45,10 @@ public final class GamePlayController {
     }
 
     public void handlePlayCard(int handIndex) {
-        actions.playCard(handIndex);
+        PlayResult result = actions.playCard(handIndex);
+        if (!result.getRevealedCards().isEmpty()) {
+            view.showFutureCards(result.getRevealedCards());
+        }
         view.render(actions.getSnapshot());
     }
 
