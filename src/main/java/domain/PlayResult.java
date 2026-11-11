@@ -21,15 +21,26 @@ public final class PlayResult {
     public static PlayResult continueTurn(
             List<CardType> revealedCards
     ) {
+        List<CardType> checkedCards = Objects.requireNonNull(
+                revealedCards,
+                "Revealed cards must not be null."
+        );
+
+        for (CardType card : checkedCards) {
+            if (card == null) {
+                throw new NullPointerException(
+                        "Revealed cards must not contain null."
+                );
+            }
+        }
+
         return new PlayResult(
                 PlayStatus.CONTINUE_TURN,
                 PlayFailure.NONE,
-                Objects.requireNonNull(
-                        revealedCards,
-                        "Revealed cards must not be null."
-                )
+                checkedCards
         );
     }
+
     public PlayStatus getStatus() {
         return status;
     }
@@ -41,6 +52,5 @@ public final class PlayResult {
     public List<CardType> getRevealedCards() {
         return revealedCards;
     }
-
 
 }

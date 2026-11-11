@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -59,6 +60,24 @@ public class PlayResultTests {
 
         assertEquals(
                 "Revealed cards must not be null.",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    public void ContinueTurn_WithNullCard_ThrowsNullPointerException() {
+        List<CardType> cards = Arrays.asList(
+                CardType.SKIP,
+                null
+        );
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> PlayResult.continueTurn(cards)
+        );
+
+        assertEquals(
+                "Revealed cards must not contain null.",
                 exception.getMessage()
         );
     }
