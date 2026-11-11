@@ -11,7 +11,7 @@
 | TE-05 | No engine exists. | `effects = null`; all other inputs valid | Throws `NullPointerException` with `"Card effects must not be null."`; no engine is created. | :white_check_mark: |
 | TE-06 | No engine exists. | Effects map contains a `null` key | Throws `NullPointerException` with `"Card effect type must not be null."`; no engine is created. | :white_check_mark: |
 | TE-07 | No engine exists. | Effects map contains a `null` value | Throws `NullPointerException` with `"Card effect must not be null."`; no engine is created. | :white_check_mark: |
-| TE-08 | A caller owns a mutable effects map. | Construct engine, then change the source map | Later source-map changes do not change the engine's registered effects. | :x: |
+| TE-08 | A caller owns a mutable effects map. | Construct engine, then change the source map | Later source-map changes do not change the engine's registered effects. | :white_check_mark: |
 
 ## Method under test: `draw()`
 
@@ -34,7 +34,7 @@
 | TE-18 | Selected effect is registered but `canPlay` returns `false`. | A valid hand index | Returns `REJECTED` with `PRECONDITION_NOT_MET`; state does not change. | :white_check_mark: |
 | TE-19 | Selected effect can play and returns `endsTurn = false`. | A valid hand index | Removes the selected card, executes the effect once, discards the played card, preserves revealed-card order, and does not advance the player. | :x: |
 | TE-20 | Selected effect can play and returns `endsTurn = true`; at least two players are alive. | A valid hand index | Removes and discards the selected card, executes the effect once, advances exactly once, and returns `TURN_ENDED`. | :x: |
-| TE-21 | Engine was built from a mutable effects map that was later changed. | Play a card whose original mapping was removed or replaced in the source map | Uses the mapping captured at construction time. | :x: (planned with TE-08) |
+| TE-21 | Engine was built from a mutable effects map that was later changed. | Play a card whose original mapping was removed or replaced in the source map | Uses the mapping captured at construction time. | implemented in TE-08 |
 
 ## Method under test: `resolveDefuse(int position)`
 

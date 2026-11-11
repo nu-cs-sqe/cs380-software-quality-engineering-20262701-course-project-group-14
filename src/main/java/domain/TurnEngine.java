@@ -46,7 +46,7 @@ public final class TurnEngine {
             );
         }
 
-        this.effects = checkedEffects;
+        this.effects = Map.copyOf(checkedEffects);
     }
 
     public TurnPhase getPhase() {

@@ -324,6 +324,30 @@ public class TurnEngineTests {
         assertEquals(player, state.getCurrentPlayer());
     }
 
+    @Test
+    public void Constructor_CopiesMutableEffectsMap() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.SKIP));
+        GameState state = new GameState(List.of(player), new Deck());
+        DiscardPile discardPile = new DiscardPile();
+        StubEffect originalEffect = new StubEffect();
+        originalEffect.canPlay = false;
+        Map<CardType, CardEffect> sourceEffects = new HashMap<>();
+        sourceEffects.put(CardType.SKIP, originalEffect);
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                sourceEffects
+        );
+
+        sourceEffects.clear();
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayFailure.PRECONDITION_NOT_MET, result.getFailure());
+        assertEquals(1, originalEffect.canPlayCalls);
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
