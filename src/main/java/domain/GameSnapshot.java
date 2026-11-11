@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class GameSnapshot {
     private final String currentPlayerName;
@@ -35,7 +36,10 @@ public final class GameSnapshot {
             TurnPhase phase
     ) {
         return new GameSnapshot(
-                currentPlayerName,
+                Objects.requireNonNull(
+                        currentPlayerName,
+                        "Current player name must not be null."
+                ),
                 currentPlayerHand,
                 deckSize,
                 discardPileSize,

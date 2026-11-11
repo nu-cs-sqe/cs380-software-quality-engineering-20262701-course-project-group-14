@@ -4,6 +4,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GameSnapshotTests {
 
@@ -41,5 +42,25 @@ public class GameSnapshotTests {
         );
 
         assertEquals(0, snapshot.getDeckSize());
+    }
+
+    @Test
+    public void Create_WithNullPlayerName_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> GameSnapshot.create(
+                        null,
+                        List.of(CardType.ATTACK),
+                        10,
+                        0,
+                        2,
+                        TurnPhase.ACTIONS_ALLOWED
+                )
+        );
+
+        assertEquals(
+                "Current player name must not be null.",
+                exception.getMessage()
+        );
     }
 }
