@@ -19,7 +19,10 @@ public final class TurnEngine {
                 state,
                 "Game state must not be null."
         );
-        this.discardPile = discardPile;
+        this.discardPile = Objects.requireNonNull(
+                discardPile,
+                "Discard pile must not be null."
+        );
         this.resolver = resolver;
         this.effects = effects;
     }

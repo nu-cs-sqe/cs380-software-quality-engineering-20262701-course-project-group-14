@@ -50,4 +50,30 @@ public class TurnEngineTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Constructor_WithNullDiscardPile_ThrowsNullPointerException() {
+        GameState state = new GameState(
+                List.of(new Player("Player 1")),
+                new Deck()
+        );
+        DiscardPile resolverPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(resolverPile);
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new TurnEngine(
+                        state,
+                        null,
+                        resolver,
+                        Map.of()
+                )
+        );
+
+        assertEquals(
+                "Discard pile must not be null.",
+                exception.getMessage()
+        );
+    }
 }
