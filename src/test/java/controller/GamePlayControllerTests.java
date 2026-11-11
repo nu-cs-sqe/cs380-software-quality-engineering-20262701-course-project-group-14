@@ -129,6 +129,26 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void HandleDraw_DefuseRequestCancelled_DoesNotResolve() {
+        GameSnapshot snapshot = createSnapshot(6);
+        StubActions actions = new StubActions(
+                snapshot,
+                DrawResult.defuseRequired()
+        );
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleDraw();
+
+        assertEquals("draw.defuse-position-required", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertEquals(1, view.positionRequestCalls);
+        assertEquals(0, view.requestedMinimum);
+        assertEquals(6, view.requestedMaximum);
+        assertEquals(0, actions.resolveDefuseCalls);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -144,6 +164,7 @@ public class GamePlayControllerTests {
         private final GameSnapshot snapshot;
         private final DrawResult drawResult;
         private int drawCalls;
+        private int resolveDefuseCalls;
         private int snapshotCalls;
 
         private StubActions() {
@@ -175,6 +196,7 @@ public class GamePlayControllerTests {
 
         @Override
         public DefuseResult resolveDefuse(int position) {
+            resolveDefuseCalls++;
             throw new AssertionError("Unexpected resolveDefuse call.");
         }
 
@@ -194,6 +216,9 @@ public class GamePlayControllerTests {
         private GameSnapshot renderedSnapshot;
         private String messageKey;
         private int renderCalls;
+        private int positionRequestCalls;
+        private int requestedMinimum;
+        private int requestedMaximum;
 
         @Override
         public void render(GameSnapshot snapshot) {
@@ -215,6 +240,9 @@ public class GamePlayControllerTests {
                 int minimum,
                 int maximum
         ) {
+            positionRequestCalls++;
+            requestedMinimum = minimum;
+            requestedMaximum = maximum;
             return OptionalInt.empty();
         }
     }

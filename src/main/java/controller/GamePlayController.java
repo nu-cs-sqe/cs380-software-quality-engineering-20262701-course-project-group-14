@@ -2,6 +2,7 @@ package controller;
 
 import domain.DrawResult;
 import domain.DrawStatus;
+import domain.GameSnapshot;
 import domain.TurnActions;
 import java.util.Objects;
 
@@ -30,7 +31,22 @@ public final class GamePlayController {
     public void handleDraw() {
         DrawResult result = actions.draw();
         view.showMessage(drawMessageKey(result));
-        view.render(actions.getSnapshot());
+        GameSnapshot snapshot = actions.getSnapshot();
+        view.render(snapshot);
+        if (result.getStatus() == DrawStatus.DEFUSE_POSITION_REQUIRED) {
+            requestDefusePosition(snapshot);
+        }
+    }
+
+    public void handleChooseDefusePosition() {
+        requestDefusePosition(actions.getSnapshot());
+    }
+
+    private void requestDefusePosition(GameSnapshot snapshot) {
+        view.requestDefusePosition(
+                0,
+                snapshot.getDeckSize()
+        );
     }
 
     private String drawMessageKey(DrawResult result) {
@@ -42,6 +58,9 @@ public final class GamePlayController {
         }
         if (result.getStatus() == DrawStatus.PLAYER_ELIMINATED) {
             return "draw.player-eliminated";
+        }
+        if (result.getStatus() == DrawStatus.DEFUSE_POSITION_REQUIRED) {
+            return "draw.defuse-position-required";
         }
         return "draw.normal-card";
     }
