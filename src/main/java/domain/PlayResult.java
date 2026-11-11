@@ -3,6 +3,7 @@ package domain;
 import java.util.List;
 import java.util.Objects;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public final class PlayResult {
     private final PlayStatus status;
@@ -51,7 +52,7 @@ public final class PlayResult {
     }
 
     public List<CardType> getRevealedCards() {
-        return revealedCards;
+        return Collections.unmodifiableList(revealedCards);
     }
 
     public static PlayResult turnEnded() {

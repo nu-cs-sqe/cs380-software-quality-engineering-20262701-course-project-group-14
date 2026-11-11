@@ -43,4 +43,4 @@
 |---|---|---|---|---|
 | PR-13 | A continuing result with revealed cards exists. | None | Returns the revealed card types in their original order. | :white_check_mark: (implemented in PR-02) |
 | PR-14 | A result without revealed cards exists. | None | Returns an empty list and never returns `null`. | :white_check_mark: (planned in PR-01, PR-06, and PR-07) |
-| PR-15 | A result with revealed cards exists. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the result remains unchanged. | :x: |
+| PR-15 | A result with revealed cards exists. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the result remains unchanged. | :white_check_mark: |

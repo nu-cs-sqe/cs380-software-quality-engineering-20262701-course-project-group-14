@@ -165,4 +165,23 @@ public class PlayResultTests {
         );
     }
 
+    @Test
+    public void GetRevealedCards_WithCards_ReturnsUnmodifiableList() {
+        List<CardType> expectedCards = List.of(
+                CardType.SKIP,
+                CardType.FAVOR,
+                CardType.SHUFFLE
+        );
+        PlayResult result = PlayResult.continueTurn(expectedCards);
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> result.getRevealedCards().add(CardType.ATTACK)
+        );
+        assertEquals(
+                expectedCards,
+                result.getRevealedCards()
+        );
+    }
+
 }
