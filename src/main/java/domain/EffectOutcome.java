@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class EffectOutcome {
     private final boolean endsTurn;
@@ -8,7 +9,10 @@ public final class EffectOutcome {
 
     EffectOutcome(boolean endsTurn, List<CardType> revealedCards) {
         this.endsTurn = endsTurn;
-        this.revealedCards = revealedCards;
+        this.revealedCards = Objects.requireNonNull(
+                revealedCards,
+                "Revealed cards must not be null."
+        );
     }
 
     public boolean endsTurn() {

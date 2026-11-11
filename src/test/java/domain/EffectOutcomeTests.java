@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EffectOutcomeTests {
@@ -37,5 +38,18 @@ public class EffectOutcomeTests {
 
         assertTrue(outcome.endsTurn());
         assertEquals(List.of(), outcome.getRevealedCards());
+    }
+
+    @Test
+    public void Constructor_WithNullCards_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new EffectOutcome(false, null)
+        );
+
+        assertEquals(
+                "Revealed cards must not be null.",
+                exception.getMessage()
+        );
     }
 }
