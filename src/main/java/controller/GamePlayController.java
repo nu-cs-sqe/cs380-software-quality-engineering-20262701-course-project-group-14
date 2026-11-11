@@ -20,4 +20,8 @@ public final class GamePlayController {
                 "Game play view must not be null."
         );
     }
+
+    public void initialize() {
+        view.render(actions.getSnapshot());
+    }
 }

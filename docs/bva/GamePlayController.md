@@ -11,7 +11,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GPC-03 | Actions expose a current snapshot. | None | Requests one snapshot and renders that exact snapshot once. | :x: |
+| GPC-03 | Actions expose a current snapshot. | None | Requests one snapshot and renders that exact snapshot once. | :white_check_mark: |
 
 ## Method under test: `handleDraw()`
 
