@@ -4,7 +4,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSP-01 | A valid game is in progress. | `"Player 1"`, `[ATTACK, DEFUSE]`, deck size `10`, discard size `0`, alive count `2`, `ACTIONS_ALLOWED` | Returns a snapshot containing exactly those values. | :x: |
+| GSP-01 | A valid game is in progress. | `"Player 1"`, `[ATTACK, DEFUSE]`, deck size `10`, discard size `0`, alive count `2`, `ACTIONS_ALLOWED` | Returns a snapshot containing exactly those values. | :white_check_mark: |
 | GSP-02 | A valid game has no cards in the draw pile. | Deck size `0`; all other inputs valid | Returns a snapshot whose deck size is `0`. | :x: |
 | GSP-03 | No snapshot exists. | `currentPlayerName = null`; all other inputs valid | Throws `NullPointerException`; no snapshot is created. | :x: |
 | GSP-04 | No snapshot exists. | `currentPlayerHand = null`; all other inputs valid | Throws `NullPointerException`; no snapshot is created. | :x: |
@@ -21,38 +21,38 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSP-13 | A valid snapshot exists for Player 1. | None | Returns `"Player 1"` and never returns `null`. | :x: (planned in GSP-01) |
+| GSP-13 | A valid snapshot exists for Player 1. | None | Returns `"Player 1"` and never returns `null`. | implemented in GSP-01 |
 
 ## Method under test: `getCurrentPlayerHand()`
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSP-14 | A snapshot contains `[ATTACK, DEFUSE]`. | None | Returns `[ATTACK, DEFUSE]` in the same order. | :x: (planned in GSP-01) |
+| GSP-14 | A snapshot contains `[ATTACK, DEFUSE]`. | None | Returns `[ATTACK, DEFUSE]` in the same order. | implemented in GSP-01 |
 | GSP-15 | A snapshot contains a hand. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the snapshot remains unchanged. | :x: |
 
 ## Method under test: `getDeckSize()`
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSP-16 | A snapshot was created with deck size `10`. | None | Returns `10`. | :x: (planned in GSP-01) |
+| GSP-16 | A snapshot was created with deck size `10`. | None | Returns `10`. | implemented in GSP-01 |
 | GSP-17 | A snapshot was created with deck size `0`. | None | Returns `0`. | :x: (planned in GSP-02) |
 
 ## Method under test: `getDiscardPileSize()`
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSP-18 | A snapshot was created with discard-pile size `0`. | None | Returns `0`. | :x: (planned in GSP-01) |
+| GSP-18 | A snapshot was created with discard-pile size `0`. | None | Returns `0`. | implemented in GSP-01 |
 
 ## Method under test: `getAlivePlayerCount()`
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSP-19 | A snapshot was created with `2` living players. | None | Returns `2`. | :x: (planned in GSP-01) |
+| GSP-19 | A snapshot was created with `2` living players. | None | Returns `2`. | implemented in GSP-01 |
 | GSP-20 | A snapshot was created with `1` living player. | None | Returns `1`. | :x: (planned in GSP-10) |
 
 ## Method under test: `getPhase()`
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSP-21 | A snapshot was created in `ACTIONS_ALLOWED`. | None | Returns `ACTIONS_ALLOWED` and never returns `null`. | :x: (planned in GSP-01) |
+| GSP-21 | A snapshot was created in `ACTIONS_ALLOWED`. | None | Returns `ACTIONS_ALLOWED` and never returns `null`. | implemented in GSP-01 |
 | GSP-22 | A snapshot was created in `AWAITING_DEFUSE_POSITION`. | None | Returns `AWAITING_DEFUSE_POSITION`. | :x: |
