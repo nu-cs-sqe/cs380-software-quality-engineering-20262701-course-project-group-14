@@ -56,6 +56,9 @@ public final class GamePlayController {
         if (result.getFailure() == PlayFailure.CARD_NOT_PLAYABLE) {
             view.showMessage("play.card-not-playable");
         }
+        if (result.getFailure() == PlayFailure.PRECONDITION_NOT_MET) {
+            view.showMessage("play.precondition-not-met");
+        }
         view.render(actions.getSnapshot());
     }
 

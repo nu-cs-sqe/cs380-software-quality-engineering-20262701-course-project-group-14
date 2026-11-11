@@ -252,6 +252,22 @@ public class GamePlayControllerTests {
         assertEquals(1, view.renderCalls);
     }
 
+    @Test
+    public void HandlePlay_PreconditionNotMet_ShowsFailureAndRenders() {
+        GameSnapshot snapshot = createSnapshot(7);
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.rejected(
+                PlayFailure.PRECONDITION_NOT_MET
+        );
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals("play.precondition-not-met", view.messageKey);
+        assertEquals(1, view.renderCalls);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
