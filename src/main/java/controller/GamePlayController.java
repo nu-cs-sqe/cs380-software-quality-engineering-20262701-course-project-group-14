@@ -3,6 +3,7 @@ package controller;
 import domain.DrawResult;
 import domain.DrawStatus;
 import domain.GameSnapshot;
+import domain.PlayFailure;
 import domain.PlayResult;
 import domain.TurnActions;
 import java.util.Objects;
@@ -48,6 +49,9 @@ public final class GamePlayController {
         PlayResult result = actions.playCard(handIndex);
         if (!result.getRevealedCards().isEmpty()) {
             view.showFutureCards(result.getRevealedCards());
+        }
+        if (result.getFailure() == PlayFailure.INVALID_HAND_INDEX) {
+            view.showMessage("play.invalid-hand-index");
         }
         view.render(actions.getSnapshot());
     }

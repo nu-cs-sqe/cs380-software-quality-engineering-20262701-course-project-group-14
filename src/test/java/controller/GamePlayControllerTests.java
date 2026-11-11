@@ -4,6 +4,7 @@ import domain.CardType;
 import domain.DefuseResult;
 import domain.DrawResult;
 import domain.GameSnapshot;
+import domain.PlayFailure;
 import domain.PlayResult;
 import domain.TurnActions;
 import domain.TurnPhase;
@@ -217,6 +218,22 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
         assertNull(view.messageKey);
         assertEquals(0, view.futureCardsCalls);
+    }
+
+    @Test
+    public void HandlePlay_InvalidIndex_ShowsFailureAndRenders() {
+        GameSnapshot snapshot = createSnapshot(7);
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.rejected(
+                PlayFailure.INVALID_HAND_INDEX
+        );
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(-1);
+
+        assertEquals("play.invalid-hand-index", view.messageKey);
+        assertEquals(1, view.renderCalls);
     }
 
     private static GameSnapshot createSnapshot(int deckSize) {
