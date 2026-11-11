@@ -23,7 +23,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| DR-05 | No result exists. | None | Returns a result whose status is `EMPTY_DECK` and whose drawn-card type is `Optional.empty()`. | :x: |
+| DR-05 | No result exists. | None | Returns a result whose status is `EMPTY_DECK` and whose drawn-card type is `Optional.empty()`. | :white_check_mark: |
 
 ## Method under test: `rejectedPendingDefuse()`
 

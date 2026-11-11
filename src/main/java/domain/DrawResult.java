@@ -47,4 +47,11 @@ public final class DrawResult {
         );
     }
 
+    public static DrawResult emptyDeck() {
+        return new DrawResult(
+                DrawStatus.EMPTY_DECK,
+                null
+        );
+    }
+
 }

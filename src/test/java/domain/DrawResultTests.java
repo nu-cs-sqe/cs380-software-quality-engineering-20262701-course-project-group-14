@@ -63,4 +63,18 @@ public class DrawResultTests {
         );
     }
 
+    @Test
+    public void EmptyDeck_ReturnsEmptyDeckStatusWithoutCardType() {
+        DrawResult result = DrawResult.emptyDeck();
+
+        assertEquals(
+                DrawStatus.EMPTY_DECK,
+                result.getStatus()
+        );
+        assertEquals(
+                Optional.empty(),
+                result.getDrawnCardType()
+        );
+    }
+
 }
