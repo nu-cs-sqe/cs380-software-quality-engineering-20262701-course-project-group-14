@@ -52,6 +52,12 @@ public final class GameSnapshot {
             }
         }
 
+        if (deckSize < 0) {
+            throw new IllegalArgumentException(
+                    "Deck size must not be negative."
+            );
+        }
+
         return new GameSnapshot(
                 checkedName,
                 checkedHand,

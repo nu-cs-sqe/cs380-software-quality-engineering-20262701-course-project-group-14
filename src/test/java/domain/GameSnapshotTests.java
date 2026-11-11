@@ -109,4 +109,24 @@ public class GameSnapshotTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Create_WithNegativeDeckSize_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> GameSnapshot.create(
+                        "Player 1",
+                        List.of(CardType.ATTACK),
+                        -1,
+                        0,
+                        2,
+                        TurnPhase.ACTIONS_ALLOWED
+                )
+        );
+
+        assertEquals(
+                "Deck size must not be negative.",
+                exception.getMessage()
+        );
+    }
 }
