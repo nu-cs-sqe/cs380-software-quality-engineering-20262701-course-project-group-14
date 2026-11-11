@@ -93,6 +93,24 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void HandleDraw_PendingDefuse_ShowsRejectionAndRenders() {
+        GameSnapshot snapshot = createSnapshot(5);
+        StubActions actions = new StubActions(
+                snapshot,
+                DrawResult.rejectedPendingDefuse()
+        );
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleDraw();
+
+        assertEquals(1, actions.drawCalls);
+        assertEquals("draw.pending-defuse", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",

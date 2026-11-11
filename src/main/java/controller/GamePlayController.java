@@ -37,6 +37,9 @@ public final class GamePlayController {
         if (result.getStatus() == DrawStatus.EMPTY_DECK) {
             return "draw.empty-deck";
         }
+        if (result.getStatus() == DrawStatus.REJECTED_PENDING_DEFUSE) {
+            return "draw.pending-defuse";
+        }
         return "draw.normal-card";
     }
 }
