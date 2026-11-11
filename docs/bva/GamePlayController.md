@@ -17,7 +17,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GPC-04 | `draw()` returns `NORMAL_CARD_DRAWN`. | None | Shows `draw.normal-card` and renders the latest snapshot. | :x: |
+| GPC-04 | `draw()` returns `NORMAL_CARD_DRAWN`. | None | Shows `draw.normal-card` and renders the latest snapshot. | :white_check_mark: |
 | GPC-05 | `draw()` returns `EMPTY_DECK`. | None | Shows `draw.empty-deck` and renders the unchanged snapshot. | :x: |
 | GPC-06 | `draw()` returns `REJECTED_PENDING_DEFUSE`. | None | Shows `draw.pending-defuse` and renders the unchanged snapshot. | :x: |
 | GPC-07 | `draw()` returns `PLAYER_ELIMINATED`. | None | Shows `draw.player-eliminated` and renders the latest snapshot. | :x: |

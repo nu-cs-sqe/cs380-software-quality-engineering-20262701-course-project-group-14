@@ -24,4 +24,10 @@ public final class GamePlayController {
     public void initialize() {
         view.render(actions.getSnapshot());
     }
+
+    public void handleDraw() {
+        actions.draw();
+        view.showMessage("draw.normal-card");
+        view.render(actions.getSnapshot());
+    }
 }

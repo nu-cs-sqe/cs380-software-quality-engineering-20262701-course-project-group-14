@@ -57,6 +57,24 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void HandleDraw_NormalCard_ShowsMessageAndRenders() {
+        GameSnapshot snapshot = createSnapshot(9);
+        StubActions actions = new StubActions(
+                snapshot,
+                DrawResult.normal(CardType.ATTACK)
+        );
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleDraw();
+
+        assertEquals(1, actions.drawCalls);
+        assertEquals("draw.normal-card", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -70,19 +88,30 @@ public class GamePlayControllerTests {
 
     private static final class StubActions implements TurnActions {
         private final GameSnapshot snapshot;
+        private final DrawResult drawResult;
+        private int drawCalls;
         private int snapshotCalls;
 
         private StubActions() {
-            this(null);
+            this(null, null);
         }
 
         private StubActions(GameSnapshot snapshot) {
+            this(snapshot, null);
+        }
+
+        private StubActions(
+                GameSnapshot snapshot,
+                DrawResult drawResult
+        ) {
             this.snapshot = snapshot;
+            this.drawResult = drawResult;
         }
 
         @Override
         public DrawResult draw() {
-            throw new AssertionError("Unexpected draw call.");
+            drawCalls++;
+            return drawResult;
         }
 
         @Override
@@ -109,6 +138,7 @@ public class GamePlayControllerTests {
 
     private static final class RecordingView implements GamePlayViewPort {
         private GameSnapshot renderedSnapshot;
+        private String messageKey;
         private int renderCalls;
 
         @Override
@@ -119,6 +149,7 @@ public class GamePlayControllerTests {
 
         @Override
         public void showMessage(String messageKey) {
+            this.messageKey = messageKey;
         }
 
         @Override
