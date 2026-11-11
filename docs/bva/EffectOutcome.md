@@ -9,7 +9,7 @@
 | EO-03 | No outcome exists. | `endsTurn = true`, `revealedCards = []` | Creates an outcome that ends the turn and contains no revealed cards. | :white_check_mark: |
 | EO-04 | No outcome exists. | `revealedCards = null` | Throws `NullPointerException` with `"Revealed cards must not be null."`; no outcome is created. | :white_check_mark: |
 | EO-05 | No outcome exists. | `revealedCards` contains `null` | Throws `NullPointerException` with `"Revealed cards must not contain null."`; no outcome is created. | :white_check_mark: |
-| EO-06 | A caller owns a mutable source list. | A mutable list containing `[SKIP, FAVOR, SHUFFLE]` | Later changes to the source list do not change the outcome's revealed cards. | :x: |
+| EO-06 | A caller owns a mutable source list. | A mutable list containing `[SKIP, FAVOR, SHUFFLE]` | Later changes to the source list do not change the outcome's revealed cards. | :white_check_mark: |
 
 ## Method under test: `endsTurn()`
 
