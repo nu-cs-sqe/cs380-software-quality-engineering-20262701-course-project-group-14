@@ -298,6 +298,32 @@ public class TurnEngineTests {
         assertEquals(player, state.getCurrentPlayer());
     }
 
+    @Test
+    public void PlayCard_WhenEffectCannotPlay_ReturnsPreconditionFailure() {
+        Player player = new Player("Player 1");
+        player.addCard(new Card(CardType.SKIP));
+        Deck deck = new Deck();
+        GameState state = new GameState(List.of(player), deck);
+        DiscardPile discardPile = new DiscardPile();
+        StubEffect effect = new StubEffect();
+        effect.canPlay = false;
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.SKIP, effect)
+        );
+
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.PRECONDITION_NOT_MET, result.getFailure());
+        assertEquals(1, effect.canPlayCalls);
+        assertEquals(0, effect.playCalls);
+        assertEquals(1, player.getHand().size());
+        assertEquals(player, state.getCurrentPlayer());
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
@@ -307,13 +333,19 @@ public class TurnEngineTests {
     }
 
     private static final class StubEffect implements CardEffect {
+        private boolean canPlay = true;
+        private int canPlayCalls;
+        private int playCalls;
+
         @Override
         public boolean canPlay(Player player, Deck deck) {
-            return true;
+            canPlayCalls++;
+            return canPlay;
         }
 
         @Override
         public EffectOutcome play(Player player, Deck deck) {
+            playCalls++;
             return new EffectOutcome(false, List.of());
         }
     }

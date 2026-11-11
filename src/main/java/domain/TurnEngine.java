@@ -78,6 +78,10 @@ public final class TurnEngine {
         if (effect == null) {
             return PlayResult.rejected(PlayFailure.CARD_NOT_PLAYABLE);
         }
+        Player currentPlayer = state.getCurrentPlayer();
+        if (!effect.canPlay(currentPlayer, state.getDeck())) {
+            return PlayResult.rejected(PlayFailure.PRECONDITION_NOT_MET);
+        }
         throw new UnsupportedOperationException(
                 "Card play is not implemented."
         );
