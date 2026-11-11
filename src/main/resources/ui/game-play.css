@@ -1,0 +1,51 @@
+.game-play-root {
+    -fx-background-color: linear-gradient(to bottom, #2A2060, #16112F);
+    -fx-font-family: "Menlo", "Consolas", "Courier New", monospace;
+    -fx-text-fill: #FFF1D6;
+}
+
+.game-play-root .label {
+    -fx-text-fill: #FFF1D6;
+}
+
+.game-title {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFB84D;
+}
+
+.current-player {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.status-bar {
+    -fx-padding: 12px;
+    -fx-background-color: #2B2262;
+}
+
+.game-message {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FF8A7A;
+}
+
+.future-cards {
+    -fx-font-size: 15px;
+    -fx-text-fill: #FFD166;
+}
+
+.game-play-root .button {
+    -fx-background-color: #141026, #FFB84D;
+    -fx-background-insets: 0, 4;
+    -fx-background-radius: 0;
+    -fx-padding: 12px 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.card-button {
+    -fx-min-width: 120px;
+    -fx-min-height: 150px;
+    -fx-wrap-text: true;
+}
