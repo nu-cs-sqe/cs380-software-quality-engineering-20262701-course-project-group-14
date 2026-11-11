@@ -40,7 +40,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| TE-22 | No Kitten is pending. | Any position | Returns `NOT_AWAITING_DEFUSE`; state does not change. | :x: |
+| TE-22 | No Kitten is pending. | Any position | Returns `NOT_AWAITING_DEFUSE`; state does not change. | :white_check_mark: |
 | TE-23 | A Kitten is pending; resolver returns `INVALID_POSITION`. | Invalid position | Returns `INVALID_POSITION`; pending Kitten and current player remain unchanged. | :x: |
 | TE-24 | A Kitten is pending; resolver returns `DEFUSE_NOT_FOUND`. | A position in range | Returns `DEFUSE_NOT_FOUND`; pending Kitten and current player remain unchanged. | :x: |
 | TE-25 | A Kitten is pending; resolver returns `DEFUSED`; at least two players are alive. | A valid position | Returns `DEFUSED`, clears the pending Kitten, changes phase to `ACTIONS_ALLOWED`, and advances exactly once. | :x: |

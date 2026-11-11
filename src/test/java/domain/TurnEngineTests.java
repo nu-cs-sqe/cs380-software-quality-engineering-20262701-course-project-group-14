@@ -184,6 +184,30 @@ public class TurnEngineTests {
         );
     }
 
+    @Test
+    public void ResolveDefuse_WithNoPendingKitten_ReturnsNotAwaiting() {
+        Player player = new Player("Player 1");
+        Deck deck = new Deck();
+        GameState state = new GameState(List.of(player), deck);
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile);
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                resolver,
+                Map.of()
+        );
+        int originalDeckSize = deck.size();
+
+        DefuseResult result = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.NOT_AWAITING_DEFUSE, result);
+        assertEquals(originalDeckSize, deck.size());
+        assertEquals(player, state.getCurrentPlayer());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+    }
+
     private static final class StubEffect implements CardEffect {
         @Override
         public boolean canPlay(Player player, Deck deck) {

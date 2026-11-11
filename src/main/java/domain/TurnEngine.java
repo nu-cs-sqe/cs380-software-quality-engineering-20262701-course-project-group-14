@@ -52,4 +52,8 @@ public final class TurnEngine {
     public TurnPhase getPhase() {
         return TurnPhase.ACTIONS_ALLOWED;
     }
+
+    public DefuseResult resolveDefuse(int position) {
+        return DefuseResult.NOT_AWAITING_DEFUSE;
+    }
 }
