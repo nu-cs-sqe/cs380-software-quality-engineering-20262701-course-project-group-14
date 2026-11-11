@@ -83,6 +83,10 @@ public final class GamePlayController {
                 view.showMessage("defuse.invalid-position");
                 view.render(actions.getSnapshot());
             }
+            if (result == DefuseResult.NOT_AWAITING_DEFUSE) {
+                view.showMessage("defuse.not-awaiting");
+                view.render(actions.getSnapshot());
+            }
         }
     }
 
