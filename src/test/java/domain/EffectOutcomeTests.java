@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EffectOutcomeTests {
 
@@ -28,5 +29,13 @@ public class EffectOutcomeTests {
 
         assertFalse(outcome.endsTurn());
         assertEquals(cards, outcome.getRevealedCards());
+    }
+
+    @Test
+    public void Constructor_WithEndsTurn_ReturnsEndedOutcome() {
+        EffectOutcome outcome = new EffectOutcome(true, List.of());
+
+        assertTrue(outcome.endsTurn());
+        assertEquals(List.of(), outcome.getRevealedCards());
     }
 }
