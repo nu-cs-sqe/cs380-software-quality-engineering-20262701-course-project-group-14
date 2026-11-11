@@ -300,6 +300,23 @@ public class GamePlayControllerTests {
         assertEquals(0, view.renderCalls);
     }
 
+    @Test
+    public void HandleChooseDefuse_Success_ShowsMessageAndRenders() {
+        GameSnapshot snapshot = createSnapshot(4);
+        StubActions actions = new StubActions(snapshot);
+        actions.defuseResult = DefuseResult.DEFUSED;
+        RecordingView view = new RecordingView();
+        view.positionResponse = OptionalInt.of(2);
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleChooseDefusePosition();
+
+        assertEquals(2, actions.resolvedPosition);
+        assertEquals("defuse.success", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -315,6 +332,7 @@ public class GamePlayControllerTests {
         private final GameSnapshot snapshot;
         private final DrawResult drawResult;
         private PlayResult playResult;
+        private DefuseResult defuseResult = DefuseResult.DEFUSED;
         private int drawCalls;
         private int playCardCalls;
         private int playedHandIndex;
@@ -355,7 +373,7 @@ public class GamePlayControllerTests {
         public DefuseResult resolveDefuse(int position) {
             resolveDefuseCalls++;
             resolvedPosition = position;
-            return DefuseResult.DEFUSED;
+            return defuseResult;
         }
 
         @Override

@@ -1,5 +1,6 @@
 package controller;
 
+import domain.DefuseResult;
 import domain.DrawResult;
 import domain.DrawStatus;
 import domain.GameSnapshot;
@@ -71,7 +72,13 @@ public final class GamePlayController {
                 snapshot.getDeckSize()
         );
         if (position.isPresent()) {
-            actions.resolveDefuse(position.getAsInt());
+            DefuseResult result = actions.resolveDefuse(
+                    position.getAsInt()
+            );
+            if (result == DefuseResult.DEFUSED) {
+                view.showMessage("defuse.success");
+                view.render(actions.getSnapshot());
+            }
         }
     }
 
