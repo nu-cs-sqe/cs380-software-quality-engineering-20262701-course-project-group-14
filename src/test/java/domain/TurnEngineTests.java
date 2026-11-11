@@ -100,4 +100,30 @@ public class TurnEngineTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Constructor_WithNullEffects_ThrowsNullPointerException() {
+        GameState state = new GameState(
+                List.of(new Player("Player 1")),
+                new Deck()
+        );
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile);
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new TurnEngine(
+                        state,
+                        discardPile,
+                        resolver,
+                        null
+                )
+        );
+
+        assertEquals(
+                "Card effects must not be null.",
+                exception.getMessage()
+        );
+    }
 }

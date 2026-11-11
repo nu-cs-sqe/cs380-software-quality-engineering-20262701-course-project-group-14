@@ -27,7 +27,10 @@ public final class TurnEngine {
                 resolver,
                 "Exploding Kitten resolver must not be null."
         );
-        this.effects = effects;
+        this.effects = Objects.requireNonNull(
+                effects,
+                "Card effects must not be null."
+        );
     }
 
     public TurnPhase getPhase() {
