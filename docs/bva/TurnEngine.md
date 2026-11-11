@@ -7,7 +7,7 @@
 | TE-01 | Valid turn dependencies exist. | Non-null state, discard pile, resolver, and empty effects map | Creates an engine in `ACTIONS_ALLOWED`. | :white_check_mark: |
 | TE-02 | No engine exists. | `state = null`; all other inputs valid | Throws `NullPointerException` with `"Game state must not be null."`; no engine is created. | :white_check_mark: |
 | TE-03 | No engine exists. | `discardPile = null`; all other inputs valid | Throws `NullPointerException` with `"Discard pile must not be null."`; no engine is created. | :white_check_mark: |
-| TE-04 | No engine exists. | `resolver = null`; all other inputs valid | Throws `NullPointerException` with `"Exploding Kitten resolver must not be null."`; no engine is created. | :x: |
+| TE-04 | No engine exists. | `resolver = null`; all other inputs valid | Throws `NullPointerException` with `"Exploding Kitten resolver must not be null."`; no engine is created. | :white_check_mark: |
 | TE-05 | No engine exists. | `effects = null`; all other inputs valid | Throws `NullPointerException` with `"Card effects must not be null."`; no engine is created. | :x: |
 | TE-06 | No engine exists. | Effects map contains a `null` key | Throws `NullPointerException` with `"Card effect type must not be null."`; no engine is created. | :x: |
 | TE-07 | No engine exists. | Effects map contains a `null` value | Throws `NullPointerException` with `"Card effect must not be null."`; no engine is created. | :x: |

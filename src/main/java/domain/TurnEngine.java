@@ -23,7 +23,10 @@ public final class TurnEngine {
                 discardPile,
                 "Discard pile must not be null."
         );
-        this.resolver = resolver;
+        this.resolver = Objects.requireNonNull(
+                resolver,
+                "Exploding Kitten resolver must not be null."
+        );
         this.effects = effects;
     }
 
