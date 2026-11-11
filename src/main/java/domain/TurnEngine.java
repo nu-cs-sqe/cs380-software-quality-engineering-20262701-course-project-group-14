@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.Map;
+import java.util.Objects;
 
 public final class TurnEngine {
     private final GameState state;
@@ -14,7 +15,10 @@ public final class TurnEngine {
             ExplodingKittenResolver resolver,
             Map<CardType, CardEffect> effects
     ) {
-        this.state = state;
+        this.state = Objects.requireNonNull(
+                state,
+                "Game state must not be null."
+        );
         this.discardPile = discardPile;
         this.resolver = resolver;
         this.effects = effects;

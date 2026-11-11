@@ -5,6 +5,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TurnEngineTests {
 
@@ -26,5 +27,27 @@ public class TurnEngineTests {
         );
 
         assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+    }
+
+    @Test
+    public void Constructor_WithNullState_ThrowsNullPointerException() {
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile);
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new TurnEngine(
+                        null,
+                        discardPile,
+                        resolver,
+                        Map.of()
+                )
+        );
+
+        assertEquals(
+                "Game state must not be null.",
+                exception.getMessage()
+        );
     }
 }
