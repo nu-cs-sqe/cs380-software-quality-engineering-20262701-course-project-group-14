@@ -32,7 +32,7 @@
 | GPC-11 | `playCard` returns `CONTINUE_TURN` with revealed cards. | Valid index | Shows the revealed cards in order and renders the latest snapshot. | :white_check_mark: |
 | GPC-12 | `playCard` returns `TURN_ENDED`. | Valid index | Renders the latest snapshot without showing a failure message. | :white_check_mark: |
 | GPC-13 | `playCard` rejects with `INVALID_HAND_INDEX`. | Any index | Shows `play.invalid-hand-index` and renders. | :white_check_mark: |
-| GPC-14 | `playCard` rejects with `CARD_NOT_PLAYABLE`. | Valid index | Shows `play.card-not-playable` and renders. | :x: |
+| GPC-14 | `playCard` rejects with `CARD_NOT_PLAYABLE`. | Valid index | Shows `play.card-not-playable` and renders. | :white_check_mark: |
 | GPC-15 | `playCard` rejects with `PRECONDITION_NOT_MET`. | Valid index | Shows `play.precondition-not-met` and renders. | :x: |
 | GPC-16 | `playCard` rejects with `DEFUSE_RESOLUTION_REQUIRED`. | Any index | Shows `play.defuse-required` and renders. | :x: |
 

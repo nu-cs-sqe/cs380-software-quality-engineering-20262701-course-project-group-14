@@ -53,6 +53,9 @@ public final class GamePlayController {
         if (result.getFailure() == PlayFailure.INVALID_HAND_INDEX) {
             view.showMessage("play.invalid-hand-index");
         }
+        if (result.getFailure() == PlayFailure.CARD_NOT_PLAYABLE) {
+            view.showMessage("play.card-not-playable");
+        }
         view.render(actions.getSnapshot());
     }
 
