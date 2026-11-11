@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -222,5 +223,26 @@ public class GameSnapshotTests {
                 "Turn phase must not be null.",
                 exception.getMessage()
         );
+    }
+
+    @Test
+    public void Create_WithMutableHand_DefensivelyCopiesHand() {
+        List<CardType> expectedHand = List.of(
+                CardType.ATTACK,
+                CardType.DEFUSE
+        );
+        List<CardType> sourceHand = new ArrayList<>(expectedHand);
+        GameSnapshot snapshot = GameSnapshot.create(
+                "Player 1",
+                sourceHand,
+                10,
+                0,
+                2,
+                TurnPhase.ACTIONS_ALLOWED
+        );
+
+        sourceHand.clear();
+
+        assertEquals(expectedHand, snapshot.getCurrentPlayerHand());
     }
 }
