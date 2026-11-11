@@ -208,6 +208,36 @@ public class TurnEngineTests {
         assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
     }
 
+    @Test
+    public void Draw_WithEmptyDeck_ReturnsEmptyDeckWithoutMutation() {
+        Player player = new Player("Player 1");
+        Deck deck = createEmptyDeck();
+        GameState state = new GameState(List.of(player), deck);
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of()
+        );
+
+        DrawResult result = engine.draw();
+
+        assertEquals(DrawStatus.EMPTY_DECK, result.getStatus());
+        assertEquals(0, deck.size());
+        assertEquals(0, player.getHand().size());
+        assertEquals(player, state.getCurrentPlayer());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+    }
+
+    private static Deck createEmptyDeck() {
+        Deck deck = new Deck();
+        for (CardType type : CardType.values()) {
+            deck.removeCards(type, deck.countOf(type));
+        }
+        return deck;
+    }
+
     private static final class StubEffect implements CardEffect {
         @Override
         public boolean canPlay(Player player, Deck deck) {

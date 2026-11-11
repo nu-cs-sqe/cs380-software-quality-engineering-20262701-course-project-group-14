@@ -17,7 +17,7 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| TE-09 | Phase is `ACTIONS_ALLOWED`; deck is empty. | None | Returns `EMPTY_DECK`; hand, discard pile, phase, and current player do not change. | :x: |
+| TE-09 | Phase is `ACTIONS_ALLOWED`; deck is empty. | None | Returns `EMPTY_DECK`; hand, discard pile, phase, and current player do not change. | :white_check_mark: |
 | TE-10 | Phase is `ACTIONS_ALLOWED`; deck top is a non-Kitten card; at least two players are alive. | None | Drawn card enters the current player's hand, deck size decreases by one, current player advances exactly once, and result is `NORMAL_CARD_DRAWN` with the card type. | :x: |
 | TE-11 | Phase is `AWAITING_DEFUSE_POSITION`. | None | Returns `REJECTED_PENDING_DEFUSE`; no card is drawn and no state changes. | :x: |
 | TE-12 | Deck top is an Exploding Kitten; resolver returns `DEFUSE_POSITION_REQUIRED`. | None | Saves the pending Kitten, returns `DEFUSE_POSITION_REQUIRED`, changes phase to `AWAITING_DEFUSE_POSITION`, and does not advance the player. | :x: |

@@ -56,4 +56,13 @@ public final class TurnEngine {
     public DefuseResult resolveDefuse(int position) {
         return DefuseResult.NOT_AWAITING_DEFUSE;
     }
+
+    public DrawResult draw() {
+        if (state.getDeck().size() == 0) {
+            return DrawResult.emptyDeck();
+        }
+        throw new UnsupportedOperationException(
+                "Non-empty draw is not implemented."
+        );
+    }
 }
