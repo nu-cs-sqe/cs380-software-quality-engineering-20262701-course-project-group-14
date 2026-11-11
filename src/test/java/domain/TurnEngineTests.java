@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -125,5 +126,45 @@ public class TurnEngineTests {
                 "Card effects must not be null.",
                 exception.getMessage()
         );
+    }
+
+    @Test
+    public void Constructor_WithNullEffectType_ThrowsNullPointerException() {
+        GameState state = new GameState(
+                List.of(new Player("Player 1")),
+                new Deck()
+        );
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile);
+        Map<CardType, CardEffect> effects = new HashMap<>();
+        effects.put(null, new StubEffect());
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new TurnEngine(
+                        state,
+                        discardPile,
+                        resolver,
+                        effects
+                )
+        );
+
+        assertEquals(
+                "Card effect type must not be null.",
+                exception.getMessage()
+        );
+    }
+
+    private static final class StubEffect implements CardEffect {
+        @Override
+        public boolean canPlay(Player player, Deck deck) {
+            return true;
+        }
+
+        @Override
+        public EffectOutcome play(Player player, Deck deck) {
+            return new EffectOutcome(false, List.of());
+        }
     }
 }

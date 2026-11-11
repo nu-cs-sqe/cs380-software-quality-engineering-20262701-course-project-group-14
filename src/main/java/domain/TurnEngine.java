@@ -27,10 +27,19 @@ public final class TurnEngine {
                 resolver,
                 "Exploding Kitten resolver must not be null."
         );
-        this.effects = Objects.requireNonNull(
+        Map<CardType, CardEffect> checkedEffects = Objects.requireNonNull(
                 effects,
                 "Card effects must not be null."
         );
+
+        for (CardType type : checkedEffects.keySet()) {
+            Objects.requireNonNull(
+                    type,
+                    "Card effect type must not be null."
+            );
+        }
+
+        this.effects = checkedEffects;
     }
 
     public TurnPhase getPhase() {
