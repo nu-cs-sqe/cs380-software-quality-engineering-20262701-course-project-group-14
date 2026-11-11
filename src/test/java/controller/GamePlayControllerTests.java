@@ -111,6 +111,24 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void HandleDraw_PlayerEliminated_ShowsMessageAndRenders() {
+        GameSnapshot snapshot = createSnapshot(4);
+        StubActions actions = new StubActions(
+                snapshot,
+                DrawResult.playerEliminated()
+        );
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleDraw();
+
+        assertEquals(1, actions.drawCalls);
+        assertEquals("draw.player-eliminated", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",

@@ -40,6 +40,9 @@ public final class GamePlayController {
         if (result.getStatus() == DrawStatus.REJECTED_PENDING_DEFUSE) {
             return "draw.pending-defuse";
         }
+        if (result.getStatus() == DrawStatus.PLAYER_ELIMINATED) {
+            return "draw.player-eliminated";
+        }
         return "draw.normal-card";
     }
 }
