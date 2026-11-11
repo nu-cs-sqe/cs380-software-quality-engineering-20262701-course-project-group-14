@@ -2,6 +2,7 @@ package domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.ArrayList;
 
 public final class PlayResult {
     private final PlayStatus status;
@@ -37,7 +38,7 @@ public final class PlayResult {
         return new PlayResult(
                 PlayStatus.CONTINUE_TURN,
                 PlayFailure.NONE,
-                checkedCards
+                new ArrayList<>(checkedCards)
         );
     }
 

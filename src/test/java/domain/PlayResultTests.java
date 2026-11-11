@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -79,6 +80,24 @@ public class PlayResultTests {
         assertEquals(
                 "Revealed cards must not contain null.",
                 exception.getMessage()
+        );
+    }
+
+    @Test
+    public void ContinueTurn_WithMutableList_DefensivelyCopiesCards() {
+        List<CardType> expectedCards = List.of(
+                CardType.SKIP,
+                CardType.FAVOR,
+                CardType.SHUFFLE
+        );
+        List<CardType> sourceCards = new ArrayList<>(expectedCards);
+
+        PlayResult result = PlayResult.continueTurn(sourceCards);
+        sourceCards.clear();
+
+        assertEquals(
+                expectedCards,
+                result.getRevealedCards()
         );
     }
 
