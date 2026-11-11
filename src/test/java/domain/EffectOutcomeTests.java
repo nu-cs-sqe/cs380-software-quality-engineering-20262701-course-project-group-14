@@ -87,4 +87,20 @@ public class EffectOutcomeTests {
 
         assertEquals(expectedCards, outcome.getRevealedCards());
     }
+
+    @Test
+    public void GetRevealedCards_ReturnsUnmodifiableList() {
+        List<CardType> expectedCards = List.of(
+                CardType.SKIP,
+                CardType.FAVOR,
+                CardType.SHUFFLE
+        );
+        EffectOutcome outcome = new EffectOutcome(false, expectedCards);
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> outcome.getRevealedCards().add(CardType.ATTACK)
+        );
+        assertEquals(expectedCards, outcome.getRevealedCards());
+    }
 }

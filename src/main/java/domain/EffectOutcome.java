@@ -1,6 +1,5 @@
 package domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +22,7 @@ public final class EffectOutcome {
             }
         }
 
-        this.revealedCards = new ArrayList<>(checkedCards);
+        this.revealedCards = List.copyOf(checkedCards);
     }
 
     public boolean endsTurn() {

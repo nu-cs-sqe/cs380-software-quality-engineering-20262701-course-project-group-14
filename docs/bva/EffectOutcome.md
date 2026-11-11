@@ -24,4 +24,4 @@
 |---|---|---|---|---|
 | EO-09 | An outcome with revealed cards exists. | None | Returns the revealed card types in their original order. | implemented in EO-02 |
 | EO-10 | An outcome without revealed cards exists. | None | Returns an empty list and never returns `null`. | implemented in EO-01 |
-| EO-11 | An outcome with revealed cards exists. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the outcome remains unchanged. | :x: |
+| EO-11 | An outcome with revealed cards exists. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the outcome remains unchanged. | :white_check_mark: |
