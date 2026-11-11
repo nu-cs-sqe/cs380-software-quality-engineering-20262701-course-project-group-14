@@ -63,4 +63,24 @@ public class GameSnapshotTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Create_WithNullPlayerHand_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> GameSnapshot.create(
+                        "Player 1",
+                        null,
+                        10,
+                        0,
+                        2,
+                        TurnPhase.ACTIONS_ALLOWED
+                )
+        );
+
+        assertEquals(
+                "Current player hand must not be null.",
+                exception.getMessage()
+        );
+    }
 }

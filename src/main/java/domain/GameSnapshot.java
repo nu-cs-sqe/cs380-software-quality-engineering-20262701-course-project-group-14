@@ -40,7 +40,10 @@ public final class GameSnapshot {
                         currentPlayerName,
                         "Current player name must not be null."
                 ),
-                currentPlayerHand,
+                Objects.requireNonNull(
+                        currentPlayerHand,
+                        "Current player hand must not be null."
+                ),
                 deckSize,
                 discardPileSize,
                 alivePlayerCount,
