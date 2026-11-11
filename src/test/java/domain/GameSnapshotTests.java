@@ -149,4 +149,24 @@ public class GameSnapshotTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Create_WithNegativeAliveCount_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> GameSnapshot.create(
+                        "Player 1",
+                        List.of(CardType.ATTACK),
+                        10,
+                        0,
+                        -1,
+                        TurnPhase.ACTIONS_ALLOWED
+                )
+        );
+
+        assertEquals(
+                "Alive player count must be at least 1.",
+                exception.getMessage()
+        );
+    }
 }

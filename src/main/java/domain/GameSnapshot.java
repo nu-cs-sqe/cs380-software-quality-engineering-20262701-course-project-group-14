@@ -64,6 +64,12 @@ public final class GameSnapshot {
             );
         }
 
+        if (alivePlayerCount < 1) {
+            throw new IllegalArgumentException(
+                    "Alive player count must be at least 1."
+            );
+        }
+
         return new GameSnapshot(
                 checkedName,
                 checkedHand,
