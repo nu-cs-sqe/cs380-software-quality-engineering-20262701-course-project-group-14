@@ -15,4 +15,18 @@ public class EffectOutcomeTests {
         assertFalse(outcome.endsTurn());
         assertEquals(List.of(), outcome.getRevealedCards());
     }
+
+    @Test
+    public void Constructor_WithRevealedCards_PreservesOrder() {
+        List<CardType> cards = List.of(
+                CardType.SKIP,
+                CardType.FAVOR,
+                CardType.SHUFFLE
+        );
+
+        EffectOutcome outcome = new EffectOutcome(false, cards);
+
+        assertFalse(outcome.endsTurn());
+        assertEquals(cards, outcome.getRevealedCards());
+    }
 }

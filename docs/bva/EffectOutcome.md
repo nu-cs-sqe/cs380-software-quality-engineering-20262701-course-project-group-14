@@ -5,7 +5,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | EO-01 | No outcome exists. | `endsTurn = false`, `revealedCards = []` | Creates an outcome that continues the turn and contains no revealed cards. | :white_check_mark: |
-| EO-02 | No outcome exists. | `endsTurn = false`, `revealedCards = [SKIP, FAVOR, SHUFFLE]` | Creates an outcome that continues the turn and contains the three revealed card types in the same order. | :x: |
+| EO-02 | No outcome exists. | `endsTurn = false`, `revealedCards = [SKIP, FAVOR, SHUFFLE]` | Creates an outcome that continues the turn and contains the three revealed card types in the same order. | :white_check_mark: |
 | EO-03 | No outcome exists. | `endsTurn = true`, `revealedCards = []` | Creates an outcome that ends the turn and contains no revealed cards. | :x: |
 | EO-04 | No outcome exists. | `revealedCards = null` | Throws `NullPointerException`; no outcome is created. | :x: |
 | EO-05 | No outcome exists. | `revealedCards` contains `null` | Throws `NullPointerException`; no outcome is created. | :x: |
@@ -22,6 +22,6 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| EO-09 | An outcome with revealed cards exists. | None | Returns the revealed card types in their original order. | :x: (planned in EO-02) |
+| EO-09 | An outcome with revealed cards exists. | None | Returns the revealed card types in their original order. | implemented in EO-02 |
 | EO-10 | An outcome without revealed cards exists. | None | Returns an empty list and never returns `null`. | implemented in EO-01 |
 | EO-11 | An outcome with revealed cards exists. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the outcome remains unchanged. | :x: |
