@@ -63,12 +63,20 @@ public final class PlayResult {
     }
 
     public static PlayResult rejected(PlayFailure failure) {
+        PlayFailure checkedFailure = Objects.requireNonNull(
+                failure,
+                "Play failure must not be null."
+        );
+
+        if (checkedFailure == PlayFailure.NONE) {
+            throw new IllegalArgumentException(
+                    "Rejected result requires a failure reason."
+            );
+        }
+
         return new PlayResult(
                 PlayStatus.REJECTED,
-                Objects.requireNonNull(
-                        failure,
-                        "Play failure must not be null."
-                ),
+                checkedFailure,
                 new ArrayList<>()
         );
     }

@@ -152,4 +152,17 @@ public class PlayResultTests {
         );
     }
 
+    @Test
+    public void Rejected_WithNoFailure_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayResult.rejected(PlayFailure.NONE)
+        );
+
+        assertEquals(
+                "Rejected result requires a failure reason.",
+                exception.getMessage()
+        );
+    }
+
 }
