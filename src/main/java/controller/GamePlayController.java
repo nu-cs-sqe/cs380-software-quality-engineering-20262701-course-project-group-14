@@ -79,6 +79,10 @@ public final class GamePlayController {
                 view.showMessage("defuse.success");
                 view.render(actions.getSnapshot());
             }
+            if (result == DefuseResult.INVALID_POSITION) {
+                view.showMessage("defuse.invalid-position");
+                view.render(actions.getSnapshot());
+            }
         }
     }
 

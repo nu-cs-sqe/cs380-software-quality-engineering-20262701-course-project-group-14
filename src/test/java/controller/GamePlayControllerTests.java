@@ -317,6 +317,22 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void HandleChooseDefuse_InvalidPosition_ShowsMessageAndRenders() {
+        GameSnapshot snapshot = createSnapshot(4);
+        StubActions actions = new StubActions(snapshot);
+        actions.defuseResult = DefuseResult.INVALID_POSITION;
+        RecordingView view = new RecordingView();
+        view.positionResponse = OptionalInt.of(5);
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handleChooseDefusePosition();
+
+        assertEquals("defuse.invalid-position", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
