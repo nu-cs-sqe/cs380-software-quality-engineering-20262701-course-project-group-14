@@ -77,4 +77,18 @@ public class DrawResultTests {
         );
     }
 
+    @Test
+    public void RejectedPendingDefuse_ReturnsRejectedStatusWithoutCardType() {
+        DrawResult result = DrawResult.rejectedPendingDefuse();
+
+        assertEquals(
+                DrawStatus.REJECTED_PENDING_DEFUSE,
+                result.getStatus()
+        );
+        assertEquals(
+                Optional.empty(),
+                result.getDrawnCardType()
+        );
+    }
+
 }

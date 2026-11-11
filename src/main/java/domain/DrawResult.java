@@ -54,4 +54,11 @@ public final class DrawResult {
         );
     }
 
+    public static DrawResult rejectedPendingDefuse() {
+        return new DrawResult(
+                DrawStatus.REJECTED_PENDING_DEFUSE,
+                null
+        );
+    }
+
 }
