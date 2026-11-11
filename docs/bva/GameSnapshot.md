@@ -5,7 +5,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GSP-01 | A valid game is in progress. | `"Player 1"`, `[ATTACK, DEFUSE]`, deck size `10`, discard size `0`, alive count `2`, `ACTIONS_ALLOWED` | Returns a snapshot containing exactly those values. | :white_check_mark: |
-| GSP-02 | A valid game has no cards in the draw pile. | Deck size `0`; all other inputs valid | Returns a snapshot whose deck size is `0`. | :x: |
+| GSP-02 | A valid game has no cards in the draw pile. | Deck size `0`; all other inputs valid | Returns a snapshot whose deck size is `0`. | :white_check_mark: |
 | GSP-03 | No snapshot exists. | `currentPlayerName = null`; all other inputs valid | Throws `NullPointerException`; no snapshot is created. | :x: |
 | GSP-04 | No snapshot exists. | `currentPlayerHand = null`; all other inputs valid | Throws `NullPointerException`; no snapshot is created. | :x: |
 | GSP-05 | No snapshot exists. | `currentPlayerHand` contains `null`; all other inputs valid | Throws `NullPointerException`; no snapshot is created. | :x: |
@@ -35,7 +35,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GSP-16 | A snapshot was created with deck size `10`. | None | Returns `10`. | implemented in GSP-01 |
-| GSP-17 | A snapshot was created with deck size `0`. | None | Returns `0`. | :x: (planned in GSP-02) |
+| GSP-17 | A snapshot was created with deck size `0`. | None | Returns `0`. | implemented in GSP-02 |
 
 ## Method under test: `getDiscardPileSize()`
 

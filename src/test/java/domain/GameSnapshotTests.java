@@ -28,4 +28,18 @@ public class GameSnapshotTests {
         assertEquals(2, snapshot.getAlivePlayerCount());
         assertEquals(TurnPhase.ACTIONS_ALLOWED, snapshot.getPhase());
     }
+
+    @Test
+    public void Create_WithEmptyDeck_ReturnsZeroDeckSize() {
+        GameSnapshot snapshot = GameSnapshot.create(
+                "Player 1",
+                List.of(CardType.ATTACK),
+                0,
+                1,
+                2,
+                TurnPhase.ACTIONS_ALLOWED
+        );
+
+        assertEquals(0, snapshot.getDeckSize());
+    }
 }
