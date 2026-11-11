@@ -156,6 +156,34 @@ public class TurnEngineTests {
         );
     }
 
+    @Test
+    public void Constructor_WithNullEffect_ThrowsNullPointerException() {
+        GameState state = new GameState(
+                List.of(new Player("Player 1")),
+                new Deck()
+        );
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile);
+        Map<CardType, CardEffect> effects = new HashMap<>();
+        effects.put(CardType.SKIP, null);
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new TurnEngine(
+                        state,
+                        discardPile,
+                        resolver,
+                        effects
+                )
+        );
+
+        assertEquals(
+                "Card effect must not be null.",
+                exception.getMessage()
+        );
+    }
+
     private static final class StubEffect implements CardEffect {
         @Override
         public boolean canPlay(Player player, Deck deck) {

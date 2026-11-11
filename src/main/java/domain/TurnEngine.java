@@ -39,6 +39,13 @@ public final class TurnEngine {
             );
         }
 
+        for (CardEffect effect : checkedEffects.values()) {
+            Objects.requireNonNull(
+                    effect,
+                    "Card effect must not be null."
+            );
+        }
+
         this.effects = checkedEffects;
     }
 
