@@ -203,4 +203,24 @@ public class GameSnapshotTests {
 
         assertEquals(1, snapshot.getAlivePlayerCount());
     }
+
+    @Test
+    public void Create_WithNullPhase_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> GameSnapshot.create(
+                        "Player 1",
+                        List.of(CardType.ATTACK),
+                        10,
+                        0,
+                        2,
+                        null
+                )
+        );
+
+        assertEquals(
+                "Turn phase must not be null.",
+                exception.getMessage()
+        );
+    }
 }

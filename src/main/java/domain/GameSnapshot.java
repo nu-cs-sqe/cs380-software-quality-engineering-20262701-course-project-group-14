@@ -76,7 +76,10 @@ public final class GameSnapshot {
                 deckSize,
                 discardPileSize,
                 alivePlayerCount,
-                phase
+                Objects.requireNonNull(
+                        phase,
+                        "Turn phase must not be null."
+                )
         );
     }
 

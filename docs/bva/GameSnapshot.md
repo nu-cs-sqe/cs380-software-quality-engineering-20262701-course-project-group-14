@@ -14,7 +14,7 @@
 | GSP-08 | No snapshot exists. | `alivePlayerCount = -1`; all other inputs valid | Throws `IllegalArgumentException` with `"Alive player count must be at least 1."`; no snapshot is created. | :white_check_mark: |
 | GSP-09 | No snapshot exists. | `alivePlayerCount = 0`; all other inputs valid | Throws `IllegalArgumentException` with `"Alive player count must be at least 1."`; no snapshot is created. | :white_check_mark: |
 | GSP-10 | One player remains alive. | `alivePlayerCount = 1`; all other inputs valid | Returns a snapshot whose living-player count is `1`. | :white_check_mark: |
-| GSP-11 | No snapshot exists. | `phase = null`; all other inputs valid | Throws `NullPointerException`; no snapshot is created. | :x: |
+| GSP-11 | No snapshot exists. | `phase = null`; all other inputs valid | Throws `NullPointerException` with `"Turn phase must not be null."`; no snapshot is created. | :white_check_mark: |
 | GSP-12 | A caller owns a mutable hand list. | A mutable hand containing `[ATTACK, DEFUSE]` | Later changes to the source list do not change the snapshot's hand. | :x: |
 
 ## Method under test: `getCurrentPlayerName()`
