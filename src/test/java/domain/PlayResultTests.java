@@ -139,4 +139,17 @@ public class PlayResultTests {
         );
     }
 
+    @Test
+    public void Rejected_WithNullFailure_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> PlayResult.rejected(null)
+        );
+
+        assertEquals(
+                "Play failure must not be null.",
+                exception.getMessage()
+        );
+    }
+
 }

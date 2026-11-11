@@ -65,7 +65,10 @@ public final class PlayResult {
     public static PlayResult rejected(PlayFailure failure) {
         return new PlayResult(
                 PlayStatus.REJECTED,
-                failure,
+                Objects.requireNonNull(
+                        failure,
+                        "Play failure must not be null."
+                ),
                 new ArrayList<>()
         );
     }

@@ -21,7 +21,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | PR-07 | No result exists. | `INVALID_HAND_INDEX` | Returns a result with status `REJECTED`, failure `INVALID_HAND_INDEX`, and an empty revealed-card list. | :white_check_mark: |
-| PR-08 | No result exists. | `null` | Throws `NullPointerException`; no result is created. | :x: |
+| PR-08 | No result exists. | `null` | Throws `NullPointerException` with message `"Play failure must not be null."`; no result is created. | :white_check_mark: |
 | PR-09 | No result exists. | `NONE` | Throws `IllegalArgumentException`; a rejected result must contain an actual failure reason. | :x: |
 
 ## Method under test: `getStatus()`
