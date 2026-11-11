@@ -12,6 +12,7 @@ import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -200,6 +201,22 @@ public class GamePlayControllerTests {
         assertEquals(1, view.futureCardsCalls);
         assertEquals(revealed, view.futureCards);
         assertEquals(1, view.renderCalls);
+    }
+
+    @Test
+    public void HandlePlay_TurnEnded_RendersWithoutFailureMessage() {
+        GameSnapshot snapshot = createSnapshot(7);
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.turnEnded();
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+        assertNull(view.messageKey);
+        assertEquals(0, view.futureCardsCalls);
     }
 
     private static GameSnapshot createSnapshot(int deckSize) {

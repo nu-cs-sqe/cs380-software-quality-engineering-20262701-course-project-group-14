@@ -30,7 +30,7 @@
 |---|---|---|---|---|
 | GPC-10 | `playCard` returns `CONTINUE_TURN` without revealed cards. | Valid index | Delegates the exact index, does not show future cards, and renders the latest snapshot. | :white_check_mark: |
 | GPC-11 | `playCard` returns `CONTINUE_TURN` with revealed cards. | Valid index | Shows the revealed cards in order and renders the latest snapshot. | :white_check_mark: |
-| GPC-12 | `playCard` returns `TURN_ENDED`. | Valid index | Renders the latest snapshot without showing a failure message. | :x: |
+| GPC-12 | `playCard` returns `TURN_ENDED`. | Valid index | Renders the latest snapshot without showing a failure message. | :white_check_mark: |
 | GPC-13 | `playCard` rejects with `INVALID_HAND_INDEX`. | Any index | Shows `play.invalid-hand-index` and renders. | :x: |
 | GPC-14 | `playCard` rejects with `CARD_NOT_PLAYABLE`. | Valid index | Shows `play.card-not-playable` and renders. | :x: |
 | GPC-15 | `playCard` rejects with `PRECONDITION_NOT_MET`. | Valid index | Shows `play.precondition-not-met` and renders. | :x: |
