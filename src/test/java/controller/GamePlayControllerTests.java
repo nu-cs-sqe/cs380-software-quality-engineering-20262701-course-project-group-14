@@ -268,6 +268,22 @@ public class GamePlayControllerTests {
         assertEquals(1, view.renderCalls);
     }
 
+    @Test
+    public void HandlePlay_DefuseRequired_ShowsFailureAndRenders() {
+        GameSnapshot snapshot = createSnapshot(7);
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.rejected(
+                PlayFailure.DEFUSE_RESOLUTION_REQUIRED
+        );
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals("play.defuse-required", view.messageKey);
+        assertEquals(1, view.renderCalls);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",

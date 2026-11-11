@@ -59,6 +59,9 @@ public final class GamePlayController {
         if (result.getFailure() == PlayFailure.PRECONDITION_NOT_MET) {
             view.showMessage("play.precondition-not-met");
         }
+        if (result.getFailure() == PlayFailure.DEFUSE_RESOLUTION_REQUIRED) {
+            view.showMessage("play.defuse-required");
+        }
         view.render(actions.getSnapshot());
     }
 
