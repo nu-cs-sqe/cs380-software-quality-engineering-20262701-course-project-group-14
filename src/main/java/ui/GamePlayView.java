@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -56,7 +57,7 @@ public final class GamePlayView extends BorderPane
     private final Label alivePlayersLabel = new Label();
     private final Label messageLabel = new Label();
     private final Label futureCardsLabel = new Label();
-    private final HBox handBox = new HBox(12);
+    private final FlowPane handPane = new FlowPane(12, 12);
     private final Button drawButton = new Button("Draw Card");
     private final Button choosePositionButton = new Button("Choose Kitten Position");
 
@@ -95,11 +96,11 @@ public final class GamePlayView extends BorderPane
         header.setAlignment(Pos.CENTER);
         setTop(header);
 
-        handBox.setAlignment(Pos.CENTER);
+        handPane.setAlignment(Pos.CENTER);
         VBox center = new VBox(
                 18,
                 new Label("YOUR HAND"),
-                handBox,
+                handPane,
                 futureCardsLabel,
                 messageLabel
         );
@@ -122,7 +123,7 @@ public final class GamePlayView extends BorderPane
 
     void disableTurnActions() {
         drawButton.setDisable(true);
-        handBox.setDisable(true);
+        handPane.setDisable(true);
     }
 
     public void setOnPlayCard(IntConsumer action) {
@@ -176,13 +177,13 @@ public final class GamePlayView extends BorderPane
     }
 
     private void renderHand(List<CardType> hand) {
-        handBox.getChildren().clear();
+        handPane.getChildren().clear();
         for (int index = 0; index < hand.size(); index++) {
             int handIndex = index;
             Button cardButton = new Button(displayName(hand.get(index)));
             cardButton.getStyleClass().add("card-button");
             cardButton.setOnAction(event -> onPlayCard.accept(handIndex));
-            handBox.getChildren().add(cardButton);
+            handPane.getChildren().add(cardButton);
         }
     }
 
@@ -190,7 +191,7 @@ public final class GamePlayView extends BorderPane
         boolean waitingForPosition =
                 phase == TurnPhase.AWAITING_DEFUSE_POSITION;
         drawButton.setDisable(waitingForPosition);
-        handBox.setDisable(waitingForPosition);
+        handPane.setDisable(waitingForPosition);
         choosePositionButton.setVisible(waitingForPosition);
         choosePositionButton.setManaged(waitingForPosition);
     }
