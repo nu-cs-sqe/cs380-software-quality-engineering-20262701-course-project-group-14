@@ -81,13 +81,13 @@ public final class TurnEngine {
 
     private DrawResult drawKitten(Deck deck, Card kitten) {
         ExplosionOutcome outcome = resolver.begin(state.getCurrentPlayer(), kitten);
-        if (outcome != ExplosionOutcome.DEFUSE_POSITION_REQUIRED) {
-            throw new UnsupportedOperationException(
-                    "Player elimination is not implemented."
-            );
+        Card drawnKitten = deck.drawCard();
+        if (outcome == ExplosionOutcome.DEFUSE_POSITION_REQUIRED) {
+            pendingKitten = drawnKitten;
+            return DrawResult.defuseRequired();
         }
-        pendingKitten = deck.drawCard();
-        return DrawResult.defuseRequired();
+        state.advanceCurrentPlayer();
+        return DrawResult.playerEliminated();
     }
 
     public PlayResult playCard(int handIndex) {

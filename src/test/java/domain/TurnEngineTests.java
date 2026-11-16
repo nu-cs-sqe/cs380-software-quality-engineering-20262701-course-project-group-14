@@ -406,6 +406,58 @@ public class TurnEngineTests {
         assertSame(firstPlayer, state.getCurrentPlayer());
         assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
     }
+@Test
+    public void Draw_WhenResolverEliminatesPlayer_AdvancesOnce() {
+        Player firstPlayer = new Player("Player 1");
+        Player secondPlayer = new Player("Player 2");
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(kitten));
+        AdvancingState state = new AdvancingState(firstPlayer, secondPlayer, deck);
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card drawnKitten) {
+                assertSame(firstPlayer, player);
+                assertSame(kitten, drawnKitten);
+                return ExplosionOutcome.PLAYER_ELIMINATED;
+            }
+        };
+        TurnEngine engine = new TurnEngine(state, discardPile, resolver, Map.of());
+
+        DrawResult result = engine.draw();
+
+        assertEquals(DrawStatus.PLAYER_ELIMINATED, result.getStatus());
+        assertEquals(0, deck.size());
+        assertEquals(List.of(), firstPlayer.getHand());
+        assertSame(secondPlayer, state.getCurrentPlayer());
+        assertEquals(1, state.advanceCount);
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+    }
+
+    private static final class AdvancingState extends GameState {
+        private Player currentPlayer;
+        private final Player secondPlayer;
+        private int advanceCount;
+
+        private AdvancingState(Player firstPlayer, Player secondPlayer, Deck deck) {
+            super(List.of(firstPlayer, secondPlayer), deck);
+            currentPlayer = firstPlayer;
+            this.secondPlayer = secondPlayer;
+        }
+
+        @Override
+        public Player getCurrentPlayer() {
+            return currentPlayer;
+        }
+
+        @Override
+        public AdvanceResult advanceCurrentPlayer() {
+            advanceCount++;
+            currentPlayer = secondPlayer;
+            return AdvanceResult.ADVANCED;
+        }
+    }
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
