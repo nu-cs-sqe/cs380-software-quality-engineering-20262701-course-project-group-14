@@ -7,9 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 class DeckInsertionTests {
+    private static Deck emptyDeck() {
+        Deck deck = new Deck();
+        for (CardType type : CardType.values()) {
+            deck.removeCards(type, deck.countOf(type));
+        }
+        return deck;
+    }
     @Test
     void insertsAtTop() {
-        Deck deck = new Deck();
+        Deck deck = emptyDeck();
         for (CardType type : CardType.values()) {
             deck.removeCards(type, deck.countOf(type));
         }
@@ -29,7 +36,7 @@ class DeckInsertionTests {
 
     @Test
     void insertsBetweenExistingCards() {
-        Deck deck = new Deck();
+        Deck deck = emptyDeck();
         for (CardType type : CardType.values()) {
             deck.removeCards(type, deck.countOf(type));
         }
@@ -45,5 +52,21 @@ class DeckInsertionTests {
         assertSame(attack, deck.drawCard());
         assertSame(kitten, deck.drawCard());
         assertSame(skip, deck.drawCard());
+    }
+
+    @Test
+    void insertsAtBottom() {
+        Deck deck = emptyDeck();
+        Card attack = new Card(CardType.ATTACK);
+        Card skip = new Card(CardType.SKIP);
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        deck.addCards(List.of(attack, skip));
+
+        deck.insertAt(kitten, 2);
+
+        assertEquals(3, deck.size());
+        assertSame(attack, deck.drawCard());
+        assertSame(skip, deck.drawCard());
+        assertSame(kitten, deck.drawCard());
     }
 }
