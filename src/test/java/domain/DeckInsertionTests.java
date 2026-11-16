@@ -113,4 +113,19 @@ class DeckInsertionTests {
         assertSame(attack, deck.drawCard());
         assertSame(skip, deck.drawCard());
     }
+
+    @Test
+    void rejectsNullCardWithoutChangingDeck() {
+        Deck deck = emptyDeck();
+        Card attack = new Card(CardType.ATTACK);
+        Card skip = new Card(CardType.SKIP);
+        deck.addCards(List.of(attack, skip));
+
+        assertThrows(NullPointerException.class,
+                () -> deck.insertAt(null, 1));
+
+        assertEquals(2, deck.size());
+        assertSame(attack, deck.drawCard());
+        assertSame(skip, deck.drawCard());
+    }
 }

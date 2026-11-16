@@ -75,6 +75,7 @@ public class Deck {
         this.cards.addAll(cards);
     }
     public void insertAt(Card card, int position) {
+        Objects.requireNonNull(card, "Card must not be null");
         if (position < 0 || position > cards.size()) {
             throw new IllegalArgumentException(
                     "Position must be between 0 and the deck size");

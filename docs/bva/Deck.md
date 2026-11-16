@@ -89,5 +89,5 @@ A failed insertion preserves the original cards and their draw order.
 | Deck31 | Empty deck; insert Kitten at 0           | Kitten is the only card                                       | Yes          |
 | Deck32 | Deck [Attack, Skip]; insert Kitten at -1 | Throws IllegalArgumentException; size and order are preserved | Yes          |
 | Deck33 | Deck [Attack, Skip]; insert Kitten at 3  | Throws IllegalArgumentException; size and order are preserved | Yes          |
-| Deck34 | Deck [Attack, Skip]; insert null at 1    | Throws NullPointerException; size and order are preserved     | No           |
+| Deck34 | Deck [Attack, Skip]; insert null at 1    | Throws NullPointerException; size and order are preserved     | Yes          |
 
