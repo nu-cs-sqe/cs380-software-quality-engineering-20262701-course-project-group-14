@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DeckInsertionTests {
     private static Deck emptyDeck() {
@@ -79,5 +80,21 @@ class DeckInsertionTests {
 
         assertEquals(1, deck.size());
         assertSame(kitten, deck.drawCard());
+    }
+
+    @Test
+    void rejectsNegativePositionWithoutChangingDeck() {
+        Deck deck = emptyDeck();
+        Card attack = new Card(CardType.ATTACK);
+        Card skip = new Card(CardType.SKIP);
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        deck.addCards(List.of(attack, skip));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> deck.insertAt(kitten, -1));
+
+        assertEquals(2, deck.size());
+        assertSame(attack, deck.drawCard());
+        assertSame(skip, deck.drawCard());
     }
 }

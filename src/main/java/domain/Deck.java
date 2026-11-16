@@ -75,6 +75,10 @@ public class Deck {
         this.cards.addAll(cards);
     }
     public void insertAt(Card card, int position) {
+        if (position < 0) {
+            throw new IllegalArgumentException(
+                    "Position must be between 0 and the deck size");
+        }
         cards.add(position, card);
     }
 
