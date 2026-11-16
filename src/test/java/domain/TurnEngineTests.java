@@ -6,6 +6,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TurnEngineTests {
@@ -412,5 +413,36 @@ public class TurnEngineTests {
         assertEquals(List.of(topCard), firstPlayer.getHand());
         assertEquals(0, deck.size());
         assertEquals(secondPlayer, state.getCurrentPlayer());
+    }
+
+    @Test
+    public void Draw_WithKittenAndDefuse_WaitsForPosition() {
+        Player firstPlayer = new Player("Player 1");
+        Player secondPlayer = new Player("Player 2");
+        Card defuse = new Card(CardType.DEFUSE);
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        firstPlayer.addCard(defuse);
+
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(kitten));
+        GameState state = new GameState(List.of(firstPlayer, secondPlayer), deck);
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card drawnKitten) {
+                assertSame(firstPlayer, player);
+                assertSame(kitten, drawnKitten);
+                return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+            }
+        };
+        TurnEngine engine = new TurnEngine(state, discardPile, resolver, Map.of());
+
+        DrawResult result = engine.draw();
+
+        assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, result.getStatus());
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
+        assertSame(firstPlayer, state.getCurrentPlayer());
+        assertEquals(List.of(defuse), firstPlayer.getHand());
+        assertEquals(0, deck.size());
     }
 }

@@ -8,6 +8,7 @@ public final class TurnEngine {
     private final DiscardPile discardPile;
     private final ExplodingKittenResolver resolver;
     private final Map<CardType, CardEffect> effects;
+    private Card pendingKitten;
 
     public TurnEngine(
             GameState state,
@@ -50,7 +51,9 @@ public final class TurnEngine {
     }
 
     public TurnPhase getPhase() {
-        return TurnPhase.ACTIONS_ALLOWED;
+        return pendingKitten == null
+                ? TurnPhase.ACTIONS_ALLOWED
+                : TurnPhase.AWAITING_DEFUSE_POSITION;
     }
 
     public DefuseResult resolveDefuse(int position) {
@@ -62,10 +65,9 @@ public final class TurnEngine {
         if (deck.size() == 0) {
             return DrawResult.emptyDeck();
         }
-        if (deck.peekTopCard().getType() == CardType.EXPLODING_KITTEN) {
-            throw new UnsupportedOperationException(
-                    "Exploding Kitten draw is not implemented."
-            );
+        Card topCard = deck.peekTopCard();
+        if (topCard.getType() == CardType.EXPLODING_KITTEN) {
+            return drawKitten(deck, topCard);
         }
 
         Card drawnCard = deck.drawCard();
@@ -73,6 +75,18 @@ public final class TurnEngine {
         state.advanceCurrentPlayer();
         return DrawResult.normal(drawnCard.getType());
     }
+
+    private DrawResult drawKitten(Deck deck, Card kitten) {
+        ExplosionOutcome outcome = resolver.begin(state.getCurrentPlayer(), kitten);
+        if (outcome != ExplosionOutcome.DEFUSE_POSITION_REQUIRED) {
+            throw new UnsupportedOperationException(
+                    "Player elimination is not implemented."
+            );
+        }
+        pendingKitten = deck.drawCard();
+        return DrawResult.defuseRequired();
+    }
+
     public PlayResult playCard(int handIndex) {
         int handSize = state.getCurrentPlayer().getHand().size();
         if (handIndex < 0 || handIndex >= handSize) {

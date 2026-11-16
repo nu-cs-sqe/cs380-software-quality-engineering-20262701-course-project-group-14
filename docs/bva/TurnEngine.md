@@ -20,7 +20,7 @@
 | TE-09 | Phase is `ACTIONS_ALLOWED`; deck is empty. | None | Returns `EMPTY_DECK`; hand, discard pile, phase, and current player do not change. | :white_check_mark: |
 | TE-10 | Phase is `ACTIONS_ALLOWED`; deck top is a non-Kitten card; at least two players are alive. | None | Drawn card enters the current player's hand, deck size decreases by one, current player advances exactly once, and result is `NORMAL_CARD_DRAWN` with the card type. | :white_check_mark: (turn advancement tested with a GameState stub) |
 | TE-11 | Phase is `AWAITING_DEFUSE_POSITION`. | None | Returns `REJECTED_PENDING_DEFUSE`; no card is drawn and no state changes. | :x: |
-| TE-12 | Deck top is an Exploding Kitten; resolver returns `DEFUSE_POSITION_REQUIRED`. | None | Saves the pending Kitten, returns `DEFUSE_POSITION_REQUIRED`, changes phase to `AWAITING_DEFUSE_POSITION`, and does not advance the player. | :x: |
+| TE-12 | Deck top is an Exploding Kitten; resolver returns `DEFUSE_POSITION_REQUIRED`. | None | Saves the pending Kitten, returns `DEFUSE_POSITION_REQUIRED`, changes phase to `AWAITING_DEFUSE_POSITION`, and does not advance the player. | :white_check_mark: (tested with a resolver stub) |
 | TE-13 | Deck top is an Exploding Kitten; resolver returns `PLAYER_ELIMINATED`. | None | Returns `PLAYER_ELIMINATED` and advances to the next living player exactly once. | :x: |
 
 ## Method under test: `playCard(int handIndex)`
@@ -50,7 +50,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | TE-26 | No Kitten is pending. | None | Returns `ACTIONS_ALLOWED`. | implemented in TE-01 |
-| TE-27 | A Kitten is pending. | None | Returns `AWAITING_DEFUSE_POSITION`. | :x: (planned in TE-12) |
+| TE-27 | A Kitten is pending. | None | Returns `AWAITING_DEFUSE_POSITION`. | implemented in TE-12 |
 
 ## Method under test: `getSnapshot()`
 
