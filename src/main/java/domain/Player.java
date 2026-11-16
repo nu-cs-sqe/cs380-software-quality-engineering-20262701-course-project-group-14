@@ -33,4 +33,9 @@ public class Player {
     Card removeCardAt(int handIndex) {
         return hand.remove(handIndex);
     }
+
+    // Temporary until Qingyang's elimination state is integrated.
+    public boolean isEliminated() {
+        return false;
+    }
 }

@@ -494,6 +494,11 @@ public class TurnEngineTests {
         public void discard(Card card) {
             discarded.add(card);
         }
+
+        @Override
+        public int size() {
+            return discarded.size();
+        }
     }
 
     private static final class PlayingEffect implements CardEffect {
@@ -624,6 +629,40 @@ public class TurnEngineTests {
         assertEquals(1, scenario.state.advanceCount);
         assertEquals(DefuseResult.NOT_AWAITING_DEFUSE, scenario.engine.resolveDefuse(0));
         assertEquals(1, scenario.state.advanceCount);
+    }
+
+    @Test
+    public void GetSnapshot_WithPendingKitten_ReturnsIndependentCurrentState() {
+        Player current = new Player("Player 1");
+        current.addCard(new Card(CardType.SKIP));
+        current.addCard(new Card(CardType.DEFUSE));
+        Player next = new Player("Player 2");
+        Player eliminated = new Player("Player 3") {
+            @Override
+            public boolean isEliminated() {
+                return true;
+            }
+        };
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(new Card(CardType.EXPLODING_KITTEN),
+                new Card(CardType.FAVOR), new Card(CardType.ATTACK)));
+        GameState state = new GameState(List.of(current, next, eliminated), deck);
+        RecordingDiscardPile discardPile = new RecordingDiscardPile();
+        discardPile.discard(new Card(CardType.NOPE));
+        TurnActions actions = new TurnEngine(
+                state, discardPile, waitingResolver(discardPile), Map.of());
+        assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, actions.draw().getStatus());
+
+        GameSnapshot snapshot = actions.getSnapshot();
+
+        current.addCard(new Card(CardType.FAVOR));
+        assertEquals("Player 1", snapshot.getCurrentPlayerName());
+        assertEquals(List.of(CardType.SKIP, CardType.DEFUSE), snapshot.getCurrentPlayerHand());
+        assertEquals(2, snapshot.getDeckSize());
+        assertEquals(1, snapshot.getDiscardPileSize());
+        assertEquals(2, snapshot.getAlivePlayerCount());
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, snapshot.getPhase());
+        assertThrows(UnsupportedOperationException.class, snapshot.getCurrentPlayerHand()::clear);
     }
 
     private static Deck createEmptyDeck() {

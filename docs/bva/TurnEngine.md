@@ -56,4 +56,4 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| TE-28 | A valid game is in progress. | None | Returns the current player's name and hand, current deck and discard sizes, living-player count, and current phase without exposing mutable state. | :x: |
+| TE-28 | A valid game is in progress. | None | Returns the current player's name and hand, current deck and discard sizes, living-player count, and current phase without exposing mutable state. | :white_check_mark: (tested through TurnActions with dependency stubs) |

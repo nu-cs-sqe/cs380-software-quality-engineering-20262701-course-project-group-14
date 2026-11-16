@@ -1,9 +1,11 @@
 package domain;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public final class TurnEngine {
+public final class TurnEngine implements TurnActions {
     private final GameState state;
     private final DiscardPile discardPile;
     private final ExplodingKittenResolver resolver;
@@ -50,12 +52,28 @@ public final class TurnEngine {
         this.effects = Map.copyOf(checkedEffects);
     }
 
+    @Override
+    public GameSnapshot getSnapshot() {
+        Player currentPlayer = state.getCurrentPlayer();
+        List<CardType> hand = currentPlayer.getHand().stream()
+                .map(Card::getType)
+                .collect(Collectors.toList());
+        long alivePlayers = state.getPlayers().stream()
+                .filter(player -> !player.isEliminated())
+                .count();
+
+        return GameSnapshot.create(currentPlayer.getName(), hand, state.getDeck().size(),
+                discardPile.size(), Math.toIntExact(alivePlayers), getPhase());
+    }
+
+    @Override
     public TurnPhase getPhase() {
         return pendingKitten == null
                 ? TurnPhase.ACTIONS_ALLOWED
                 : TurnPhase.AWAITING_DEFUSE_POSITION;
     }
 
+    @Override
     public DefuseResult resolveDefuse(int position) {
         if (pendingKitten == null) {
             return DefuseResult.NOT_AWAITING_DEFUSE;
@@ -69,6 +87,7 @@ public final class TurnEngine {
         return result;
     }
 
+    @Override
     public DrawResult draw() {
         if (pendingKitten != null) {
             return DrawResult.rejectedPendingDefuse();
@@ -99,6 +118,7 @@ public final class TurnEngine {
         return DrawResult.playerEliminated();
     }
 
+    @Override
     public PlayResult playCard(int handIndex) {
         if (pendingKitten != null) {
             return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);

@@ -9,4 +9,8 @@ public class DiscardPile {
     public void discard(Card card) {
         throw new UnsupportedOperationException("Temporary discard pile stub.");
     }
+
+    public int size() {
+        throw new UnsupportedOperationException("Temporary discard pile stub.");
+    }
 }
