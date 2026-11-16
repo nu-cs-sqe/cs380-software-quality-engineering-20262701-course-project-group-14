@@ -61,6 +61,9 @@ public final class TurnEngine {
     }
 
     public DrawResult draw() {
+        if (pendingKitten != null) {
+            return DrawResult.rejectedPendingDefuse();
+        }
         Deck deck = state.getDeck();
         if (deck.size() == 0) {
             return DrawResult.emptyDeck();

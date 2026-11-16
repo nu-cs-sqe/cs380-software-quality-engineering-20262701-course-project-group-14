@@ -349,6 +349,36 @@ public class TurnEngineTests {
         assertEquals(1, originalEffect.canPlayCalls);
     }
 
+@Test
+    public void Draw_WhenDefuseIsPending_RejectsWithoutDrawing() {
+        Player firstPlayer = new Player("Player 1");
+        firstPlayer.addCard(new Card(CardType.DEFUSE));
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(new Card(CardType.EXPLODING_KITTEN), new Card(CardType.SKIP)));
+        GameState state = new GameState(List.of(firstPlayer), deck);
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(state, discardPile, waitingResolver(discardPile), Map.of());
+        assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, engine.draw().getStatus());
+        List<Card> handBefore = List.copyOf(firstPlayer.getHand());
+
+        DrawResult result = engine.draw();
+
+        assertEquals(DrawStatus.REJECTED_PENDING_DEFUSE, result.getStatus());
+        assertEquals(1, deck.size());
+        assertEquals(1, deck.countOf(CardType.SKIP));
+        assertEquals(handBefore, firstPlayer.getHand());
+        assertSame(firstPlayer, state.getCurrentPlayer());
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
+    }
+
+    private static ExplodingKittenResolver waitingResolver(DiscardPile discardPile) {
+        return new ExplodingKittenResolver(discardPile) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card kitten) {
+                return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+            }
+        };
+    }
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
