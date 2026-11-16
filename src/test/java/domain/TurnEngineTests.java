@@ -516,6 +516,31 @@ public class TurnEngineTests {
         }
     }
 
+    @Test
+    public void PlayCard_WhenEffectEndsTurn_DiscardsAndAdvancesOnce() {
+        Player firstPlayer = new Player("Player 1");
+        Player secondPlayer = new Player("Player 2");
+        Card skip = new Card(CardType.SKIP);
+        firstPlayer.addCard(skip);
+        Deck deck = createEmptyDeck();
+        AdvancingState state = new AdvancingState(firstPlayer, secondPlayer, deck);
+        RecordingDiscardPile discardPile = new RecordingDiscardPile();
+        PlayingEffect effect = new PlayingEffect(new EffectOutcome(true, List.of()));
+        TurnEngine engine = new TurnEngine(state, discardPile,
+                new ExplodingKittenResolver(discardPile), Map.of(CardType.SKIP, effect));
+
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.TURN_ENDED, result.getStatus());
+        assertEquals(List.of(), firstPlayer.getHand());
+        assertEquals(1, discardPile.discarded.size());
+        assertSame(skip, discardPile.discarded.get(0));
+        assertEquals(1, effect.playCalls);
+        assertSame(secondPlayer, state.getCurrentPlayer());
+        assertEquals(1, state.advanceCount);
+        assertEquals(0, deck.size());
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {

@@ -33,7 +33,7 @@
 | TE-17 | Selected card has no registered effect. | A valid hand index | Returns `REJECTED` with `CARD_NOT_PLAYABLE`; state does not change. | :white_check_mark: |
 | TE-18 | Selected effect is registered but `canPlay` returns `false`. | A valid hand index | Returns `REJECTED` with `PRECONDITION_NOT_MET`; state does not change. | :white_check_mark: |
 | TE-19 | Selected effect can play and returns `endsTurn = false`. | A valid hand index | Removes the selected card, executes the effect once, discards the played card, preserves revealed-card order, and does not advance the player. | :white_check_mark: (tested with effect and discard pile stubs) |
-| TE-20 | Selected effect can play and returns `endsTurn = true`; at least two players are alive. | A valid hand index | Removes and discards the selected card, executes the effect once, advances exactly once, and returns `TURN_ENDED`. | :x: |
+| TE-20 | Selected effect can play and returns `endsTurn = true`; at least two players are alive. | A valid hand index | Removes and discards the selected card, executes the effect once, advances exactly once, and returns `TURN_ENDED`. | :white_check_mark: (tested with effect, discard pile and GameState stubs) |
 | TE-21 | Engine was built from a mutable effects map that was later changed. | Play a card whose original mapping was removed or replaced in the source map | Uses the mapping captured at construction time. | implemented in TE-08 |
 
 ## Method under test: `resolveDefuse(int position)`

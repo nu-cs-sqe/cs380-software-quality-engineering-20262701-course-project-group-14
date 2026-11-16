@@ -111,6 +111,10 @@ public final class TurnEngine {
         Card playedCard = currentPlayer.removeCardAt(handIndex);
         EffectOutcome outcome = effect.play(currentPlayer, deck);
         discardPile.discard(playedCard);
+        if (outcome.endsTurn()) {
+            state.advanceCurrentPlayer();
+            return PlayResult.turnEnded();
+        }
         return PlayResult.continueTurn(outcome.getRevealedCards());
     }
 }
