@@ -13,10 +13,14 @@
 
 # Week 5 (10/26/2026-11/01/2026)
 **Planning and Progress Tracking**:
-1. [done] Person: Task (Links to PR)
-2. [not started] Person: Task (Links to PR)
-3. [80% done] Person: Task (Links to PR)
-4. etc.
+1. [not started; carried over to Week 6] All team members: Implement one complete turn. The team had exams this week.
+
+# Week 6 (11/02/2026-11/08/2026)
+**Planning and Progress Tracking**:
+1. [done] All team members: Addressed the instructor code review (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/18, https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/19), merged the setup integration test (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/15), and planned Week 6 on the Project Board (#20)
+2. [TODO] Sifan Liu: Static analysis, deterministic Deck, and See the Future (#21)
+3. [TODO] Xiaoyi Wang: Turn contracts, TurnEngine, and Skip (#22) (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/24)
+4. [60% done] Qingyang Xu: DiscardPile, Player elimination, and GameState turn order are done; ExplodingKittenResolver and DefuseDialog are carried over to Week 7 (#23) (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/25)
 
 # One section per week until the last week of class (the week before the Finals week)
 
