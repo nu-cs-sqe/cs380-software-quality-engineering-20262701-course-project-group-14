@@ -97,4 +97,20 @@ class DeckInsertionTests {
         assertSame(attack, deck.drawCard());
         assertSame(skip, deck.drawCard());
     }
+
+    @Test
+    void rejectsPositionBeyondBottomWithoutChangingDeck() {
+        Deck deck = emptyDeck();
+        Card attack = new Card(CardType.ATTACK);
+        Card skip = new Card(CardType.SKIP);
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        deck.addCards(List.of(attack, skip));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> deck.insertAt(kitten, 3));
+
+        assertEquals(2, deck.size());
+        assertSame(attack, deck.drawCard());
+        assertSame(skip, deck.drawCard());
+    }
 }
