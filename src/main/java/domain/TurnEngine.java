@@ -62,7 +62,8 @@ public final class TurnEngine {
         }
         DefuseResult result = resolver.defuse(
                 state.getCurrentPlayer(), pendingKitten, state.getDeck(), position);
-        if (result == DefuseResult.INVALID_POSITION) {
+        if (result == DefuseResult.INVALID_POSITION
+                || result == DefuseResult.DEFUSE_NOT_FOUND) {
             return result;
         }
         throw new UnsupportedOperationException("Defuse outcome is not implemented.");

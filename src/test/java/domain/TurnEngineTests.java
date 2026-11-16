@@ -595,6 +595,23 @@ public class TurnEngineTests {
         }
     }
 
+    @Test
+    public void ResolveDefuse_WhenDefuseIsMissing_KeepsDefusePending() {
+        DefuseScenario scenario = new DefuseScenario(0, DefuseResult.DEFUSE_NOT_FOUND);
+        scenario.firstPlayer.removeCardAt(0);
+
+        DefuseResult result = scenario.engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSE_NOT_FOUND, result);
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, scenario.engine.getPhase());
+        assertSame(scenario.firstPlayer, scenario.state.getCurrentPlayer());
+        assertEquals(0, scenario.state.advanceCount);
+        assertEquals(List.of(), scenario.firstPlayer.getHand());
+        assertEquals(0, scenario.deck.size());
+        assertEquals(List.of(), scenario.discardPile.discarded);
+        assertEquals(DefuseResult.DEFUSE_NOT_FOUND, scenario.engine.resolveDefuse(0));
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
