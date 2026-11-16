@@ -29,4 +29,8 @@ public class Player {
         Objects.requireNonNull(card, "Card must not be null");
         hand.add(card);
     }
+
+    Card removeCardAt(int handIndex) {
+        return hand.remove(handIndex);
+    }
 }

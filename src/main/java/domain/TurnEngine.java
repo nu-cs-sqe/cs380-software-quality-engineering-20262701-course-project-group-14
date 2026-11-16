@@ -94,23 +94,23 @@ public final class TurnEngine {
         if (pendingKitten != null) {
             return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
         }
-        int handSize = state.getCurrentPlayer().getHand().size();
+        Player currentPlayer = state.getCurrentPlayer();
+        int handSize = currentPlayer.getHand().size();
         if (handIndex < 0 || handIndex >= handSize) {
             return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
         }
-        Card selectedCard = state.getCurrentPlayer()
-                .getHand()
-                .get(handIndex);
+        Card selectedCard = currentPlayer.getHand().get(handIndex);
         CardEffect effect = effects.get(selectedCard.getType());
         if (effect == null) {
             return PlayResult.rejected(PlayFailure.CARD_NOT_PLAYABLE);
         }
-        Player currentPlayer = state.getCurrentPlayer();
-        if (!effect.canPlay(currentPlayer, state.getDeck())) {
+        Deck deck = state.getDeck();
+        if (!effect.canPlay(currentPlayer, deck)) {
             return PlayResult.rejected(PlayFailure.PRECONDITION_NOT_MET);
         }
-        throw new UnsupportedOperationException(
-                "Card play is not implemented."
-        );
+        Card playedCard = currentPlayer.removeCardAt(handIndex);
+        EffectOutcome outcome = effect.play(currentPlayer, deck);
+        discardPile.discard(playedCard);
+        return PlayResult.continueTurn(outcome.getRevealedCards());
     }
 }

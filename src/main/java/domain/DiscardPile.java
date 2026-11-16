@@ -5,4 +5,8 @@ package domain;
 public class DiscardPile {
     public DiscardPile() {
     }
+
+    public void discard(Card card) {
+        throw new UnsupportedOperationException("Temporary discard pile stub.");
+    }
 }

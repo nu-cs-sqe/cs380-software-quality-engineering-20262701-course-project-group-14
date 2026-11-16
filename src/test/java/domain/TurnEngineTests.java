@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -349,7 +350,7 @@ public class TurnEngineTests {
         assertEquals(1, originalEffect.canPlayCalls);
     }
 
-@Test
+    @Test
     public void Draw_WhenDefuseIsPending_RejectsWithoutDrawing() {
         Player firstPlayer = new Player("Player 1");
         firstPlayer.addCard(new Card(CardType.DEFUSE));
@@ -379,7 +380,7 @@ public class TurnEngineTests {
             }
         };
     }
-@Test
+    @Test
     public void PlayCard_WhenDefuseIsPending_RejectsWithoutPlaying() {
         Player firstPlayer = new Player("Player 1");
         Card skip = new Card(CardType.SKIP);
@@ -406,7 +407,7 @@ public class TurnEngineTests {
         assertSame(firstPlayer, state.getCurrentPlayer());
         assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
     }
-@Test
+    @Test
     public void Draw_WhenResolverEliminatesPlayer_AdvancesOnce() {
         Player firstPlayer = new Player("Player 1");
         Player secondPlayer = new Player("Player 2");
@@ -458,6 +459,63 @@ public class TurnEngineTests {
             return AdvanceResult.ADVANCED;
         }
     }
+    @Test
+    public void PlayCard_WhenEffectContinuesTurn_DiscardsSelectedCardAndKeepsOrder() {
+        Player player = new Player("Player 1");
+        Card firstCard = new Card(CardType.SEE_THE_FUTURE);
+        Card selectedCard = new Card(CardType.SEE_THE_FUTURE);
+        player.addCard(firstCard);
+        player.addCard(selectedCard);
+        Deck deck = createEmptyDeck();
+        GameState state = new GameState(List.of(player), deck);
+        RecordingDiscardPile discardPile = new RecordingDiscardPile();
+        PlayingEffect effect = new PlayingEffect(
+                new EffectOutcome(false, List.of(CardType.FAVOR, CardType.SKIP)));
+        TurnEngine engine = new TurnEngine(state, discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.SEE_THE_FUTURE, effect));
+
+        PlayResult result = engine.playCard(1);
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(CardType.FAVOR, CardType.SKIP), result.getRevealedCards());
+        assertEquals(1, player.getHand().size());
+        assertSame(firstCard, player.getHand().get(0));
+        assertEquals(1, discardPile.discarded.size());
+        assertSame(selectedCard, discardPile.discarded.get(0));
+        assertEquals(1, effect.playCalls);
+        assertSame(player, state.getCurrentPlayer());
+    }
+
+    private static final class RecordingDiscardPile extends DiscardPile {
+        private final List<Card> discarded = new ArrayList<>();
+
+        @Override
+        public void discard(Card card) {
+            discarded.add(card);
+        }
+    }
+
+    private static final class PlayingEffect implements CardEffect {
+        private final EffectOutcome outcome;
+        private int playCalls;
+
+        private PlayingEffect(EffectOutcome outcome) {
+            this.outcome = outcome;
+        }
+
+        @Override
+        public boolean canPlay(Player player, Deck deck) {
+            return true;
+        }
+
+        @Override
+        public EffectOutcome play(Player player, Deck deck) {
+            playCalls++;
+            return outcome;
+        }
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
