@@ -39,12 +39,8 @@ public class Deck {
     // Removes and returns the requested cards.
     public List<Card> removeCards(CardType type, int count) {
         Objects.requireNonNull(type, "Card type must not be null");
-        if (count < 0) {
-            throw new IllegalArgumentException("Count must not be negative");
-        }
-        if (count > countOf(type)) {
-            throw new IllegalArgumentException("Not enough cards of the requested type");
-        }
+        validateRemovalCount(type, count);
+
         List<Card> removed = new ArrayList<>();
         Iterator<Card> iterator = cards.iterator();
 
@@ -59,6 +55,14 @@ public class Deck {
 
         return removed;
     }
+    private void validateRemovalCount(CardType type, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("Count must not be negative");
+        }
+        if (count > countOf(type)) {
+            throw new IllegalArgumentException("Not enough cards of the requested type");
+        }
+    }
 
     // Adds the supplied cards without shuffling.
     public void addCards(List<Card> cards) {
@@ -69,6 +73,9 @@ public class Deck {
         }
 
         this.cards.addAll(cards);
+    }
+    public void insertAt(Card card, int position) {
+        cards.add(position, card);
     }
 
     // Removes and returns the top card.
