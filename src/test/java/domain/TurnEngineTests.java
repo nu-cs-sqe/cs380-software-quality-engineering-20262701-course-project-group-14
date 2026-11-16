@@ -612,6 +612,20 @@ public class TurnEngineTests {
         assertEquals(DefuseResult.DEFUSE_NOT_FOUND, scenario.engine.resolveDefuse(0));
     }
 
+    @Test
+    public void ResolveDefuse_WhenSuccessful_ClearsPendingKittenAndAdvancesOnce() {
+        DefuseScenario scenario = new DefuseScenario(0, DefuseResult.DEFUSED);
+
+        DefuseResult result = scenario.engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, result);
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, scenario.engine.getPhase());
+        assertSame(scenario.secondPlayer, scenario.state.getCurrentPlayer());
+        assertEquals(1, scenario.state.advanceCount);
+        assertEquals(DefuseResult.NOT_AWAITING_DEFUSE, scenario.engine.resolveDefuse(0));
+        assertEquals(1, scenario.state.advanceCount);
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
