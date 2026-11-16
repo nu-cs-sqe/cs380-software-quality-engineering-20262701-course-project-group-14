@@ -58,14 +58,21 @@ public final class TurnEngine {
     }
 
     public DrawResult draw() {
-        if (state.getDeck().size() == 0) {
+        Deck deck = state.getDeck();
+        if (deck.size() == 0) {
             return DrawResult.emptyDeck();
         }
-        throw new UnsupportedOperationException(
-                "Non-empty draw is not implemented."
-        );
-    }
+        if (deck.peekTopCard().getType() == CardType.EXPLODING_KITTEN) {
+            throw new UnsupportedOperationException(
+                    "Exploding Kitten draw is not implemented."
+            );
+        }
 
+        Card drawnCard = deck.drawCard();
+        state.getCurrentPlayer().addCard(drawnCard);
+        state.advanceCurrentPlayer();
+        return DrawResult.normal(drawnCard.getType());
+    }
     public PlayResult playCard(int handIndex) {
         int handSize = state.getCurrentPlayer().getHand().size();
         if (handIndex < 0 || handIndex >= handSize) {

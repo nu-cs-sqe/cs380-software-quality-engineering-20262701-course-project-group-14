@@ -373,4 +373,44 @@ public class TurnEngineTests {
             return new EffectOutcome(false, List.of());
         }
     }
+
+    @Test
+    public void Draw_WithNormalCard_AddsCardAndAdvancesTurn() {
+        Player firstPlayer = new Player("Player 1");
+        Player secondPlayer = new Player("Player 2");
+        Card topCard = new Card(CardType.SKIP);
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(topCard));
+
+        GameState state = new GameState(List.of(firstPlayer, secondPlayer), deck) {
+            private Player currentPlayer = firstPlayer;
+
+            @Override
+            public Player getCurrentPlayer() {
+                return currentPlayer;
+            }
+
+            @Override
+            public AdvanceResult advanceCurrentPlayer() {
+                assertEquals(firstPlayer, currentPlayer);
+                currentPlayer = secondPlayer;
+                return AdvanceResult.ADVANCED;
+            }
+        };
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of()
+        );
+
+        DrawResult result = engine.draw();
+
+        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, result.getStatus());
+        assertEquals(CardType.SKIP, result.getDrawnCardType().orElseThrow());
+        assertEquals(List.of(topCard), firstPlayer.getHand());
+        assertEquals(0, deck.size());
+        assertEquals(secondPlayer, state.getCurrentPlayer());
+    }
 }
