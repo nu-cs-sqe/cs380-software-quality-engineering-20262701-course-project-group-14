@@ -23,4 +23,15 @@ public class MainAppTests {
         assertEquals(8, game.getCurrentPlayer().getHand().size());
         assertEquals(List.of(), errors);
     }
+
+    @Test
+    public void StartGame_WithCountBelowMinimum_ReportsErrorWithoutOpeningGameplay() {
+        List<GameState> openedGames = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        MainApp.startGame("1", openedGames::add, errors::add);
+
+        assertEquals(List.of(), openedGames);
+        assertEquals(List.of("Player count must be a whole number between 2 and 5."), errors);
+    }
 }

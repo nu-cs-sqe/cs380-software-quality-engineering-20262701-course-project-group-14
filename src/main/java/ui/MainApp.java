@@ -20,14 +20,11 @@ public final class MainApp extends Application {
     public void start(Stage stage) {
         GameSetupView view = new GameSetupView();
         Scene scene = new Scene(view, 900, 760);
-        view.setOnStart(() -> {
-            try {
-                startGame(view.getPlayerCountInput(), state -> showGameplay(scene, state),
-                        view::showMessage);
-            } catch (IllegalArgumentException exception) {
-                view.showMessage(exception.getMessage());
-            }
-        });
+        view.setOnStart(() -> startGame(
+                view.getPlayerCountInput(),
+                state -> showGameplay(scene, state),
+                view::showMessage
+        ));
 
         view.getStylesheets().add(
                 Objects.requireNonNull(
@@ -61,7 +58,13 @@ public final class MainApp extends Application {
             Consumer<GameState> openGameplay,
             Consumer<String> showError
     ) {
-        GameState state = new GameSetupController().startGame(playerCountText);
+        GameState state;
+        try {
+            state = new GameSetupController().startGame(playerCountText);
+        } catch (IllegalArgumentException exception) {
+            showError.accept(exception.getMessage());
+            return;
+        }
         openGameplay.accept(state);
     }
 
