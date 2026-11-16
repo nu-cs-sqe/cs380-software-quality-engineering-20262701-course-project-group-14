@@ -541,6 +541,60 @@ public class TurnEngineTests {
         assertEquals(0, deck.size());
     }
 
+    @Test
+    public void ResolveDefuse_WhenPositionIsInvalid_KeepsDefusePending() {
+        DefuseScenario scenario = new DefuseScenario(-1, DefuseResult.INVALID_POSITION);
+
+        DefuseResult result = scenario.engine.resolveDefuse(-1);
+
+        assertEquals(DefuseResult.INVALID_POSITION, result);
+        scenario.assertStillPending();
+        assertEquals(DefuseResult.INVALID_POSITION, scenario.engine.resolveDefuse(-1));
+    }
+
+    private static final class DefuseScenario {
+        private final Player firstPlayer = new Player("Player 1");
+        private final Player secondPlayer = new Player("Player 2");
+        private final Card defuse = new Card(CardType.DEFUSE);
+        private final Deck deck = createEmptyDeck();
+        private final AdvancingState state = new AdvancingState(firstPlayer, secondPlayer, deck);
+        private final RecordingDiscardPile discardPile = new RecordingDiscardPile();
+        private final TurnEngine engine;
+
+        private DefuseScenario(int requestedPosition, DefuseResult resolved) {
+            Card kitten = new Card(CardType.EXPLODING_KITTEN);
+            firstPlayer.addCard(defuse);
+            deck.addCards(List.of(kitten));
+            ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile) {
+                @Override
+                public ExplosionOutcome begin(Player player, Card drawnKitten) {
+                    return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+                }
+
+                @Override
+                public DefuseResult defuse(
+                        Player player, Card pending, Deck drawPile, int position) {
+                    assertSame(firstPlayer, player);
+                    assertSame(kitten, pending);
+                    assertSame(deck, drawPile);
+                    assertEquals(requestedPosition, position);
+                    return resolved;
+                }
+            };
+            engine = new TurnEngine(state, discardPile, resolver, Map.of());
+            assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, engine.draw().getStatus());
+        }
+
+        private void assertStillPending() {
+            assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
+            assertSame(firstPlayer, state.getCurrentPlayer());
+            assertEquals(0, state.advanceCount);
+            assertEquals(List.of(defuse), firstPlayer.getHand());
+            assertEquals(0, deck.size());
+            assertEquals(List.of(), discardPile.discarded);
+        }
+    }
+
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
