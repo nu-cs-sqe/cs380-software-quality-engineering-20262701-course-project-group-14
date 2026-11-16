@@ -379,6 +379,33 @@ public class TurnEngineTests {
             }
         };
     }
+@Test
+    public void PlayCard_WhenDefuseIsPending_RejectsWithoutPlaying() {
+        Player firstPlayer = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        Card defuse = new Card(CardType.DEFUSE);
+        firstPlayer.addCard(skip);
+        firstPlayer.addCard(defuse);
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(new Card(CardType.EXPLODING_KITTEN)));
+        GameState state = new GameState(List.of(firstPlayer), deck);
+        DiscardPile discardPile = new DiscardPile();
+        StubEffect effect = new StubEffect();
+        TurnEngine engine = new TurnEngine(
+                state, discardPile, waitingResolver(discardPile), Map.of(CardType.SKIP, effect));
+        assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, engine.draw().getStatus());
+
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.DEFUSE_RESOLUTION_REQUIRED, result.getFailure());
+        assertEquals(List.of(skip, defuse), firstPlayer.getHand());
+        assertEquals(0, deck.size());
+        assertEquals(0, effect.canPlayCalls);
+        assertEquals(0, effect.playCalls);
+        assertSame(firstPlayer, state.getCurrentPlayer());
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
+    }
     private static Deck createEmptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {

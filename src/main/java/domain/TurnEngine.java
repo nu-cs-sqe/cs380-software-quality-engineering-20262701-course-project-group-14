@@ -91,6 +91,9 @@ public final class TurnEngine {
     }
 
     public PlayResult playCard(int handIndex) {
+        if (pendingKitten != null) {
+            return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
+        }
         int handSize = state.getCurrentPlayer().getHand().size();
         if (handIndex < 0 || handIndex >= handSize) {
             return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
