@@ -69,4 +69,15 @@ class DeckInsertionTests {
         assertSame(skip, deck.drawCard());
         assertSame(kitten, deck.drawCard());
     }
+
+    @Test
+    void insertsIntoEmptyDeck() {
+        Deck deck = emptyDeck();
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+
+        deck.insertAt(kitten, 0);
+
+        assertEquals(1, deck.size());
+        assertSame(kitten, deck.drawCard());
+    }
 }
