@@ -120,6 +120,11 @@ public final class GamePlayView extends BorderPane
         onDraw = action;
     }
 
+    void disableTurnActions() {
+        drawButton.setDisable(true);
+        handBox.setDisable(true);
+    }
+
     public void setOnPlayCard(IntConsumer action) {
         onPlayCard = action;
     }
