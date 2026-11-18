@@ -57,3 +57,25 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | TE-28 | A valid game is in progress. | None | Returns the current player's name and hand, current deck and discard sizes, living-player count, and current phase without exposing mutable state. | :white_check_mark: (tested through TurnActions with dependency stubs) |
+
+## Integration coverage
+
+### F2-01 — Normal draw
+
+- Method under test: `TurnEngine.draw()`
+- Implemented: :x:
+
+Initial state:
+- Two living players each hold 8 cards, Player 1 is current.
+- Deck order is [SKIP, SHUFFLE], with SKIP on top.
+- Discard pile is empty, phase is ACTIONS_ALLOWED.
+
+Action:
+- Call draw() once.
+
+Expected result:
+- Returns NORMAL_CARD_DRAWN with type SKIP.
+- Player 1 receives the drawn card and holds 9 cards.
+- Player 2's hand stays unchanged and Player 2 becomes current.
+- Only SHUFFLE remains in the deck.
+- Discard pile stays empty, phase remains ACTIONS_ALLOWED.
