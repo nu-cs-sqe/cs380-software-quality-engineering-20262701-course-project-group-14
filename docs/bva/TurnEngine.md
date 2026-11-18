@@ -79,3 +79,26 @@ Expected result:
 - Player 2's hand stays unchanged and Player 2 becomes current.
 - Only SHUFFLE remains in the deck.
 - Discard pile stays empty, phase remains ACTIONS_ALLOWED.
+
+### F2-02 — Skip ends the turn
+
+- Method under test: TurnEngine.playCard(int)
+- Implemented: :x:
+
+Initial state:
+- Two living players each hold 8 cards, Player 1 is current.
+- Player 1 holds SKIP at index 0, and SkipEffect is registered.
+- Deck order is [ATTACK, SHUFFLE], discard pile is empty.
+- Phase is ACTIONS_ALLOWED.
+
+Action:
+- Call playCard(0) once.
+
+Expected result:
+- Returns TURN_ENDED with failure NONE.
+- Player 1 retains the other 7 cards.
+- The discard pile receives the played SKIP.
+- Player 2's hand stays unchanged and Player 2 becomes current.
+- Deck order and size stay unchanged.
+- Phase remains ACTIONS_ALLOWED.
+```
