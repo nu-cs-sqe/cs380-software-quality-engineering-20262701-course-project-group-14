@@ -1,8 +1,8 @@
 # Turn Contracts
 
-> Draft for team confirmation. No production implementation should depend on
-> these contracts until the team confirms the items in the final section.
-
+> Confirmed by the team and merged through PR #24. Production implementations
+> must follow these contracts unless the team approves a documented revision.
+> 
 ## Package Placement
 
 - `domain`: result enums, result classes, `EffectOutcome`, `GameSnapshot`,
@@ -174,10 +174,10 @@ Tests provide hand-written adapters for those two interfaces.
 - Qingyang: `Player`, `GameState`, `DiscardPile`, and
   `ExplodingKittenResolver`
 
-## Team Confirmation
+## Confirmed Decisions
 
-- [ ] Confirm all method names, return types, parameters, and package placement.
-- [ ] Confirm that `PlayResult.rejected(PlayFailure.NONE)` is invalid.
-- [ ] Confirm that `GameSnapshot` requires at least one living player.
-- [ ] Confirm that `CardEffect.canPlay(...)` cannot change game state.
-- [ ] Confirm that only `TurnEngine` advances the current player.
+- [x] Confirm all method names, return types, parameters, and package placement.
+- [x] Confirm that `PlayResult.rejected(PlayFailure.NONE)` is invalid.
+- [x] Confirm that `GameSnapshot` requires at least one living player.
+- [x] Confirm that `CardEffect.canPlay(...)` cannot change game state.
+- [x] Confirm that only `TurnEngine` advances the current player.
