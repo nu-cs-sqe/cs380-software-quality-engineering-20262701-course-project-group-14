@@ -1,51 +1,383 @@
+/* ===== Bold Diegetic Tavern Stage Theme ===== */
+
 .game-play-root {
-    -fx-background-color: linear-gradient(to bottom, #2A2060, #16112F);
+    -fx-background-color: #120A07;
     -fx-font-family: "Menlo", "Consolas", "Courier New", monospace;
-    -fx-text-fill: #FFF1D6;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
-.game-play-root .label {
-    -fx-text-fill: #FFF1D6;
-}
+/* ---------- hanging signboard & table props ---------- */
 
-.game-title {
-    -fx-font-size: 30px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #FFB84D;
-}
-
-.current-player {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-}
-
-.status-bar {
-    -fx-padding: 12px;
-    -fx-background-color: #2B2262;
-}
-
-.game-message {
-    -fx-font-size: 15px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #FF8A7A;
-}
-
-.future-cards {
-    -fx-font-size: 15px;
-    -fx-text-fill: #FFD166;
-}
-
-.game-play-root .button {
-    -fx-background-color: #141026, #FFB84D;
-    -fx-background-insets: 0, 4;
+.turn-banner {
+    -fx-background-color: #120A07, #120A07, #E0AA58, #E0AA58, #3A241A, #3A241A;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 2 6 2 6, 6 2 6 2, 6 10 6 10, 10 6 10 6;
     -fx-background-radius: 0;
-    -fx-padding: 12px 18px;
-    -fx-font-weight: bold;
+    -fx-border-color: #FFE08C transparent #7A5022 transparent;
+    -fx-border-width: 2 0 2 0;
+    -fx-border-insets: 2 6 2 6;
+}
+
+.turn-banner:danger {
+    -fx-background-color: #FF4D63, #FF4D63, #3E1424, #3E1424;
+    -fx-border-color: #FF8A99 transparent #8A1F32 transparent;
+}
+
+.avatar-slot {
+    -fx-background-color: #E0AA58, #E0AA58, #160D09, #160D09;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-background-radius: 0;
+}
+
+.phase-chip {
+    -fx-background-color: #9C785E, #9C785E, #160D09, #160D09;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-background-radius: 0;
+    -fx-padding: 7 14 7 14;
+}
+
+.phase-chip:danger {
+    -fx-background-color: #FF4D63, #FF4D63, #160D09, #160D09;
+}
+
+.message-ribbon {
+    -fx-background-color: #120A07, #120A07, #B88642, #B88642, #231116, #231116;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 2 6 2 6, 6 2 6 2, 4 8 4 8, 8 4 8 4;
+    -fx-background-radius: 0;
+    -fx-border-color: #E0AA58 transparent #5E3D1C transparent;
+    -fx-border-width: 2 0 2 0;
+    -fx-border-insets: 2 6 2 6;
+}
+
+.message-ribbon:danger {
+    -fx-background-color: #FF4D63, #FF4D63, #3E1424, #3E1424;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-border-color: #FF8A99 transparent #8A1F32 transparent;
+}
+
+.alive-coaster {
+    -fx-background-color: #120A07, #120A07, #8F6A43, #8F6A43, #2A1A13, #2A1A13;
+    -fx-background-insets: 0 3 0 3, 3 0 3 0, 2 5 2 5, 5 2 5 2, 4 7 4 7, 7 4 7 4;
+    -fx-background-radius: 0;
+}
+
+.prop-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.55), 6, 0, 0, 3);
+}
+
+.prop-hotspot,
+.deck-hotspot {
     -fx-cursor: hand;
 }
 
+.empty-coaster {
+    -fx-background-color: rgba(18, 10, 7, 0.42);
+    -fx-border-color: #8F6A43;
+    -fx-border-width: 3;
+    -fx-border-style: segments(8, 6);
+    -fx-border-radius: 0;
+}
+
+.fortune-panel {
+    -fx-background-color: #120A07, #120A07, #5E98D4, #5E98D4, #181529, #181529;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 2 6 2 6, 6 2 6 2, 4 8 4 8, 8 4 8 4;
+    -fx-border-color: #7CC4FF transparent #120A07 transparent;
+    -fx-border-width: 2 0 2 0;
+    -fx-border-insets: 2 6 2 6;
+}
+
+/* Unfurled aged parchment rule scroll above the fanned hand */
+.parchment-note {
+    -fx-background-color: #120A07, #120A07, #8F6A43, #8F6A43, #EFE0C2, #EFE0C2;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 2 6 2 6, 6 2 6 2, 6 10 6 10, 10 6 10 6;
+    -fx-background-radius: 0;
+    -fx-border-color: #FFF8EA transparent #6E4D37 transparent;
+    -fx-border-width: 2 0 2 0;
+    -fx-border-insets: 2 6 2 6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.65), 14, 0, 0, 6);
+}
+
+.corner-plaque {
+    -fx-background-color: #120A07, #120A07, #6E4D37, #6E4D37, #24150E, #24150E;
+    -fx-background-insets: 0 3 0 3, 3 0 3 0, 2 5 2 5, 5 2 5 2, 4 7 4 7, 7 4 7 4;
+    -fx-background-radius: 0;
+}
+
+.dim-overlay {
+    -fx-background-color: rgba(14, 8, 5, 0.72);
+}
+
+/* ---------- text ---------- */
+
+.msg-text {
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.fallback-name {
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.parchment-title {
+    -fx-text-fill: #24150E;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.parchment-body {
+    -fx-text-fill: #24150E;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.chip-name {
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.chip {
+    -fx-background-color: #9C785E, #9C785E, #160D09, #160D09;
+    -fx-background-insets: 0 2 0 2, 2 0 2 0, 2 4 2 4, 4 2 4 2;
+    -fx-background-radius: 0;
+    -fx-padding: 2 8 2 8;
+}
+
+.chip:danger {
+    -fx-background-color: #FF4D63, #FF4D63, #160D09, #160D09;
+}
+
+/* ---------- fanned hand cards ---------- */
+
 .card-button {
-    -fx-min-width: 120px;
-    -fx-min-height: 150px;
-    -fx-wrap-text: true;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 3;
+    -fx-border-insets: -4;
+    -fx-border-radius: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.55), 8, 0, 0, 4);
+}
+
+.card-button:focused {
+    -fx-border-color: #FFE08C;
+}
+
+.card-name {
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 3 0 3;
+    -fx-effect: dropshadow(gaussian, #000000, 0, 0, 1, 1);
+}
+
+.card-name.compact {
+    -fx-font-size: 11px;
+}
+
+.card-name.dim {
+    -fx-text-fill: #B8A38E;
+}
+
+.card-badge {
+    -fx-background-color: #160D09;
+    -fx-text-fill: #FFB84D;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 5 0 5;
+    -fx-pref-height: 16;
+    -fx-min-height: 16;
+    -fx-max-height: 16;
+}
+
+.card-badge.locked {
+    -fx-text-fill: #FF4D63;
+}
+
+/* ---------- main buttons ---------- */
+
+.draw-button {
+    -fx-background-color: #160D09, #160D09, #D96A2B, #D96A2B, #FFB84D, #FFB84D;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 10 8, 8 4 10 4;
+    -fx-background-radius: 0;
+    -fx-padding: 8 16 14 16;
+    -fx-cursor: hand;
+}
+
+.draw-button:hover {
+    -fx-background-color: #160D09, #160D09, #D96A2B, #D96A2B, #FFD166, #FFD166;
+}
+
+.draw-button:pressed {
+    -fx-background-color: #160D09, #160D09, #D96A2B, #D96A2B, #FFB84D, #FFB84D;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 6 8, 8 4 6 4;
+    -fx-translate-y: 3;
+}
+
+.draw-button:disabled {
+    -fx-opacity: 1;
+    -fx-cursor: default;
+    -fx-background-color: #160D09, #160D09, #2A1C16, #2A1C16, #4A382E, #4A382E;
+}
+
+.danger-button {
+    -fx-background-color: #160D09, #160D09, #B8243C, #B8243C, #FF4D63, #FF4D63;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 10 8, 8 4 10 4;
+    -fx-background-radius: 0;
+    -fx-padding: 10 18 16 18;
+    -fx-cursor: hand;
+}
+
+.danger-button:hover {
+    -fx-background-color: #160D09, #160D09, #B8243C, #B8243C, #FF7085, #FF7085;
+}
+
+.danger-button:pressed {
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 6 8, 8 4 6 4;
+    -fx-translate-y: 3;
+}
+
+/* ---------- pass the computer (velvet tavern curtain) ---------- */
+
+.handoff-root {
+    -fx-background-color: linear-gradient(to bottom, #260E15, #12060A);
+}
+
+.handoff-panel {
+    -fx-background-color: #12060A, #12060A, #E0AA58, #E0AA58, #381822, #381822;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 2 6 2 6, 6 2 6 2, 6 10 6 10, 10 6 10 6;
+    -fx-background-radius: 0;
+    -fx-border-color: #FFE08C transparent #7A5022 transparent;
+    -fx-border-width: 2 0 2 0;
+    -fx-border-insets: 2 6 2 6;
+}
+
+/* ---------- Kitten position dialog ---------- */
+
+.dialog-root {
+    -fx-background-color: #FF4D63, #FF4D63, #3A241A, #3A241A;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-background-radius: 0;
+    -fx-font-family: "Menlo", "Consolas", "Courier New", monospace;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.dialog-text {
+    -fx-text-fill: #E8CFA8;
+    -fx-font-size: 13px;
+}
+
+.dialog-summary {
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.dialog-root .hint {
+    -fx-text-fill: #BCA284;
+    -fx-font-size: 11px;
+}
+
+.tile-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.tile-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.tile-scroll .scroll-bar:vertical {
+    -fx-background-color: #1E130E;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-pref-width: 12;
+}
+
+.tile-scroll .scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+.tile-scroll .scroll-bar .thumb {
+    -fx-background-color: #9C785E;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.tile-scroll .scroll-bar .increment-button,
+.tile-scroll .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+}
+
+.tile-scroll .scroll-bar .increment-arrow,
+.tile-scroll .scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0;
+}
+
+.tile {
+    -fx-background-color: #9C785E, #9C785E, #160D09, #160D09;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-background-radius: 0;
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 3;
+    -fx-border-insets: -3;
+    -fx-border-radius: 0;
+}
+
+.tile:hover {
+    -fx-background-color: #E0AA58, #E0AA58, #160D09, #160D09;
+}
+
+.tile:selected {
+    -fx-background-color: #FFD166, #FFD166, #FFB84D, #FFB84D;
+    -fx-text-fill: #160D09;
+}
+
+.tile:focused {
+    -fx-border-color: #FFF1D6;
+}
+
+.dialog-button {
+    -fx-background-radius: 0;
+    -fx-padding: 12 20 20 20;
+    -fx-cursor: hand;
+}
+
+.confirm-button {
+    -fx-background-color: #160D09, #160D09, #D96A2B, #D96A2B, #FFB84D, #FFB84D;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 12 8, 8 4 12 4;
+}
+
+.confirm-button:hover {
+    -fx-background-color: #160D09, #160D09, #D96A2B, #D96A2B, #FFD166, #FFD166;
+}
+
+.cancel-button {
+    -fx-background-color: #160D09, #160D09, #2A1C16, #2A1C16, #5A4538, #5A4538;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 12 8, 8 4 12 4;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #160D09, #160D09, #2A1C16, #2A1C16, #7A604F, #7A604F;
 }

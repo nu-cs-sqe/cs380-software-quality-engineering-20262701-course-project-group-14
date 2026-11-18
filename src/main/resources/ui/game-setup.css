@@ -24,7 +24,7 @@
 
 /* ---------- input ---------- */
 
-.text-field {
+.game-setup-root .text-field {
     -fx-background-color: #7B68E0, #7B68E0, #120E26, #120E26;
     -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
     -fx-background-radius: 0;
@@ -37,13 +37,13 @@
     -fx-padding: 14px 18px 14px 18px;
 }
 
-.text-field:focused {
+.game-setup-root .text-field:focused {
     -fx-background-color: #FFB84D, #FFB84D, #120E26, #120E26;
 }
 
 /* ---------- button ---------- */
 
-.button {
+.game-setup-root .button {
     -fx-background-color: #141026, #141026, #D96A2B, #D96A2B, #FFB84D, #FFB84D;
     -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 12 8, 8 4 12 4;
     -fx-background-radius: 0;
@@ -51,11 +51,11 @@
     -fx-cursor: hand;
 }
 
-.button:hover {
+.game-setup-root .button:hover {
     -fx-background-color: #141026, #141026, #D96A2B, #D96A2B, #FFD166, #FFD166;
 }
 
-.button:pressed {
+.game-setup-root .button:pressed {
     -fx-background-color: #141026, #141026, #D96A2B, #D96A2B, #FFB84D, #FFB84D;
     -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4, 4 8 8 8, 8 4 8 4;
     -fx-translate-y: 4px;
