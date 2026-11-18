@@ -1,13 +1,16 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Player {
 
     private final String name;
     private final List<Card> hand = new ArrayList<>();
+    private boolean eliminated;
 
     public Player(String name) {
         Objects.requireNonNull(name, "Player name must not be null");
@@ -22,7 +25,7 @@ public class Player {
     }
 
     public List<Card> getHand() {
-        return hand;
+        return Collections.unmodifiableList(hand);
     }
 
     public void addCard(Card card) {
@@ -30,12 +33,41 @@ public class Player {
         hand.add(card);
     }
 
-    Card removeCardAt(int handIndex) {
-        return hand.remove(handIndex);
+    public boolean hasCard(CardType type) {
+        Objects.requireNonNull(type, "Card type must not be null");
+        for (Card card : hand) {
+            if (card.getType() == type) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    // Temporary until Qingyang's elimination state is integrated.
+    public Optional<Card> removeOne(CardType type) {
+        Objects.requireNonNull(type, "Card type must not be null");
+        for (int index = 0; index < hand.size(); index++) {
+            if (hand.get(index).getType() == type) {
+                return Optional.of(hand.remove(index));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public List<Card> removeAllCards() {
+        List<Card> removedCards = new ArrayList<>(hand);
+        hand.clear();
+        return removedCards;
+    }
+
+    public void eliminate() {
+        eliminated = true;
+    }
+
     public boolean isEliminated() {
-        return false;
+        return eliminated;
+    }
+
+    Card removeCardAt(int handIndex) {
+        return hand.remove(handIndex);
     }
 }

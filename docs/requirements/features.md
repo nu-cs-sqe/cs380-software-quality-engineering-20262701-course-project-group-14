@@ -3,7 +3,7 @@
 | ID | Feature | Test class |
 |---|---|---|
 | F1 | Game Setup | GameSetupIntegrationTest |
-| F2 | One Complete Turn | F2Tests (planned) |
+| F2 | One Complete Turn | F2Tests — F2-01 implemented |
 
 ## F2 — One Complete Turn
 
@@ -20,3 +20,5 @@ Integrates TurnEngine, GameState, Player and Deck.
   and the phase remains ACTIONS_ALLOWED.
 
 Further turn scenarios will be added under F2.
+F2-01 uses real turn state, players, deck and discard pile.
+The resolver remains a compilation stub and is not exercised by this scenario.

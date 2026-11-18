@@ -63,7 +63,7 @@
 ### F2-01 — Normal draw
 
 - Method under test: `TurnEngine.draw()`
-- Implemented: :x:
+- Implemented: :white_check_mark:
 
 Initial state:
 - Two living players each hold 8 cards, Player 1 is current.

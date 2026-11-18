@@ -1,16 +1,30 @@
 package domain;
 
-// Temporary compilation stub for feature/turn-engine.
-// Replace with Qingyang's reviewed implementation before final merge.
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 public class DiscardPile {
+
+    private final List<Card> cards = new ArrayList<>();
+
     public DiscardPile() {
     }
 
     public void discard(Card card) {
-        throw new UnsupportedOperationException("Temporary discard pile stub.");
+        Objects.requireNonNull(card, "Card must not be null");
+        cards.add(card);
+    }
+
+    public void discardAll(List<Card> newCards) {
+        Objects.requireNonNull(newCards, "Cards must not be null");
+        for (Card card : newCards) {
+            Objects.requireNonNull(card, "Card must not be null");
+        }
+        cards.addAll(newCards);
     }
 
     public int size() {
-        throw new UnsupportedOperationException("Temporary discard pile stub.");
+        return cards.size();
     }
 }
