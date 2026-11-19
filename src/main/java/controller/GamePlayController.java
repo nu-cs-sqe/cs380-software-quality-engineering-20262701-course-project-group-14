@@ -29,6 +29,7 @@ public final class GamePlayController {
     }
 
     public void initialize() {
+        view.setOnDraw(this::handleDraw);
         view.render(actions.getSnapshot());
     }
 

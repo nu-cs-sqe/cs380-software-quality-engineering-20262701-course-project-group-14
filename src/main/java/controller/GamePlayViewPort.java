@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.OptionalInt;
 
 public interface GamePlayViewPort {
+    void setOnDraw(Runnable action);
+
     void render(GameSnapshot snapshot);
 
     void showMessage(String messageKey);

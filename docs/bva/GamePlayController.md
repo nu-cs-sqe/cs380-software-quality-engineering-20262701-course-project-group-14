@@ -51,7 +51,7 @@
 ### GPC-22 — Draw event
 
 - Methods under test: initialize() and its registered draw callback.
-- Implemented: :x:
+- Implemented: :white_check_mark:
 - State: Valid actions and view exist. The actions return a snapshot and a normal-draw result.
 - Input: Initialize the controller, then trigger the view's draw event.
 - Expected: draw() is called once, the normal-draw message appears, and the returned snapshot is rendered. Total render count is 2, including initialization.

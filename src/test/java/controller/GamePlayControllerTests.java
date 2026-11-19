@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.function.IntConsumer;
 
 public class GamePlayControllerTests {
 
@@ -365,6 +366,23 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void Initialize_DrawEvent_DelegatesAndRefreshes() {
+        GameSnapshot snapshot = createSnapshot(9);
+        StubActions actions = new StubActions(
+                snapshot, DrawResult.normal(CardType.ATTACK));
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+        controller.initialize();
+
+        view.drawAction.run();
+
+        assertEquals(1, actions.drawCalls);
+        assertEquals("draw.normal-card", view.messageKey);
+        assertEquals(2, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -437,6 +455,22 @@ public class GamePlayControllerTests {
     }
 
     private static final class RecordingView implements GamePlayViewPort {
+        private Runnable drawAction = () -> { };
+        private IntConsumer playCardAction = index -> { };
+        private Runnable chooseDefusePositionAction = () -> { };
+
+        public void setOnDraw(Runnable action) {
+            drawAction = action;
+        }
+
+        public void setOnPlayCard(IntConsumer action) {
+            playCardAction = action;
+        }
+
+        public void setOnChooseDefusePosition(Runnable action) {
+            chooseDefusePositionAction = action;
+        }
+
         private GameSnapshot renderedSnapshot;
         private String messageKey;
         private int renderCalls;
@@ -475,4 +509,5 @@ public class GamePlayControllerTests {
             return positionResponse;
         }
     }
+
 }
