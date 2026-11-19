@@ -4,9 +4,12 @@ import domain.CardType;
 import domain.GameSnapshot;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.function.IntConsumer;
 
 public interface GamePlayViewPort {
     void setOnDraw(Runnable action);
+
+    void setOnPlayCard(IntConsumer action);
 
     void render(GameSnapshot snapshot);
 
@@ -16,3 +19,4 @@ public interface GamePlayViewPort {
 
     OptionalInt requestDefusePosition(int minimum, int maximum);
 }
+

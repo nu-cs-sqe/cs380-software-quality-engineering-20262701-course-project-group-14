@@ -59,7 +59,7 @@
 ### GPC-23 — Play-card event
 
 - Methods under test: initialize() and its registered play callback.
-- Implemented: :x:
+- Implemented: :white_check_mark:
 - State: Valid actions and view exist. The actions accept hand index 0 and return a continuing result.
 - Input: Initialize the controller, then trigger the view's play event with index 0.
 - Expected: playCard(0) is called once and the snapshot is rendered. Total render count is 2.

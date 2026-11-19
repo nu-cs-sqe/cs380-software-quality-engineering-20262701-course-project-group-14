@@ -383,6 +383,23 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void Initialize_PlayCardEvent_PreservesIndexAndRefreshes() {
+        GameSnapshot snapshot = createSnapshot(9);
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.continueTurn(List.of());
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+        controller.initialize();
+
+        view.playCardAction.accept(0);
+
+        assertEquals(1, actions.playCardCalls);
+        assertEquals(0, actions.playedHandIndex);
+        assertEquals(2, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
