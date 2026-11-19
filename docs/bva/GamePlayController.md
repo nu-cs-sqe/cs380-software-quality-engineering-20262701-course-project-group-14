@@ -45,3 +45,29 @@
 | GPC-19 | Position is supplied; result is `INVALID_POSITION`. | Any position | Shows `defuse.invalid-position` and renders the still-waiting snapshot. | :white_check_mark: |
 | GPC-20 | Position is supplied; result is `NOT_AWAITING_DEFUSE`. | Any position | Shows `defuse.not-awaiting` and renders. | :white_check_mark: |
 | GPC-21 | Position is supplied; result is `DEFUSE_NOT_FOUND`. | Any position | Shows `defuse.not-found` and renders. | :white_check_mark: |
+
+## initialize() event bindings
+
+### GPC-22 — Draw event
+
+- Methods under test: initialize() and its registered draw callback.
+- Implemented: :white_check_mark:
+- State: Valid actions and view exist. The actions return a snapshot and a normal-draw result.
+- Input: Initialize the controller, then trigger the view's draw event.
+- Expected: draw() is called once, the normal-draw message appears, and the returned snapshot is rendered. Total render count is 2, including initialization.
+
+### GPC-23 — Play-card event
+
+- Methods under test: initialize() and its registered play callback.
+- Implemented: :white_check_mark:
+- State: Valid actions and view exist. The actions accept hand index 0 and return a continuing result.
+- Input: Initialize the controller, then trigger the view's play event with index 0.
+- Expected: playCard(0) is called once and the snapshot is rendered. Total render count is 2.
+
+### GPC-24 — Defuse-position event
+
+- Methods under test: initialize() and its registered position callback.
+- Implemented: :white_check_mark:
+- State: Valid actions and view exist. The snapshot has 4 cards in the deck. The view selects position 2 and the actions return DEFUSED.
+- Input: Initialize the controller, then trigger the view's position-selection event.
+- Expected: The view is asked for a position in [0, 4], resolveDefuse(2) is called once, the success message appears, and the snapshot is rendered. Total render count is 2.
