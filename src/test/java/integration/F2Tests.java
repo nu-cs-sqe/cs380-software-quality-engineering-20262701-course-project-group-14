@@ -9,6 +9,10 @@ import domain.DrawStatus;
 import domain.ExplodingKittenResolver;
 import domain.GameState;
 import domain.Player;
+import domain.PlayFailure;
+import domain.PlayResult;
+import domain.PlayStatus;
+import domain.SkipEffect;
 import domain.TurnEngine;
 import domain.TurnPhase;
 import java.util.List;
@@ -76,5 +80,65 @@ public class F2Tests {
         assertEquals(0, discardPile.size());
         assertSame(secondPlayer, state.getCurrentPlayer());
         assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+    }
+    @Test
+    public void F2_02_PlaySkip_DiscardsCardAndAdvancesWithoutDrawing() {
+        Player firstPlayer = new Player("Player 1");
+        Player secondPlayer = new Player("Player 2");
+        List<Player> players = List.of(firstPlayer, secondPlayer);
+        Card skip = new Card(CardType.SKIP);
+        firstPlayer.addCard(skip);
+        secondPlayer.addCard(new Card(CardType.SKIP));
+
+        List<CardType> remainingHand = List.of(
+                CardType.DEFUSE,
+                CardType.ATTACK,
+                CardType.FAVOR,
+                CardType.SHUFFLE,
+                CardType.SEE_THE_FUTURE,
+                CardType.NOPE,
+                CardType.TACOCAT
+        );
+        for (Player player : players) {
+            for (CardType type : remainingHand) {
+                player.addCard(new Card(type));
+            }
+        }
+
+        List<Card> firstHandBefore = List.copyOf(firstPlayer.getHand());
+        List<Card> secondHandBefore = List.copyOf(secondPlayer.getHand());
+        Deck deck = new Deck();
+        for (CardType type : CardType.values()) {
+            deck.removeCards(type, deck.countOf(type));
+        }
+        Card attack = new Card(CardType.ATTACK);
+        Card shuffle = new Card(CardType.SHUFFLE);
+        deck.addCards(List.of(attack, shuffle));
+
+        GameState state = new GameState(players, deck);
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.SKIP, new SkipEffect())
+        );
+
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.TURN_ENDED, result.getStatus());
+        assertEquals(PlayFailure.NONE, result.getFailure());
+        assertEquals(List.of(), result.getRevealedCards());
+        assertEquals(7, firstPlayer.getHand().size());
+        assertEquals(firstHandBefore.subList(1, 8), firstPlayer.getHand());
+        assertEquals(secondHandBefore, secondPlayer.getHand());
+        assertEquals(1, discardPile.size());
+        assertEquals(2, deck.size());
+        assertSame(secondPlayer, state.getCurrentPlayer());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+
+        // Inspect the remaining order after checking the action's postconditions.
+        assertSame(attack, deck.drawCard());
+        assertSame(shuffle, deck.drawCard());
     }
 }

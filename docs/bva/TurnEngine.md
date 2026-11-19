@@ -83,7 +83,7 @@ Expected result:
 ### F2-02 — Skip ends the turn
 
 - Method under test: TurnEngine.playCard(int)
-- Implemented: :x:
+- Implemented: :white_check_mark:
 
 Initial state:
 - Two living players each hold 8 cards, Player 1 is current.

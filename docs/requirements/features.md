@@ -3,7 +3,7 @@
 | ID | Feature | Test class |
 |---|---|---|
 | F1 | Game Setup | GameSetupIntegrationTest |
-| F2 | One Complete Turn | F2Tests — F2-01 implemented |
+| F2 | One Complete Turn | F2Tests — F2-01 and F2-02 implemented |
 
 ## F2 — One Complete Turn
 
