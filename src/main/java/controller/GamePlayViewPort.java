@@ -11,6 +11,8 @@ public interface GamePlayViewPort {
 
     void setOnPlayCard(IntConsumer action);
 
+    void setOnChooseDefusePosition(Runnable action);
+
     void render(GameSnapshot snapshot);
 
     void showMessage(String messageKey);
@@ -19,4 +21,3 @@ public interface GamePlayViewPort {
 
     OptionalInt requestDefusePosition(int minimum, int maximum);
 }
-

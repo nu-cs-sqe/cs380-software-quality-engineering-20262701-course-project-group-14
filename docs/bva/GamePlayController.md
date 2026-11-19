@@ -67,7 +67,7 @@
 ### GPC-24 — Defuse-position event
 
 - Methods under test: initialize() and its registered position callback.
-- Implemented: :x:
+- Implemented: :white_check_mark:
 - State: Valid actions and view exist. The snapshot has 4 cards in the deck. The view selects position 2 and the actions return DEFUSED.
 - Input: Initialize the controller, then trigger the view's position-selection event.
 - Expected: The view is asked for a position in [0, 4], resolveDefuse(2) is called once, the success message appears, and the snapshot is rendered. Total render count is 2.

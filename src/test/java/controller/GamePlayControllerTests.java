@@ -400,6 +400,28 @@ public class GamePlayControllerTests {
         assertSame(snapshot, view.renderedSnapshot);
     }
 
+    @Test
+    public void Initialize_DefusePositionEvent_RequestsPositionAndRefreshes() {
+        GameSnapshot snapshot = createSnapshot(4);
+        StubActions actions = new StubActions(snapshot);
+        RecordingView view = new RecordingView();
+        view.positionResponse = OptionalInt.of(2);
+        GamePlayController controller = new GamePlayController(actions, view);
+        controller.initialize();
+
+        view.chooseDefusePositionAction.run();
+
+        assertEquals(1, view.positionRequestCalls);
+        assertEquals(0, view.requestedMinimum);
+        assertEquals(4, view.requestedMaximum);
+        assertEquals(1, actions.resolveDefuseCalls);
+        assertEquals(2, actions.resolvedPosition);
+        assertEquals("defuse.success", view.messageKey);
+        assertEquals(2, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
