@@ -11,7 +11,7 @@
 
 ### NAV-03 — Initialize a gameplay session
 
-- Implemented: :x:
+- Implemented: :white_check_mark:
 - State: Two living players each hold 8 cards. Player 1 is current. The deck contains [ATTACK, SHUFFLE].
 - Input: A valid state and recording view.
 - Expected: The view receives Player 1's initial snapshot, an empty discard pile, two living players and ACTIONS_ALLOWED. Draw, play and position-selection callbacks are registered.

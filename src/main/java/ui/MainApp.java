@@ -1,16 +1,16 @@
 package ui;
 
+import controller.GamePlayController;
+import controller.GamePlayViewPort;
 import controller.GameSetupController;
-import domain.Card;
-import domain.CardType;
-import domain.GameSnapshot;
+import domain.DiscardPile;
+import domain.ExplodingKittenResolver;
 import domain.GameState;
-import domain.Player;
-import domain.TurnPhase;
-import java.util.List;
+import domain.TurnActions;
+import domain.TurnEngine;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -42,15 +42,19 @@ public final class MainApp extends Application {
 
     private static void showGameplay(Scene scene, GameState state) {
         GamePlayView gameplay = new GamePlayView();
-        Player currentPlayer = state.getCurrentPlayer();
-        List<CardType> hand = currentPlayer.getHand().stream()
-                .map(Card::getType)
-                .collect(Collectors.toList());
-        GameSnapshot initial = GameSnapshot.create(currentPlayer.getName(), hand,
-                state.getDeck().size(), 0, state.getPlayers().size(), TurnPhase.ACTIONS_ALLOWED);
-        gameplay.render(initial);
-        gameplay.disableTurnActions();
+        startGameplay(state, gameplay);
         scene.setRoot(gameplay);
+    }
+
+    static void startGameplay(GameState state, GamePlayViewPort view) {
+        TurnActions actions = createTurnActions(state);
+        new GamePlayController(actions, view).initialize();
+    }
+
+    private static TurnActions createTurnActions(GameState state) {
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile);
+        return new TurnEngine(state, discardPile, resolver, Map.of());
     }
 
     static void startGame(
