@@ -151,4 +151,16 @@ public class GamePlayStartupTests {
         assertEquals("Game state must not be null.", exception.getMessage());
     }
 
+    @Test
+    public void StartGameplay_NullViewIsRejected() {
+        GameState state = fixedGame();
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> MainApp.startGameplay(state, null));
+
+        assertEquals("Game play view must not be null.", exception.getMessage());
+        assertSame(state.getPlayers().get(0), state.getCurrentPlayer());
+        assertEquals(2, state.getDeck().size());
+    }
+
 }

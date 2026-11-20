@@ -39,7 +39,7 @@
 
 ### NAV-07 — Reject a null view
 
-- Implemented: :x:
+- Implemented: :white_check_mark:
 - State: The valid fixed state from NAV-03 exists.
 - Input: view = null.
 - Expected: Throws NullPointerException with "Game play view must not be null.". Current player and deck size remain unchanged.
