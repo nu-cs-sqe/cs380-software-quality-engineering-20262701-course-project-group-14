@@ -34,3 +34,10 @@ The resolver remains a compilation stub and is not exercised by this scenario.
 - And Player 2 becomes current with an unchanged hand.
 - And the deck remains unchanged.
 ```
+
+### Gameplay startup coverage
+
+GamePlayStartupTests verifies initialization, ordinary drawing, Skip registration and invalid startup arguments through MainApp.startGameplay.
+
+The tests use the real controller, engine and ordinary-turn domain implementations with a recording view. The resolver remains a compilation stub and is not exercised by these scenarios.
+```
