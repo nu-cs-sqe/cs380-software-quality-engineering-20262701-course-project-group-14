@@ -160,11 +160,18 @@ public interface GamePlayViewPort {
     void showMessage(String messageKey);
     void showFutureCards(List<CardType> cards);
     OptionalInt requestDefusePosition(int minimum, int maximum);
+    void setOnDraw(Runnable action);
+    void setOnPlayCard(IntConsumer action);
+    void setOnChooseDefusePosition(Runnable action);
 }
 ```
+GamePlayController.initialize() binds the three input callbacks before rendering the initial snapshot. GamePlayView implements these registration methods.
 
 `GamePlayController` depends only on `TurnActions` and `GamePlayViewPort`.
 Tests provide hand-written adapters for those two interfaces.
+MainApp.startGameplay assembles the turn engine, discard pile, resolver
+and effect map, then initializes GamePlayController with the gameplay view.
+Skip is registered in the startup effect map.
 
 ## Ownership
 

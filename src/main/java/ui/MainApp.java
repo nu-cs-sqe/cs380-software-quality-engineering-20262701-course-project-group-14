@@ -1,22 +1,34 @@
 package ui;
+
+import controller.GamePlayController;
+import controller.GamePlayViewPort;
 import controller.GameSetupController;
+import domain.DiscardPile;
+import domain.ExplodingKittenResolver;
 import domain.GameState;
+import domain.TurnActions;
+import domain.TurnEngine;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import domain.CardType;
+import domain.SkipEffect;
 
 public final class MainApp extends Application {
-    private GameState gameState;
-
     @Override
     public void start(Stage stage) {
         GameSetupView view = new GameSetupView();
-        GameSetupController controller = new GameSetupController();
-        view.setOnStart(() -> handleStartGame(controller, view));
         Scene scene = new Scene(view, 900, 760);
+        view.setOnStart(() -> startGame(
+                view.getPlayerCountInput(),
+                state -> showGameplay(scene, state),
+                view::showMessage
+        ));
 
-        scene.getStylesheets().add(
+        view.getStylesheets().add(
                 Objects.requireNonNull(
                         MainApp.class.getResource("/ui/game-setup.css"),
                         "Missing game-setup.css"
@@ -29,27 +41,40 @@ public final class MainApp extends Application {
         stage.setScene(scene);
         stage.show();
     }
-    private void handleStartGame(
-            GameSetupController controller,
-            GameSetupView view
-    ) {
-        try {
-            gameState = controller.startGame(
-                    view.getPlayerCountInput()
-            );
 
-            view.showMessage(
-                    "Game ready! "
-                            + gameState.getPlayers().size()
-                            + " players, "
-                            + gameState.getDeck().size()
-                            + " cards remaining. "
-                            + gameState.getCurrentPlayer().getName()
-                            + " goes first."
-            );
+    private static void showGameplay(Scene scene, GameState state) {
+        GamePlayView gameplay = new GamePlayView();
+        startGameplay(state, gameplay);
+        scene.setRoot(gameplay);
+    }
+
+    static void startGameplay(GameState state, GamePlayViewPort view) {
+        TurnActions actions = createTurnActions(state);
+        new GamePlayController(actions, view).initialize();
+    }
+
+    private static TurnActions createTurnActions(GameState state) {
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile);
+        return new TurnEngine(
+                state, discardPile, resolver,
+                Map.of(CardType.SKIP, new SkipEffect())
+        );
+    }
+
+    static void startGame(
+            String playerCountText,
+            Consumer<GameState> openGameplay,
+            Consumer<String> showError
+    ) {
+        GameState state;
+        try {
+            state = new GameSetupController().startGame(playerCountText);
         } catch (IllegalArgumentException exception) {
-            view.showMessage(exception.getMessage());
+            showError.accept(exception.getMessage());
+            return;
         }
+        openGameplay.accept(state);
     }
 
     public static void main(String[] args) {
