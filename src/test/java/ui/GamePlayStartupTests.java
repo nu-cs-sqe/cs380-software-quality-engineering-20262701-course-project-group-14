@@ -99,4 +99,23 @@ public class GamePlayStartupTests {
             throw new AssertionError("No Exploding Kitten is drawn in these scenarios.");
         }
     }
+
+    @Test
+    public void StartGameplay_DrawEventRunsRealTurnAndRefreshesView() {
+        GameState state = fixedGame();
+        Player first = state.getPlayers().get(0);
+        RecordingView view = new RecordingView();
+        MainApp.startGameplay(state, view);
+
+        view.draw.run();
+
+        assertEquals(9, first.getHand().size());
+        assertEquals(CardType.ATTACK, first.getHand().get(8).getType());
+        assertSame(state.getPlayers().get(1), state.getCurrentPlayer());
+        assertEquals("Player 2", view.snapshot.getCurrentPlayerName());
+        assertEquals(8, view.snapshot.getCurrentPlayerHand().size());
+        assertEquals(1, view.snapshot.getDeckSize());
+        assertEquals(0, view.snapshot.getDiscardPileSize());
+        assertEquals("draw.normal-card", view.message);
+    }
 }

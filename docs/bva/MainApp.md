@@ -18,7 +18,7 @@
 
 ### NAV-04 — Draw through the view
 
-- Implemented: :x:
+- Implemented: :white_check_mark:
 - State: A session has been initialized using the fixed state from NAV-03.
 - Input: Trigger the view's draw event.
 - Expected: Player 1 receives ATTACK and holds 9 cards. Player 2 becomes current. The view shows Player 2's 8 cards, one remaining deck card and an empty discard pile.
