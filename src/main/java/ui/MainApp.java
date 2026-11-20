@@ -14,6 +14,8 @@ import java.util.function.Consumer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import domain.CardType;
+import domain.SkipEffect;
 
 public final class MainApp extends Application {
     @Override
@@ -54,7 +56,10 @@ public final class MainApp extends Application {
     private static TurnActions createTurnActions(GameState state) {
         DiscardPile discardPile = new DiscardPile();
         ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile);
-        return new TurnEngine(state, discardPile, resolver, Map.of());
+        return new TurnEngine(
+                state, discardPile, resolver,
+                Map.of(CardType.SKIP, new SkipEffect())
+        );
     }
 
     static void startGame(

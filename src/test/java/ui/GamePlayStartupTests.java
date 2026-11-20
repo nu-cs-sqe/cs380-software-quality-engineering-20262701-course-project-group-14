@@ -118,4 +118,27 @@ public class GamePlayStartupTests {
         assertEquals(0, view.snapshot.getDiscardPileSize());
         assertEquals("draw.normal-card", view.message);
     }
+
+    @Test
+    public void StartGameplay_SkipEventRunsRealEffectWithoutDrawing() {
+        GameState state = fixedGame();
+        Player first = state.getPlayers().get(0);
+        List<Card> originalHand = List.copyOf(first.getHand());
+        RecordingView view = new RecordingView();
+        MainApp.startGameplay(state, view);
+
+        view.play.accept(0);
+
+        assertEquals(7, first.getHand().size());
+        assertEquals(originalHand.subList(1, 8), first.getHand());
+        assertSame(state.getPlayers().get(1), state.getCurrentPlayer());
+        assertEquals("Player 2", view.snapshot.getCurrentPlayerName());
+        assertEquals(8, view.snapshot.getCurrentPlayerHand().size());
+        assertEquals(2, view.snapshot.getDeckSize());
+        assertEquals(1, view.snapshot.getDiscardPileSize());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, view.snapshot.getPhase());
+        assertSame(CardType.ATTACK, state.getDeck().drawCard().getType());
+        assertSame(CardType.SHUFFLE, state.getDeck().drawCard().getType());
+    }
+
 }

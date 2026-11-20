@@ -25,7 +25,7 @@
 
 ### NAV-05 — Play Skip through the view
 
-- Implemented: :x:
+- Implemented: :white_check_mark:
 - State: The fixed session is initialized, and Player 1 has SKIP at index 0.
 - Input: Trigger the view's play event with index 0.
 - Expected: Player 1 retains the other 7 cards, one card enters the discard pile, and Player 2 becomes current. Both deck cards remain in their original order.
