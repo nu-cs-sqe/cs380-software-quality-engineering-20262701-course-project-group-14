@@ -141,4 +141,14 @@ public class GamePlayStartupTests {
         assertSame(CardType.SHUFFLE, state.getDeck().drawCard().getType());
     }
 
+    @Test
+    public void StartGameplay_NullStateIsRejected() {
+        RecordingView view = new RecordingView();
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> MainApp.startGameplay(null, view));
+
+        assertEquals("Game state must not be null.", exception.getMessage());
+    }
+
 }

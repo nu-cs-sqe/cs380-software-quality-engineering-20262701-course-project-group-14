@@ -32,7 +32,7 @@
 
 ### NAV-06 — Reject a null state
 
-- Implemented: :x:
+- Implemented: :white_check_mark:
 - State: A valid recording view exists.
 - Input: state = null.
 - Expected: Throws NullPointerException with "Game state must not be null.".
