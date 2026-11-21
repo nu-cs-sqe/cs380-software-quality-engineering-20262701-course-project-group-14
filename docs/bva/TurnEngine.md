@@ -111,7 +111,7 @@ Expected result:
 - Expected: Current player changes 1 -> 2 -> 1; each hand grows to two;
   each player receives the expected card; deck and discard sizes are zero;
   phase remains ACTIONS_ALLOWED.
-- Implemented: :x:
+- Implemented: :white_check_mark:
 
 ### F2-04 — Empty-deck integration (IT-02)
 
