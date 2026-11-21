@@ -181,3 +181,24 @@ Tests provide hand-written adapters for those two interfaces.
 - [x] Confirm that `GameSnapshot` requires at least one living player.
 - [x] Confirm that `CardEffect.canPlay(...)` cannot change game state.
 - [x] Confirm that only `TurnEngine` advances the current player.
+
+## Attack and Turn Debt
+
+`EffectOutcome` distinguishes ordinary end-of-turn effects from Attack by
+returning a `TurnDirective`.
+
+- `CONTINUE`: the current turn continues.
+- `END_TURN`: complete one current turn.
+- `ATTACK_NEXT_PLAYER`: immediately transfer play to the next living player
+  and assign Attack turn debt.
+
+`TurnEngine` privately owns the remaining-turn count and whether that count
+came from an Attack. `GameState` continues to own only player order.
+
+A normal Attack assigns two turns to the next living player. If a player who
+is already resolving Attack turns plays another Attack, all remaining turns
+are transferred and two additional turns are added.
+
+Drawing, Skip, and a successful Defuse each complete exactly one Attack turn.
+Player elimination clears that player's remaining Attack turns. Only
+`TurnEngine` calls `advanceCurrentPlayer()`.
