@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.List;
 import java.util.Objects;
 
 public final class AttackEffect implements CardEffect {
@@ -13,8 +14,9 @@ public final class AttackEffect implements CardEffect {
 
     @Override
     public EffectOutcome play(Player player, Deck deck) {
-        throw new UnsupportedOperationException(
-                "Attack play is not implemented yet."
+        return new EffectOutcome(
+                TurnDirective.ATTACK_NEXT_PLAYER,
+                List.of()
         );
     }
 }

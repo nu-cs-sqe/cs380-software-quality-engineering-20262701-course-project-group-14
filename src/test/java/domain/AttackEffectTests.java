@@ -41,4 +41,21 @@ public class AttackEffectTests {
 
         assertEquals("Deck must not be null.", exception.getMessage());
     }
+
+    @Test
+    public void Play_WithValidPlayerAndDeck_ReturnsAttackOutcome() {
+        AttackEffect effect = new AttackEffect();
+
+        EffectOutcome outcome = effect.play(
+                new Player("Player 1"),
+                new Deck()
+        );
+
+        assertEquals(
+                TurnDirective.ATTACK_NEXT_PLAYER,
+                outcome.getTurnDirective()
+        );
+        assertTrue(outcome.endsTurn());
+        assertEquals(List.of(), outcome.getRevealedCards());
+    }
 }
