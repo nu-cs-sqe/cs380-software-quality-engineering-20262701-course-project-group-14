@@ -461,7 +461,7 @@ public class GamePlayControllerTests {
         @Override
         public void showFutureCards(List<CardType> cards) {
             futureCardsCalls++;
-            futureCards = cards;
+            futureCards = List.copyOf(cards);
         }
 
         @Override
