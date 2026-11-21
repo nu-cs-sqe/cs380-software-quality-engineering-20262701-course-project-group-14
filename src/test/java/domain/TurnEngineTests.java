@@ -881,4 +881,39 @@ public class TurnEngineTests {
         assertSame(first, state.getCurrentPlayer());
         assertEquals(2, discardPile.size());
     }
+
+    @Test
+    public void PlaySkip_DuringAttack_ConsumesOneAttackTurn() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        second.addCard(new Card(CardType.SKIP));
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(new Card(CardType.SHUFFLE)));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(
+                        CardType.ATTACK, new AttackEffect(),
+                        CardType.SKIP, new SkipEffect()
+                )
+        );
+
+        engine.playCard(0);
+        engine.playCard(0);
+
+        assertSame(second, state.getCurrentPlayer());
+        assertEquals(2, discardPile.size());
+
+        engine.draw();
+
+        assertSame(third, state.getCurrentPlayer());
+    }
 }
