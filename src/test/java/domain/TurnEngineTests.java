@@ -836,4 +836,49 @@ public class TurnEngineTests {
         assertSame(first, state.getCurrentPlayer());
         assertEquals(2, discardPile.size());
     }
+
+    @Test
+    public void PlayAttack_AfterOneAttackTurn_TransfersThreeTurns() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        second.addCard(new Card(CardType.ATTACK));
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(
+                new Card(CardType.SKIP),
+                new Card(CardType.SHUFFLE),
+                new Card(CardType.FAVOR),
+                new Card(CardType.NOPE)
+        ));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        engine.playCard(0);
+        engine.draw();
+
+        assertSame(second, state.getCurrentPlayer());
+
+        engine.playCard(0);
+
+        assertSame(third, state.getCurrentPlayer());
+        for (int turn = 0; turn < 2; turn++) {
+            engine.draw();
+            assertSame(third, state.getCurrentPlayer());
+        }
+
+        engine.draw();
+
+        assertSame(first, state.getCurrentPlayer());
+        assertEquals(2, discardPile.size());
+    }
 }
