@@ -121,4 +121,4 @@ Expected result:
 - Action: Attempt to draw.
 - Expected: EMPTY_DECK with no drawn card; both hands, current player,
   deck, discard pile and phase remain unchanged.
-- Implemented: :x:
+- Implemented: :white_check_mark:

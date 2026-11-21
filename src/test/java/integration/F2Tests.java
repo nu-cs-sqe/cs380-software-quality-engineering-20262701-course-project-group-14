@@ -189,4 +189,36 @@ public class F2Tests {
         deck.addCards(cards);
         return deck;
     }
+
+    @Test
+    public void F2_04_DrawFromEmptyDeck_PreservesIntegratedState() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        first.addCard(new Card(CardType.DEFUSE));
+        second.addCard(new Card(CardType.DEFUSE));
+        List<Card> firstHand = List.copyOf(first.getHand());
+        List<Card> secondHand = List.copyOf(second.getHand());
+        Deck deck = fixedDeck(List.of());
+        GameState state = new GameState(List.of(first, second), deck);
+        DiscardPile discard = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state, discard, new ExplodingKittenResolver(discard), Map.of());
+
+        DrawResult result = engine.draw();
+
+        assertEquals(DrawStatus.EMPTY_DECK, result.getStatus());
+        assertEquals(Optional.empty(), result.getDrawnCardType());
+        assertEquals(firstHand, first.getHand());
+        assertEquals(secondHand, second.getHand());
+        assertSame(first, state.getCurrentPlayer());
+        assertEquals(0, deck.size());
+        assertEquals(0, discard.size());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertEquals("Player 1", engine.getSnapshot().getCurrentPlayerName());
+        assertEquals(List.of(CardType.DEFUSE),
+                engine.getSnapshot().getCurrentPlayerHand());
+        assertEquals(2, engine.getSnapshot().getAlivePlayerCount());
+        assertEquals(0, engine.getSnapshot().getDeckSize());
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+    }
 }
