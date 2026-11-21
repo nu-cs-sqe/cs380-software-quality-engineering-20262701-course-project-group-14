@@ -30,7 +30,7 @@
 
 | ID | State | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| EO-12 | No outcome exists. | `ATTACK_NEXT_PLAYER`, `[]` | Creates an Attack outcome that ends the turn and reveals no cards. | :x: |
+| EO-12 | No outcome exists. | `ATTACK_NEXT_PLAYER`, `[]` | Creates an Attack outcome that ends the turn and reveals no cards. | :white_check_mark: |
 | EO-13 | No outcome exists. | `directive = null`, `[]` | Throws `NullPointerException` with `"Turn directive must not be null."`. | :x: |
 
 ## Method under test: `getTurnDirective()`
