@@ -116,7 +116,7 @@ public final class TurnEngine implements TurnActions {
             pendingKitten = drawnKitten;
             return DrawResult.defuseRequired();
         }
-        state.advanceCurrentPlayer();
+        advanceAfterElimination();
         return DrawResult.playerEliminated();
     }
 
@@ -170,5 +170,11 @@ public final class TurnEngine implements TurnActions {
         state.advanceCurrentPlayer();
         remainingTurns = turnsForNextPlayer;
         attackTurnsActive = true;
+    }
+
+    private void advanceAfterElimination() {
+        remainingTurns = 1;
+        attackTurnsActive = false;
+        state.advanceCurrentPlayer();
     }
 }

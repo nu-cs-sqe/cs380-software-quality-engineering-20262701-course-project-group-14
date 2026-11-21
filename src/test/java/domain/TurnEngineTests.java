@@ -986,4 +986,52 @@ public class TurnEngineTests {
 
         assertSame(third, state.getCurrentPlayer());
     }
+
+    @Test
+    public void DrawKitten_DuringAttack_ClearsEliminatedPlayersTurnDebt() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        Deck deck = createEmptyDeck();
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        deck.addCards(List.of(
+                kitten,
+                new Card(CardType.SHUFFLE)
+        ));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile) {
+                    @Override
+                    public ExplosionOutcome begin(
+                            Player player,
+                            Card drawnKitten
+                    ) {
+                        assertSame(second, player);
+                        assertSame(kitten, drawnKitten);
+                        player.eliminate();
+                        return ExplosionOutcome.PLAYER_ELIMINATED;
+                    }
+                };
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                resolver,
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        engine.playCard(0);
+        DrawResult elimination = engine.draw();
+
+        assertEquals(DrawStatus.PLAYER_ELIMINATED, elimination.getStatus());
+        assertSame(third, state.getCurrentPlayer());
+
+        engine.draw();
+
+        assertSame(first, state.getCurrentPlayer());
+    }
 }
