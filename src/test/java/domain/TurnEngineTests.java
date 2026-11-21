@@ -761,4 +761,38 @@ public class TurnEngineTests {
         assertEquals(List.of(defuse), firstPlayer.getHand());
         assertEquals(0, deck.size());
     }
+
+    @Test
+    public void PlayAttack_AssignsTwoTurnsToNextPlayer() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        first.addCard(new Card(CardType.ATTACK));
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(
+                new Card(CardType.SKIP),
+                new Card(CardType.SHUFFLE)
+        ));
+        GameState state = new GameState(List.of(first, second), deck);
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.TURN_ENDED, result.getStatus());
+        assertSame(second, state.getCurrentPlayer());
+        assertEquals(1, discardPile.size());
+
+        engine.draw();
+
+        assertSame(second, state.getCurrentPlayer());
+
+        engine.draw();
+
+        assertSame(first, state.getCurrentPlayer());
+    }
 }
