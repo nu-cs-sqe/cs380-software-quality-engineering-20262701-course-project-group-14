@@ -27,6 +27,13 @@
 **Planning and Progress Tracking**:
 1. [80% done] Xiaoyi Wang: Implemented and tested TurnEngine and Skip, and connected Game Setup to the gameplay screen. Full-turn integration is pending. (PRs #28–#30)
 
+# Week 8 (11/16/2026-11/22/2026)
+
+**Planning and Progress Tracking**:
+1. [not started] Xiaoyi Wang: Complete gameplay integration, configure JaCoCo/PIT, document the i18n plan, and align weekly reporting (#36).
+2. [not started] Sifan Liu: Complete deterministic Deck support, fixed games, static analysis, instructor-requested Deck refactoring, and See the Future (#38).
+3. [not started] Qingyang Xu: Complete Kitten/Defuse resolution, elimination integration, instructor-requested dealer refactoring, and the integration testing plan (#37).
+
 # One section per week until the last week of class (the week before the Finals week)
 
 
