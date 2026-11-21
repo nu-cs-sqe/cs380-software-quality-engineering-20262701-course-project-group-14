@@ -70,4 +70,16 @@ public class AttackEffectTests {
 
         assertEquals("Player must not be null.", exception.getMessage());
     }
+
+    @Test
+    public void Play_WithNullDeck_ThrowsNullPointerException() {
+        AttackEffect effect = new AttackEffect();
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> effect.play(new Player("Player 1"), null)
+        );
+
+        assertEquals("Deck must not be null.", exception.getMessage());
+    }
 }

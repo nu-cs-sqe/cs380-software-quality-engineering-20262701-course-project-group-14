@@ -14,4 +14,4 @@
 |---|---|---|---|---|
 | AE-04 | A valid player and deck exist. | Non-null player and deck | Returns an outcome with `ATTACK_NEXT_PLAYER`, ends the turn and reveals no cards. | :white_check_mark: |
 | AE-05 | A deck exists. | `player = null` | Throws `NullPointerException` with `"Player must not be null."`. | :white_check_mark: |
-| AE-06 | A player exists. | `deck = null` | Throws `NullPointerException` with `"Deck must not be null."`. | :x: |
+| AE-06 | A player exists. | `deck = null` | Throws `NullPointerException` with `"Deck must not be null."`. | :white_check_mark: |
