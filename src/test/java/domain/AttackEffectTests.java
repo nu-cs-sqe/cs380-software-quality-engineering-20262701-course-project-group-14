@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.Objects;
+
 
 public class AttackEffectTests {
 
@@ -28,5 +28,17 @@ public class AttackEffectTests {
         );
 
         assertEquals("Player must not be null.", exception.getMessage());
+    }
+
+    @Test
+    public void CanPlay_WithNullDeck_ThrowsNullPointerException() {
+        AttackEffect effect = new AttackEffect();
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> effect.canPlay(new Player("Player 1"), null)
+        );
+
+        assertEquals("Deck must not be null.", exception.getMessage());
     }
 }
