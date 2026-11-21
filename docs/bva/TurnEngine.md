@@ -101,4 +101,24 @@ Expected result:
 - Player 2's hand stays unchanged and Player 2 becomes current.
 - Deck order and size stay unchanged.
 - Phase remains ACTIONS_ALLOWED.
-```
+
+### F2-03 — Consecutive ordinary turns (IT-05)
+
+- Methods under test: TurnEngine.draw(), getSnapshot().
+- State: Two living players each hold one Defuse; Player 1 is current;
+  deck order is [ATTACK, SHUFFLE]; shared discard pile is empty.
+- Action: Draw once as Player 1, then once as Player 2.
+- Expected: Current player changes 1 -> 2 -> 1; each hand grows to two;
+  each player receives the expected card; deck and discard sizes are zero;
+  phase remains ACTIONS_ALLOWED.
+- Implemented: :x:
+
+### F2-04 — Empty-deck integration (IT-02)
+
+- Methods under test: TurnEngine.draw(), getSnapshot().
+- State: Two living players each hold one Defuse; Player 1 is current;
+  deck and discard pile are empty; phase is ACTIONS_ALLOWED.
+- Action: Attempt to draw.
+- Expected: EMPTY_DECK with no drawn card; both hands, current player,
+  deck, discard pile and phase remain unchanged.
+- Implemented: :x:
