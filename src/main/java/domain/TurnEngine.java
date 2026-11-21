@@ -12,6 +12,7 @@ public final class TurnEngine implements TurnActions {
     private final Map<CardType, CardEffect> effects;
     private Card pendingKitten;
     private int remainingTurns = 1;
+    private boolean attackTurnsActive;
 
     public TurnEngine(
             GameState state,
@@ -158,11 +159,16 @@ public final class TurnEngine implements TurnActions {
         if (remainingTurns == 0) {
             state.advanceCurrentPlayer();
             remainingTurns = 1;
+            attackTurnsActive = false;
         }
     }
 
     private void attackNextPlayer() {
+        int turnsForNextPlayer = attackTurnsActive
+                ? remainingTurns + 2
+                : 2;
         state.advanceCurrentPlayer();
-        remainingTurns = 2;
+        remainingTurns = turnsForNextPlayer;
+        attackTurnsActive = true;
     }
 }
