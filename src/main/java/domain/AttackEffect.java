@@ -14,6 +14,7 @@ public final class AttackEffect implements CardEffect {
 
     @Override
     public EffectOutcome play(Player player, Deck deck) {
+        Objects.requireNonNull(player, "Player must not be null.");
         return new EffectOutcome(
                 TurnDirective.ATTACK_NEXT_PLAYER,
                 List.of()

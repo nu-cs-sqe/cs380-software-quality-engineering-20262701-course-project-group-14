@@ -58,4 +58,16 @@ public class AttackEffectTests {
         assertTrue(outcome.endsTurn());
         assertEquals(List.of(), outcome.getRevealedCards());
     }
+
+    @Test
+    public void Play_WithNullPlayer_ThrowsNullPointerException() {
+        AttackEffect effect = new AttackEffect();
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> effect.play(null, new Deck())
+        );
+
+        assertEquals("Player must not be null.", exception.getMessage());
+    }
 }
