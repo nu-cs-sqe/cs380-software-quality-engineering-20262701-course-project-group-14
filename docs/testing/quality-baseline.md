@@ -3,7 +3,7 @@
 ## Tested Revision
 
 - Branch: `build/week8-quality-reports`
-- Source commit: `8711c28`
+- Source commit: `51531ad`
 - Commands:
     - `./gradlew test jacocoTestReport pitest`
 - Tool versions:
@@ -13,7 +13,7 @@
     - JaCoCo 0.8.12
     - PIT 1.15.8
     - PIT JUnit 5 plugin 1.2.1
-- Test result: 155 tests passed; 0 failed, 0 errors, and 0 skipped.
+- Test result: 156 tests passed; 0 failed, 0 errors, and 0 skipped.
 
 ## JaCoCo
 
@@ -60,35 +60,28 @@ The complete report remains available so that the exclusions do not hide unteste
     - `AdvanceResult`
     - `ExplosionOutcome`
 - Generated: 129
-- Killed: 125
-- Survived: 4
+- Killed: 126
+- Survived: 3
 - No coverage: 0
 - Timed out: 0
 - Errors: 0
-- Mutation coverage: 97%
-- Test strength: 97%
+- Mutation coverage: 98%
+- Test strength: 98%
 - Mutated-class line coverage: 258/261 (99%)
 
 This initial scope is not a claim of final course-wide compliance.
 
 ### Remaining Findings
 
-1. `GameSnapshot.getDiscardPileSize()` at line 99
-    - Mutation: replaced the returned value with `0`
-    - Owner: Xiaoyi Wang
-    - Next action: add a BVA/TDD case using a non-zero discard-pile size.
-
-2. `StartingHandDealer.deal()` at line 10
+1.`StartingHandDealer.deal()` at line 10
     - Mutation: changed the insufficient-deck conditional boundary
     - Owner: Qingyang Xu
     - Next action: test a deck containing exactly the required number of cards.
-
-3. `GameSetupController.startGame()` at line 37
+2.`GameSetupController.startGame()` at line 37
     - Mutation: removed the first call to `Deck.shuffle()`
     - Owner: Xiaoyi Wang / team design decision
     - Next action: discuss a deterministic or call-observable shuffle seam. Do not use a probabilistic test.
-
-4. `GameSetupController.startGame()` at line 47
+3.`GameSetupController.startGame()` at line 47
     - Mutation: removed the final call to `Deck.shuffle()`
     - Owner: Xiaoyi Wang / team design decision
     - Next action: use the same approved shuffle seam or document the limitation following instructor guidance.
