@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Existing JUnit scenario names use PascalCase for readability. -->
+    <suppress files="[/\\]src[/\\]test[/\\]java[/\\].*" checks="MethodName"/>
+
+    <!-- Low-level pixel drawing primitives keep coordinates and colors together. -->
+    <suppress files="[/\\]src[/\\]main[/\\]java[/\\]ui[/\\](PixelArt|BackgroundLayer|CardCatalog|GameSetupView|TavernBackground)\.java"
+              checks="ParameterNumber"/>
+
+    <!-- GameSnapshot is an immutable transfer object assembled from six values. -->
+    <suppress files="[/\\]src[/\\]main[/\\]java[/\\]domain[/\\]GameSnapshot\.java"
+              checks="ParameterNumber"/>
+</suppressions>
