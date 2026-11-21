@@ -42,6 +42,7 @@
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GSP-18 | A snapshot was created with discard-pile size `0`. | None | Returns `0`. | implemented in GSP-01 |
+| GSP-23 | A snapshot was created with discard-pile size `3`. | None | Returns `3`. | :x: |
 
 ## Method under test: `getAlivePlayerCount()`
 
