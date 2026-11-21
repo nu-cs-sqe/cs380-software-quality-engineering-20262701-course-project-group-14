@@ -119,4 +119,17 @@ public class EffectOutcomeTests {
         assertEquals(List.of(), outcome.getRevealedCards());
     }
 
+    @Test
+    public void Constructor_WithNullDirective_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new EffectOutcome(null, List.of())
+        );
+
+        assertEquals(
+                "Turn directive must not be null.",
+                exception.getMessage()
+        );
+    }
+
 }

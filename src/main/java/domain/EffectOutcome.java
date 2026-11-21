@@ -20,7 +20,10 @@ public final class EffectOutcome {
             TurnDirective turnDirective,
             List<CardType> revealedCards
     ) {
-        this.turnDirective = turnDirective;
+        this.turnDirective = Objects.requireNonNull(
+                turnDirective,
+                "Turn directive must not be null."
+        );
         List<CardType> checkedCards = Objects.requireNonNull(
                 revealedCards,
                 "Revealed cards must not be null."
