@@ -30,7 +30,7 @@
 # Week 8 (11/16/2026-11/22/2026)
 
 **Planning and Progress Tracking**:
-1. [not started] Xiaoyi Wang: Complete gameplay integration, configure JaCoCo/PIT, document the i18n plan, and align weekly reporting (#36).
+1. [in review] Xiaoyi Wang: Submitted gameplay wiring and normal-turn integration tests (#33, #34, #35), the JaCoCo/PIT baseline (#42), and the i18n plan (#39). Final integration with the real Deck and Resolver carries over to Week 9. Tracked in #36.
 2. [not started] Sifan Liu: Complete deterministic Deck support, fixed games, static analysis, instructor-requested Deck refactoring, and See the Future (#38).
 3. [not started] Qingyang Xu: Complete Kitten/Defuse resolution, elimination integration, instructor-requested dealer refactoring, and the integration testing plan (#37).
 
