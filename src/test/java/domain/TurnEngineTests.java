@@ -916,4 +916,74 @@ public class TurnEngineTests {
 
         assertSame(third, state.getCurrentPlayer());
     }
+
+    @Test
+    public void ResolveDefuse_DuringAttack_ConsumesOneAttackTurn() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        second.addCard(new Card(CardType.DEFUSE));
+        Deck deck = createEmptyDeck();
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        deck.addCards(List.of(
+                kitten,
+                new Card(CardType.SHUFFLE)
+        ));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile) {
+                    @Override
+                    public ExplosionOutcome begin(
+                            Player player,
+                            Card drawnKitten
+                    ) {
+                        assertSame(second, player);
+                        assertSame(kitten, drawnKitten);
+                        return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+                    }
+
+                    @Override
+                    public DefuseResult defuse(
+                            Player player,
+                            Card drawnKitten,
+                            Deck currentDeck,
+                            int position
+                    ) {
+                        assertSame(second, player);
+                        assertSame(kitten, drawnKitten);
+                        assertSame(deck, currentDeck);
+                        assertEquals(0, position);
+                        return DefuseResult.DEFUSED;
+                    }
+                };
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                resolver,
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        engine.playCard(0);
+        DrawResult drawResult = engine.draw();
+
+        assertEquals(
+                DrawStatus.DEFUSE_POSITION_REQUIRED,
+                drawResult.getStatus()
+        );
+        assertSame(second, state.getCurrentPlayer());
+
+        DefuseResult defuseResult = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, defuseResult);
+        assertSame(second, state.getCurrentPlayer());
+
+        engine.draw();
+
+        assertSame(third, state.getCurrentPlayer());
+    }
 }

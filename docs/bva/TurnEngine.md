@@ -39,7 +39,7 @@
 | TE-30 | Player 2 has two Attack turns remaining and immediately plays Attack. | Valid Attack hand index | Player 3 becomes current and receives four turns. | :white_check_mark: |
 | TE-31 | Player 2 completes one of two Attack turns, then plays Attack. | Valid Attack hand index | Player 3 becomes current and receives three turns. | :white_check_mark: |
 | TE-32 | Player 2 has two Attack turns and plays Skip. | Valid Skip hand index | Skip is discarded; Player 2 remains current with one turn remaining. | :white_check_mark: |
-| TE-33 | Player 2 has two Attack turns, draws a Kitten and successfully Defuses it. | Valid Defuse position | Player 2 remains current with one turn remaining. | :x: |
+| TE-33 | Player 2 has two Attack turns, draws a Kitten and successfully Defuses it. | Valid Defuse position | Player 2 remains current with one turn remaining. | :white_check_mark: |
 | TE-34 | Player 2 has Attack turns remaining and is eliminated by a Kitten. | Draw | Player 3 becomes current with one ordinary turn; Player 2's remaining Attack debt is cleared. | :x: |
 
 ## Method under test: `resolveDefuse(int position)`

@@ -84,7 +84,7 @@ public final class TurnEngine implements TurnActions {
                 state.getCurrentPlayer(), pendingKitten, state.getDeck(), position);
         if (result == DefuseResult.DEFUSED) {
             pendingKitten = null;
-            state.advanceCurrentPlayer();
+            finishOneTurn();
         }
         return result;
     }
