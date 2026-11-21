@@ -1,0 +1,33 @@
+name: Quality Reports
+
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  reports:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "11"
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Tests, checks and coverage
+        run: bash ./gradlew check test jacocoTestReport
+      - name: Mutation testing on manual runs
+        if: github.event_name == 'workflow_dispatch'
+        run: bash ./gradlew pitest
+      - name: Upload quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: |
+            build/reports/jacoco/
+            build/reports/pitest/
+            build/reports/tests/
