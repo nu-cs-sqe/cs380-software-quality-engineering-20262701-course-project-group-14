@@ -22,6 +22,11 @@
 3. [TODO] Xiaoyi Wang: Turn contracts, TurnEngine, and Skip (#22) (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/24)
 4. [60% done] Qingyang Xu: DiscardPile, Player elimination, and GameState turn order are done; ExplodingKittenResolver and DefuseDialog are carried over to Week 7 (#23) (https://github.com/nu-cs-sqe/cs380-software-quality-engineering-20262701-course-project-group-14/pull/25)
 
+# Week 7 (11/09/2026-11/15/2026)
+
+**Planning and Progress Tracking**:
+1. [80% done] Xiaoyi Wang: Implemented and tested TurnEngine and Skip, and connected Game Setup to the gameplay screen. Full-turn integration is pending. (PRs #28–#30)
+
 # One section per week until the last week of class (the week before the Finals week)
 
 
