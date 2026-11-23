@@ -35,6 +35,11 @@ public final class PlayerSummary {
                 name,
                 "Player name must not be null."
         );
+        if (checkedName.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Player name must not be blank."
+            );
+        }
         return new PlayerSummary(
                 playerIndex,
                 checkedName,
