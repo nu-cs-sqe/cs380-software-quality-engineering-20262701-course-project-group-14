@@ -100,4 +100,13 @@ public class PlayCommandTests {
         assertEquals(1, command.getSecondHandIndex().orElseThrow());
         assertEquals(0, command.getTargetPlayerIndex().orElseThrow());
     }
+
+    @Test
+    public void Pair_WithDuplicateIndices_PreservesCommandForEngineValidation() {
+        PlayCommand command = PlayCommand.pair(1, 1, 0);
+
+        assertEquals(1, command.getFirstHandIndex());
+        assertEquals(1, command.getSecondHandIndex().orElseThrow());
+        assertEquals(0, command.getTargetPlayerIndex().orElseThrow());
+    }
 }
