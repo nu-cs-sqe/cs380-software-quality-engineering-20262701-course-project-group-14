@@ -69,4 +69,17 @@ public class PlayCommandTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Targeted_WithNegativeTarget_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayCommand.targeted(0, -1)
+        );
+
+        assertEquals(
+                "Target player index must not be negative.",
+                exception.getMessage()
+        );
+    }
 }
