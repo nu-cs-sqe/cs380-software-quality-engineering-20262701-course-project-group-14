@@ -6,7 +6,7 @@
 |---|---|---|---|---|
 | PS-01 | No summary exists. | `playerIndex = 0`, `name = "Player 1"`, `handSize = 0`, `eliminated = false` | Creates an active-player summary preserving all values. | :white_check_mark: |
 | PS-02 | No summary exists. | `playerIndex = 4`, `name = "Player 5"`, `handSize = 8`, `eliminated = true` | Creates an eliminated-player summary preserving all values. | :white_check_mark: |
-| PS-03 | No summary exists. | `playerIndex = -1`, otherwise valid values | Throws `IllegalArgumentException` with `"Player index must not be negative."`; no summary is created. | :x: |
+| PS-03 | No summary exists. | `playerIndex = -1`, otherwise valid values | Throws `IllegalArgumentException` with `"Player index must not be negative."`; no summary is created. | :white_check_mark: |
 | PS-04 | No summary exists. | `name = null`, otherwise valid values | Throws `NullPointerException` with `"Player name must not be null."`; no summary is created. | :x: |
 | PS-05 | No summary exists. | `name = ""`, otherwise valid values | Throws `IllegalArgumentException` with `"Player name must not be blank."`; no summary is created. | :x: |
 | PS-06 | No summary exists. | `name = "   "`, otherwise valid values | Throws `IllegalArgumentException` with `"Player name must not be blank."`; no summary is created. | :x: |

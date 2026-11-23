@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlayerSummaryTests {
@@ -36,5 +37,18 @@ public class PlayerSummaryTests {
         assertEquals("Player 5", summary.getName());
         assertEquals(8, summary.getHandSize());
         assertTrue(summary.isEliminated());
+    }
+
+    @Test
+    public void Create_WithNegativePlayerIndex_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayerSummary.create(-1, "Player 1", 0, false)
+        );
+
+        assertEquals(
+                "Player index must not be negative.",
+                exception.getMessage()
+        );
     }
 }

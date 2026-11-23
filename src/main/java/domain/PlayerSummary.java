@@ -24,6 +24,11 @@ public final class PlayerSummary {
             int handSize,
             boolean eliminated
     ) {
+        if (playerIndex < 0) {
+            throw new IllegalArgumentException(
+                    "Player index must not be negative."
+            );
+        }
         return new PlayerSummary(
                 playerIndex,
                 name,
