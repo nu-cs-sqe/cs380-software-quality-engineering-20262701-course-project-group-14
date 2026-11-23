@@ -8,7 +8,7 @@ distinct pair indices, matching card types, and legal targets.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| PC-01 | No command exists. | `handIndex = 0` | Creates a command with first index `0`, no second index, and no target. | :x: |
+| PC-01 | No command exists. | `handIndex = 0` | Creates a command with first index `0`, no second index, and no target. | :white_check_mark: |
 | PC-02 | No command exists. | `handIndex = 4` | Creates a command preserving first index `4`, with no second index and no target. | :x: |
 | PC-03 | No command exists. | `handIndex = -1` | Throws `IllegalArgumentException` with `"Hand index must not be negative."`; no command is created. | :x: |
 
