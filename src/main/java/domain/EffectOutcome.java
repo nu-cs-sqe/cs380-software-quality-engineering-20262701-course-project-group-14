@@ -4,11 +4,26 @@ import java.util.List;
 import java.util.Objects;
 
 public final class EffectOutcome {
-    private final boolean endsTurn;
+    private final TurnDirective turnDirective;
     private final List<CardType> revealedCards;
 
     EffectOutcome(boolean endsTurn, List<CardType> revealedCards) {
-        this.endsTurn = endsTurn;
+        this(
+                endsTurn
+                        ? TurnDirective.END_TURN
+                        : TurnDirective.CONTINUE,
+                revealedCards
+        );
+    }
+
+    EffectOutcome(
+            TurnDirective turnDirective,
+            List<CardType> revealedCards
+    ) {
+        this.turnDirective = Objects.requireNonNull(
+                turnDirective,
+                "Turn directive must not be null."
+        );
         List<CardType> checkedCards = Objects.requireNonNull(
                 revealedCards,
                 "Revealed cards must not be null."
@@ -26,7 +41,11 @@ public final class EffectOutcome {
     }
 
     public boolean endsTurn() {
-        return endsTurn;
+        return turnDirective != TurnDirective.CONTINUE;
+    }
+
+    public TurnDirective getTurnDirective() {
+        return turnDirective;
     }
 
     public List<CardType> getRevealedCards() {

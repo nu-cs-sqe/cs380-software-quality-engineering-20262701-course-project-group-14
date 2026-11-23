@@ -25,3 +25,17 @@
 | EO-09 | An outcome with revealed cards exists. | None | Returns the revealed card types in their original order. | implemented in EO-02 |
 | EO-10 | An outcome without revealed cards exists. | None | Returns an empty list and never returns `null`. | implemented in EO-01 |
 | EO-11 | An outcome with revealed cards exists. | Attempt to modify the returned list. | The modification is rejected with `UnsupportedOperationException`; the outcome remains unchanged. | :white_check_mark: |
+
+## Constructor under test: `EffectOutcome(TurnDirective, List<CardType>)`
+
+| ID | State | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| EO-12 | No outcome exists. | `ATTACK_NEXT_PLAYER`, `[]` | Creates an Attack outcome that ends the turn and reveals no cards. | :white_check_mark: |
+| EO-13 | No outcome exists. | `directive = null`, `[]` | Throws `NullPointerException` with `"Turn directive must not be null."`. | :white_check_mark: |
+
+## Method under test: `getTurnDirective()`
+
+| ID | State | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| EO-14 | An Attack outcome exists. | None | Returns `ATTACK_NEXT_PLAYER`. | implemented in EO-12 |
+

@@ -761,4 +761,277 @@ public class TurnEngineTests {
         assertEquals(List.of(defuse), firstPlayer.getHand());
         assertEquals(0, deck.size());
     }
+
+    @Test
+    public void PlayAttack_AssignsTwoTurnsToNextPlayer() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        first.addCard(new Card(CardType.ATTACK));
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(
+                new Card(CardType.SKIP),
+                new Card(CardType.SHUFFLE)
+        ));
+        GameState state = new GameState(List.of(first, second), deck);
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.TURN_ENDED, result.getStatus());
+        assertSame(second, state.getCurrentPlayer());
+        assertEquals(1, discardPile.size());
+
+        engine.draw();
+
+        assertSame(second, state.getCurrentPlayer());
+
+        engine.draw();
+
+        assertSame(first, state.getCurrentPlayer());
+    }
+
+    @Test
+    public void PlayAttack_WhenAlreadyAttacked_TransfersFourTurns() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        second.addCard(new Card(CardType.ATTACK));
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(
+                new Card(CardType.SKIP),
+                new Card(CardType.SHUFFLE),
+                new Card(CardType.FAVOR),
+                new Card(CardType.NOPE)
+        ));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        engine.playCard(0);
+        engine.playCard(0);
+
+        assertSame(third, state.getCurrentPlayer());
+        for (int turn = 0; turn < 3; turn++) {
+            engine.draw();
+            assertSame(third, state.getCurrentPlayer());
+        }
+
+        engine.draw();
+
+        assertSame(first, state.getCurrentPlayer());
+        assertEquals(2, discardPile.size());
+    }
+
+    @Test
+    public void PlayAttack_AfterOneAttackTurn_TransfersThreeTurns() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        second.addCard(new Card(CardType.ATTACK));
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(
+                new Card(CardType.SKIP),
+                new Card(CardType.SHUFFLE),
+                new Card(CardType.FAVOR),
+                new Card(CardType.NOPE)
+        ));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        engine.playCard(0);
+        engine.draw();
+
+        assertSame(second, state.getCurrentPlayer());
+
+        engine.playCard(0);
+
+        assertSame(third, state.getCurrentPlayer());
+        for (int turn = 0; turn < 2; turn++) {
+            engine.draw();
+            assertSame(third, state.getCurrentPlayer());
+        }
+
+        engine.draw();
+
+        assertSame(first, state.getCurrentPlayer());
+        assertEquals(2, discardPile.size());
+    }
+
+    @Test
+    public void PlaySkip_DuringAttack_ConsumesOneAttackTurn() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        second.addCard(new Card(CardType.SKIP));
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(new Card(CardType.SHUFFLE)));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                new ExplodingKittenResolver(discardPile),
+                Map.of(
+                        CardType.ATTACK, new AttackEffect(),
+                        CardType.SKIP, new SkipEffect()
+                )
+        );
+
+        engine.playCard(0);
+        engine.playCard(0);
+
+        assertSame(second, state.getCurrentPlayer());
+        assertEquals(2, discardPile.size());
+
+        engine.draw();
+
+        assertSame(third, state.getCurrentPlayer());
+    }
+
+    @Test
+    public void ResolveDefuse_DuringAttack_ConsumesOneAttackTurn() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        second.addCard(new Card(CardType.DEFUSE));
+        Deck deck = createEmptyDeck();
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        deck.addCards(List.of(
+                kitten,
+                new Card(CardType.SHUFFLE)
+        ));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile) {
+                    @Override
+                    public ExplosionOutcome begin(
+                            Player player,
+                            Card drawnKitten
+                    ) {
+                        assertSame(second, player);
+                        assertSame(kitten, drawnKitten);
+                        return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+                    }
+
+                    @Override
+                    public DefuseResult defuse(
+                            Player player,
+                            Card drawnKitten,
+                            Deck currentDeck,
+                            int position
+                    ) {
+                        assertSame(second, player);
+                        assertSame(kitten, drawnKitten);
+                        assertSame(deck, currentDeck);
+                        assertEquals(0, position);
+                        return DefuseResult.DEFUSED;
+                    }
+                };
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                resolver,
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        engine.playCard(0);
+        DrawResult drawResult = engine.draw();
+
+        assertEquals(
+                DrawStatus.DEFUSE_POSITION_REQUIRED,
+                drawResult.getStatus()
+        );
+        assertSame(second, state.getCurrentPlayer());
+
+        DefuseResult defuseResult = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, defuseResult);
+        assertSame(second, state.getCurrentPlayer());
+
+        engine.draw();
+
+        assertSame(third, state.getCurrentPlayer());
+    }
+
+    @Test
+    public void DrawKitten_DuringAttack_ClearsEliminatedPlayersTurnDebt() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Player third = new Player("Player 3");
+        first.addCard(new Card(CardType.ATTACK));
+        Deck deck = createEmptyDeck();
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        deck.addCards(List.of(
+                kitten,
+                new Card(CardType.SHUFFLE)
+        ));
+        GameState state = new GameState(
+                List.of(first, second, third),
+                deck
+        );
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver =
+                new ExplodingKittenResolver(discardPile) {
+                    @Override
+                    public ExplosionOutcome begin(
+                            Player player,
+                            Card drawnKitten
+                    ) {
+                        assertSame(second, player);
+                        assertSame(kitten, drawnKitten);
+                        player.eliminate();
+                        return ExplosionOutcome.PLAYER_ELIMINATED;
+                    }
+                };
+        TurnEngine engine = new TurnEngine(
+                state,
+                discardPile,
+                resolver,
+                Map.of(CardType.ATTACK, new AttackEffect())
+        );
+
+        engine.playCard(0);
+        DrawResult elimination = engine.draw();
+
+        assertEquals(DrawStatus.PLAYER_ELIMINATED, elimination.getStatus());
+        assertSame(third, state.getCurrentPlayer());
+
+        engine.draw();
+
+        assertSame(first, state.getCurrentPlayer());
+    }
 }
