@@ -47,4 +47,13 @@ public class PlayCommandTests {
         assertTrue(command.getSecondHandIndex().isEmpty());
         assertEquals(0, command.getTargetPlayerIndex().orElseThrow());
     }
+
+    @Test
+    public void Targeted_WithPositiveIndices_PreservesCardAndTarget() {
+        PlayCommand command = PlayCommand.targeted(3, 2);
+
+        assertEquals(3, command.getFirstHandIndex());
+        assertTrue(command.getSecondHandIndex().isEmpty());
+        assertEquals(2, command.getTargetPlayerIndex().orElseThrow());
+    }
 }

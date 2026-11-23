@@ -17,7 +17,7 @@ distinct pair indices, matching card types, and legal targets.
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | PC-04 | No command exists. | `handIndex = 0`, `targetPlayerIndex = 0` | Creates a command with first index `0`, no second index, and target seat `0`. | :white_check_mark: |
-| PC-05 | No command exists. | `handIndex = 3`, `targetPlayerIndex = 2` | Creates a command preserving first index `3` and target seat `2`, with no second index. | :x: |
+| PC-05 | No command exists. | `handIndex = 3`, `targetPlayerIndex = 2` | Creates a command preserving first index `3` and target seat `2`, with no second index. | :white_check_mark: |
 | PC-06 | No command exists. | `handIndex = -1`, `targetPlayerIndex = 0` | Throws `IllegalArgumentException` with `"Hand index must not be negative."`; no command is created. | :x: |
 | PC-07 | No command exists. | `handIndex = 0`, `targetPlayerIndex = -1` | Throws `IllegalArgumentException` with `"Target player index must not be negative."`; no command is created. | :x: |
 
