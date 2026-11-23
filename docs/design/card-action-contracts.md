@@ -79,8 +79,8 @@ public final class PlayerSummary {
 }
 ```
 
-Player indices and hand sizes cannot be negative. Names cannot be `null`.
-Summaries never expose another player's card types.
+Player indices and hand sizes cannot be negative. Names cannot be `null`,
+empty, or blank. Summaries never expose another player's card types.
 
 ## Game Snapshot
 
