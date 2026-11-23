@@ -40,6 +40,11 @@ public final class PlayerSummary {
                     "Player name must not be blank."
             );
         }
+        if (handSize < 0) {
+            throw new IllegalArgumentException(
+                    "Hand size must not be negative."
+            );
+        }
         return new PlayerSummary(
                 playerIndex,
                 checkedName,

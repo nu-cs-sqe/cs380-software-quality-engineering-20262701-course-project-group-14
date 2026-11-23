@@ -10,7 +10,7 @@
 | PS-04 | No summary exists. | `name = null`, otherwise valid values | Throws `NullPointerException` with `"Player name must not be null."`; no summary is created. | :white_check_mark: |
 | PS-05 | No summary exists. | `name = ""`, otherwise valid values | Throws `IllegalArgumentException` with `"Player name must not be blank."`; no summary is created. | :white_check_mark: |
 | PS-06 | No summary exists. | `name = "   "`, otherwise valid values | Throws `IllegalArgumentException` with `"Player name must not be blank."`; no summary is created. | :white_check_mark: |
-| PS-07 | No summary exists. | `handSize = -1`, otherwise valid values | Throws `IllegalArgumentException` with `"Hand size must not be negative."`; no summary is created. | :x: |
+| PS-07 | No summary exists. | `handSize = -1`, otherwise valid values | Throws `IllegalArgumentException` with `"Hand size must not be negative."`; no summary is created. | :white_check_mark: |
 
 ## Getter coverage
 

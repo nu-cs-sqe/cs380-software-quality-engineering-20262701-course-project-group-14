@@ -90,4 +90,17 @@ public class PlayerSummaryTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Create_WithNegativeHandSize_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayerSummary.create(0, "Player 1", -1, false)
+        );
+
+        assertEquals(
+                "Hand size must not be negative.",
+                exception.getMessage()
+        );
+    }
 }
