@@ -135,4 +135,17 @@ public class PlayCommandTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Pair_WithNegativeTarget_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayCommand.pair(0, 1, -1)
+        );
+
+        assertEquals(
+                "Target player index must not be negative.",
+                exception.getMessage()
+        );
+    }
 }
