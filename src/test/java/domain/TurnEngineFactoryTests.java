@@ -5,8 +5,22 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TurnEngineFactoryTests {
+
+    @Test
+    public void Create_WithNullState_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> TurnEngineFactory.create(null)
+        );
+
+        assertEquals(
+                "Game state must not be null.",
+                exception.getMessage()
+        );
+    }
 
     @Test
     public void Create_WithAttack_RegistersEffectAndAssignsTurnDebt() {
