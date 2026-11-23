@@ -109,4 +109,17 @@ public class PlayCommandTests {
         assertEquals(1, command.getSecondHandIndex().orElseThrow());
         assertEquals(0, command.getTargetPlayerIndex().orElseThrow());
     }
+
+    @Test
+    public void Pair_WithNegativeFirstIndex_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayCommand.pair(-1, 0, 0)
+        );
+
+        assertEquals(
+                "Hand index must not be negative.",
+                exception.getMessage()
+        );
+    }
 }
