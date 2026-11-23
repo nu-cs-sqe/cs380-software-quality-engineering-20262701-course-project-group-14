@@ -77,4 +77,17 @@ public class PlayerSummaryTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Create_WithBlankName_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayerSummary.create(0, "   ", 0, false)
+        );
+
+        assertEquals(
+                "Player name must not be blank.",
+                exception.getMessage()
+        );
+    }
 }
