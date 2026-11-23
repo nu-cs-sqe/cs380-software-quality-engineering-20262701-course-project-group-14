@@ -38,4 +38,13 @@ public class PlayCommandTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Targeted_WithZeroIndices_PreservesCardAndTarget() {
+        PlayCommand command = PlayCommand.targeted(0, 0);
+
+        assertEquals(0, command.getFirstHandIndex());
+        assertTrue(command.getSecondHandIndex().isEmpty());
+        assertEquals(0, command.getTargetPlayerIndex().orElseThrow());
+    }
 }

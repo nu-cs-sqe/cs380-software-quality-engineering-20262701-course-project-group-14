@@ -26,6 +26,18 @@ public final class PlayCommand {
         );
     }
 
+    public static PlayCommand targeted(
+            int handIndex,
+            int targetPlayerIndex
+    ) {
+        requireNonNegativeHandIndex(handIndex);
+        return new PlayCommand(
+                handIndex,
+                OptionalInt.empty(),
+                OptionalInt.of(targetPlayerIndex)
+        );
+    }
+
     public int getFirstHandIndex() {
         return firstHandIndex;
     }
