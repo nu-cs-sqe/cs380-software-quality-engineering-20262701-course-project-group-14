@@ -56,4 +56,17 @@ public class PlayCommandTests {
         assertTrue(command.getSecondHandIndex().isEmpty());
         assertEquals(2, command.getTargetPlayerIndex().orElseThrow());
     }
+
+    @Test
+    public void Targeted_WithNegativeHandIndex_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayCommand.targeted(-1, 0)
+        );
+
+        assertEquals(
+                "Hand index must not be negative.",
+                exception.getMessage()
+        );
+    }
 }
