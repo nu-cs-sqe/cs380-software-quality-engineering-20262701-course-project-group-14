@@ -25,7 +25,7 @@ distinct pair indices, matching card types, and legal targets.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| PC-08 | No command exists. | `firstHandIndex = 0`, `secondHandIndex = 1`, `targetPlayerIndex = 2` | Creates a command preserving both hand indices and target seat `2`. | :x: |
+| PC-08 | No command exists. | `firstHandIndex = 0`, `secondHandIndex = 1`, `targetPlayerIndex = 2` | Creates a command preserving both hand indices and target seat `2`. | :white_check_mark: |
 | PC-09 | No command exists. | `firstHandIndex = 4`, `secondHandIndex = 1`, `targetPlayerIndex = 0` | Preserves the original index order; removal order is a later engine responsibility. | :x: |
 | PC-10 | No command exists. | `firstHandIndex = 1`, `secondHandIndex = 1`, `targetPlayerIndex = 0` | Creates the command; the engine later rejects the duplicate selection atomically. | :x: |
 | PC-11 | No command exists. | `firstHandIndex = -1`, `secondHandIndex = 0`, `targetPlayerIndex = 0` | Throws `IllegalArgumentException` with `"Hand index must not be negative."`; no command is created. | :x: |

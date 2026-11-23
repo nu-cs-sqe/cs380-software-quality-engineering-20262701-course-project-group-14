@@ -82,4 +82,13 @@ public class PlayCommandTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Pair_WithDistinctIndices_PreservesBothCardsAndTarget() {
+        PlayCommand command = PlayCommand.pair(0, 1, 2);
+
+        assertEquals(0, command.getFirstHandIndex());
+        assertEquals(1, command.getSecondHandIndex().orElseThrow());
+        assertEquals(2, command.getTargetPlayerIndex().orElseThrow());
+    }
 }
