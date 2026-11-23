@@ -18,6 +18,7 @@ public final class PlayCommand {
     }
 
     public static PlayCommand single(int handIndex) {
+        requireNonNegativeHandIndex(handIndex);
         return new PlayCommand(
                 handIndex,
                 OptionalInt.empty(),
@@ -35,5 +36,13 @@ public final class PlayCommand {
 
     public OptionalInt getTargetPlayerIndex() {
         return targetPlayerIndex;
+    }
+
+    private static void requireNonNegativeHandIndex(int handIndex) {
+        if (handIndex < 0) {
+            throw new IllegalArgumentException(
+                    "Hand index must not be negative."
+            );
+        }
     }
 }

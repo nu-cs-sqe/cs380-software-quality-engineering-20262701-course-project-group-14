@@ -10,7 +10,7 @@ distinct pair indices, matching card types, and legal targets.
 |---|---|---|---|---|
 | PC-01 | No command exists. | `handIndex = 0` | Creates a command with first index `0`, no second index, and no target. | :white_check_mark: |
 | PC-02 | No command exists. | `handIndex = 4` | Creates a command preserving first index `4`, with no second index and no target. | :white_check_mark: |
-| PC-03 | No command exists. | `handIndex = -1` | Throws `IllegalArgumentException` with `"Hand index must not be negative."`; no command is created. | :x: |
+| PC-03 | No command exists. | `handIndex = -1` | Throws `IllegalArgumentException` with `"Hand index must not be negative."`; no command is created. | :white_check_mark: |
 
 ## Method under test: `targeted(int handIndex, int targetPlayerIndex)`
 

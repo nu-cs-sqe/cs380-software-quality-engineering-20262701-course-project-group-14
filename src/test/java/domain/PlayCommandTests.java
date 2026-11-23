@@ -3,6 +3,7 @@ package domain;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlayCommandTests {
@@ -23,5 +24,18 @@ public class PlayCommandTests {
         assertEquals(4, command.getFirstHandIndex());
         assertTrue(command.getSecondHandIndex().isEmpty());
         assertTrue(command.getTargetPlayerIndex().isEmpty());
+    }
+
+    @Test
+    public void Single_WithNegativeIndex_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayCommand.single(-1)
+        );
+
+        assertEquals(
+                "Hand index must not be negative.",
+                exception.getMessage()
+        );
     }
 }
