@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlayerSummaryTests {
 
@@ -20,5 +21,20 @@ public class PlayerSummaryTests {
         assertEquals("Player 1", summary.getName());
         assertEquals(0, summary.getHandSize());
         assertFalse(summary.isEliminated());
+    }
+
+    @Test
+    public void Create_WithEliminatedPlayer_PreservesSummaryValues() {
+        PlayerSummary summary = PlayerSummary.create(
+                4,
+                "Player 5",
+                8,
+                true
+        );
+
+        assertEquals(4, summary.getPlayerIndex());
+        assertEquals("Player 5", summary.getName());
+        assertEquals(8, summary.getHandSize());
+        assertTrue(summary.isEliminated());
     }
 }
