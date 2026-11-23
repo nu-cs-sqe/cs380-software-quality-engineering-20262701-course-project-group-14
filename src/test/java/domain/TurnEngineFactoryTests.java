@@ -48,6 +48,25 @@ public class TurnEngineFactoryTests {
         assertSame(second, state.getCurrentPlayer());
     }
 
+    @Test
+    public void Create_WithSkip_RegistersEffectAndEndsTurn() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        first.addCard(new Card(CardType.SKIP));
+        GameState state = new GameState(
+                List.of(first, second),
+                emptyDeck()
+        );
+        TurnActions actions = TurnEngineFactory.create(state);
+
+        PlayResult result = actions.playCard(0);
+
+        assertEquals(PlayStatus.TURN_ENDED, result.getStatus());
+        assertEquals(0, first.getHand().size());
+        assertSame(second, state.getCurrentPlayer());
+        assertEquals(1, actions.getSnapshot().getDiscardPileSize());
+    }
+
     private static Deck emptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
