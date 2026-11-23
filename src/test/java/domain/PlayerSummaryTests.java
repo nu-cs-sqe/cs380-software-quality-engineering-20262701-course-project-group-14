@@ -51,4 +51,17 @@ public class PlayerSummaryTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Create_WithNullName_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> PlayerSummary.create(0, null, 0, false)
+        );
+
+        assertEquals(
+                "Player name must not be null.",
+                exception.getMessage()
+        );
+    }
 }

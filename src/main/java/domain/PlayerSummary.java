@@ -1,5 +1,7 @@
 package domain;
 
+import java.util.Objects;
+
 public final class PlayerSummary {
     private final int playerIndex;
     private final String name;
@@ -29,9 +31,13 @@ public final class PlayerSummary {
                     "Player index must not be negative."
             );
         }
+        String checkedName = Objects.requireNonNull(
+                name,
+                "Player name must not be null."
+        );
         return new PlayerSummary(
                 playerIndex,
-                name,
+                checkedName,
                 handSize,
                 eliminated
         );
