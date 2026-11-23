@@ -122,4 +122,17 @@ public class PlayCommandTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void Pair_WithNegativeSecondIndex_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> PlayCommand.pair(0, -1, 0)
+        );
+
+        assertEquals(
+                "Second hand index must not be negative.",
+                exception.getMessage()
+        );
+    }
 }

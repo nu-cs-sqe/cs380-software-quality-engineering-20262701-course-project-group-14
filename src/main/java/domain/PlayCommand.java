@@ -45,6 +45,7 @@ public final class PlayCommand {
             int targetPlayerIndex
     ) {
         requireNonNegativeHandIndex(firstHandIndex);
+        requireNonNegativeSecondHandIndex(secondHandIndex);
         requireNonNegativeTargetPlayerIndex(targetPlayerIndex);
         return new PlayCommand(
                 firstHandIndex,
@@ -79,6 +80,16 @@ public final class PlayCommand {
         if (targetPlayerIndex < 0) {
             throw new IllegalArgumentException(
                     "Target player index must not be negative."
+            );
+        }
+    }
+
+    private static void requireNonNegativeSecondHandIndex(
+            int secondHandIndex
+    ) {
+        if (secondHandIndex < 0) {
+            throw new IllegalArgumentException(
+                    "Second hand index must not be negative."
             );
         }
     }
