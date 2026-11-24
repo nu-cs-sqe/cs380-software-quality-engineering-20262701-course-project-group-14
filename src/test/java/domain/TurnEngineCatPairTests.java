@@ -3,6 +3,8 @@ package domain;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -84,6 +86,34 @@ class TurnEngineCatPairTests {
         assertEquals(List.of(gift), target.getHand());
         assertEquals(0, engine.getSnapshot().getDiscardPileSize());
         assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(1, deck.size());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(deckTop, current.getHand().get(2));
+        assertSame(target, state.getCurrentPlayer());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CardType.class, names = {
+            "TACOCAT", "CATTERMELON", "HAIRY_POTATO_CAT", "BEARD_CAT", "RAINBOW_RALPHING_CAT"
+    })
+    void PlayCard_WithSupportedCatType_UsesSharedPairRule(CardType type) {
+        Card held = new Card(CardType.SKIP);
+        Card leftWithTarget = new Card(CardType.ATTACK);
+        Card transferred = new Card(CardType.FAVOR);
+        Card deckTop = new Card(CardType.SHUFFLE);
+        Player current = playerWith("Player 1", new Card(type), new Card(type), held);
+        Player target = playerWith("Player 2", leftWithTarget, transferred);
+        Deck deck = Deck.fromTopToBottom(List.of(deckTop));
+        GameState state = new GameState(List.of(current, target), deck);
+        TurnEngine engine = engineFor(state, bound -> 1);
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(held, transferred), current.getHand());
+        assertEquals(List.of(leftWithTarget), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
         assertSame(current, state.getCurrentPlayer());
         assertEquals(1, deck.size());
         assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
