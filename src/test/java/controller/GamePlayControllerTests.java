@@ -634,6 +634,22 @@ public class GamePlayControllerTests {
         }
     }
 
+    @Test
+    public void HandleReturnToSetup_WhilePlaying_DoesNotNavigate() {
+        StubActions actions = new StubActions(createSnapshot(7));
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+        controller.setOnReturnToSetup(() -> {
+            throw new AssertionError("An active game must not return to setup.");
+        });
+
+        controller.handleReturnToSetup();
+
+        assertEquals(0, actions.playCardCalls);
+        assertEquals(0, actions.drawCalls);
+        assertEquals(0, view.renderCalls);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
