@@ -447,6 +447,17 @@ public class GamePlayControllerTests {
         assertEquals(List.of(2), view.matchingHandIndices);
     }
 
+    @Test
+    public void HandlePlay_CloseSecondCardChooser_SubmitsNoPlay() {
+        PairActions actions = new PairActions(catPairSnapshot());
+        PairRecordingView view = new PairRecordingView();
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(List.of(2), view.matchingHandIndices);
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+    }
+
     private static GameSnapshot catPairSnapshot() {
         return GameSnapshot.create("Player 1",
                 List.of(CardType.TACOCAT, CardType.SKIP, CardType.TACOCAT, CardType.BEARD_CAT),
