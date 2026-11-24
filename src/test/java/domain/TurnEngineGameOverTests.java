@@ -49,6 +49,18 @@ class TurnEngineGameOverTests {
         }
     }
 
+    @Test
+    void Draw_AfterGameOver_RejectsWithoutDrawing() {
+        FinalTurn game = new FinalTurn();
+        game.engine.draw();
+
+        DrawResult result = game.engine.draw();
+
+        assertEquals(DrawStatus.GAME_OVER, result.getStatus());
+        assertEquals(java.util.Optional.empty(), result.getDrawnCardType());
+        game.assertGameUnchanged();
+    }
+
     private static final class FinalTurn {
         private final Player loser = new Player("Loser");
         private final Player winner = new Player("Winner");

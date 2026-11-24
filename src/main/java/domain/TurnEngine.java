@@ -119,6 +119,9 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
 
     @Override
     public DrawResult draw() {
+        if (gameOver) {
+            return DrawResult.gameOver();
+        }
         if (pendingKitten != null) {
             return DrawResult.rejectedPendingDefuse();
         }

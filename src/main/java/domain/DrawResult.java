@@ -54,6 +54,10 @@ public final class DrawResult {
         );
     }
 
+    static DrawResult gameOver() {
+        return new DrawResult(DrawStatus.GAME_OVER, null);
+    }
+
     public static DrawResult rejectedPendingDefuse() {
         return new DrawResult(
                 DrawStatus.REJECTED_PENDING_DEFUSE,
