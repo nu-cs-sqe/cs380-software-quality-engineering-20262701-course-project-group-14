@@ -79,6 +79,7 @@ must still be exercised in the final integration round.
 | ID | Method(s) under test | State and input | Expected output | Implemented? |
 |---|---|---|---|---|
 | TE-GO-01 | `draw()`, `getPhase()`, `getSnapshot()` | Two players remain. The current player draws an Exploding Kitten and is eliminated by the resolver. | Reports `PLAYER_ELIMINATED` for that draw. The engine reaches `GAME_OVER`, reports the other player's stable seat as the winner, and shows zero remaining turns. | :white_check_mark: |
+| TE-GO-02 | `playCard(int)` | With a winner declared, submit the legacy entry using indices `0` and `-1`. | Both calls return `REJECTED / GAME_OVER` and preserve the final state. | :white_check_mark: |
 
 Initial state:
 - Two living players each hold 8 cards, Player 1 is current.

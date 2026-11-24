@@ -36,6 +36,19 @@ class TurnEngineGameOverTests {
         game.assertGameUnchanged();
     }
 
+    @Test
+    void PlayCard_LegacyIndicesAfterGameOver_RejectWithoutChangingGame() {
+        FinalTurn game = new FinalTurn();
+        game.engine.draw();
+
+        for (int index : List.of(0, -1)) {
+            PlayResult result = game.engine.playCard(index);
+            assertEquals(PlayStatus.REJECTED, result.getStatus());
+            assertEquals(PlayFailure.GAME_OVER, result.getFailure());
+            game.assertGameUnchanged();
+        }
+    }
+
     private static final class FinalTurn {
         private final Player loser = new Player("Loser");
         private final Player winner = new Player("Winner");

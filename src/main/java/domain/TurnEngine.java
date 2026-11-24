@@ -150,6 +150,9 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
 
     @Override
     public PlayResult playCard(int handIndex) {
+        if (gameOver) {
+            return PlayResult.rejected(PlayFailure.GAME_OVER);
+        }
         if (handIndex < 0) {
             PlayFailure failure = pendingKitten != null
                     ? PlayFailure.DEFUSE_RESOLUTION_REQUIRED
