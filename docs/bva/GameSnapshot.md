@@ -65,3 +65,9 @@ These cases use the local draft-engine baseline for controller integration.
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GSP-24 | Three seats exist and the middle player has been eliminated. An active player has already become current in seat `2`. | Read a gameplay snapshot from `TurnEngine`. | Returns player summaries in original seat order, including the eliminated seat, and reports current seat `2`. The list is immutable and its hand counts remain fixed when the live hands change. | :white_check_mark: |
+
+## Methods under test: `getWinnerIndex()` and `getRemainingTurns()`
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GSP-25 | The last opponent was eliminated and seat `1` is the winner. | Read a terminal snapshot from `TurnEngine`. | Winner seat is `1` and no turns remain. | :white_check_mark: |

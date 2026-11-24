@@ -16,6 +16,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     private Card pendingKitten;
     private int remainingTurns = 1;
     private boolean attackTurnsActive;
+    private boolean gameOver;
 
     public TurnEngine(
             GameState state,
@@ -84,7 +85,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
 
         return GameSnapshot.create(currentPlayer.getName(), hand, state.getDeck().size(),
                 discardPile.size(), Math.toIntExact(alivePlayers), getPhase())
-                .withPlayerSummaries(summaries, players.indexOf(currentPlayer));
+                .withTurnDetails(summaries, players.indexOf(currentPlayer), remainingTurns);
     }
 
     private static PlayerSummary playerSummary(int seat, Player player) {
@@ -94,6 +95,9 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
 
     @Override
     public TurnPhase getPhase() {
+        if (gameOver) {
+            return TurnPhase.GAME_OVER;
+        }
         return pendingKitten == null
                 ? TurnPhase.ACTIONS_ALLOWED
                 : TurnPhase.AWAITING_DEFUSE_POSITION;
@@ -268,8 +272,8 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     }
 
     private void advanceAfterElimination() {
-        remainingTurns = 1;
         attackTurnsActive = false;
-        state.advanceCurrentPlayer();
+        gameOver = state.advanceCurrentPlayer() == AdvanceResult.ONE_PLAYER_REMAINS;
+        remainingTurns = gameOver ? 0 : 1;
     }
 }
