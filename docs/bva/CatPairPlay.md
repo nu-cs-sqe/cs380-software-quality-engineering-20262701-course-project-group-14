@@ -1,7 +1,7 @@
 # Cat Card Pair Play BVA
 
-> Status: Proposed. The contract review in #45 will confirm the cases called
-> out below. All cases are pending verification.
+> Status: Proposed. Checked cases have passed on the local draft-engine
+> baseline. Verify them again when the reviewed dependencies are integrated.
 
 ## Methods under test
 
@@ -18,7 +18,7 @@ these values through public queries and the fixture's real objects.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| CAT-01 | A holds `[TACOCAT, TACOCAT, SKIP]`; B in seat 1 holds `[ATTACK, FAVOR]`. | `pair(0, 1, 1)`; fixed random result `1` | Returns `CONTINUE_TURN / NONE`; A holds `[SKIP, FAVOR]`; B holds `[ATTACK]`; two Tacocats are discarded. A remains current and the draw pile and remaining turns are unchanged. | :x: |
+| CAT-01 | A holds `[TACOCAT, TACOCAT, SKIP]`; B in seat 1 holds `[ATTACK, FAVOR]`. | `pair(0, 1, 1)`; fixed random result `1` | Returns `CONTINUE_TURN / NONE`; A holds `[SKIP, FAVOR]`; B holds `[ATTACK]`; two Tacocats are discarded. A remains current and the draw pile and remaining turns are unchanged. | :white_check_mark: |
 | CAT-02 | A's matching cards are at positions 0 and 2, with another card between them. | `pair(2, 0, 1)` | Transfers one card, discards the two selected cards, and preserves the intervening card. | :x: |
 | CAT-03 | A holds a matching pair. | `pair(0, 0, 1)` | Returns `REJECTED / INVALID_SELECTION`. | :x: |
 | CAT-04 | Selected cards are two different Cat Card types. | Select both cards and a valid target. | Returns `REJECTED / INVALID_SELECTION`. | :x: |

@@ -1,15 +1,23 @@
 package domain;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class TurnEngine implements TurnActions {
+public final class TurnEngine implements TurnActions, CommandPlayActions {
+    private static final Set<CardType> CAT_TYPES = EnumSet.of(
+            CardType.TACOCAT, CardType.CATTERMELON, CardType.HAIRY_POTATO_CAT,
+            CardType.BEARD_CAT, CardType.RAINBOW_RALPHING_CAT);
+
     private final GameState state;
     private final DiscardPile discardPile;
     private final ExplodingKittenResolver resolver;
     private final Map<CardType, CardEffect> effects;
+    private final RandomSource random;
     private Card pendingKitten;
     private int remainingTurns = 1;
     private boolean attackTurnsActive;
@@ -19,6 +27,16 @@ public final class TurnEngine implements TurnActions {
             DiscardPile discardPile,
             ExplodingKittenResolver resolver,
             Map<CardType, CardEffect> effects
+    ) {
+        this(state, discardPile, resolver, effects, new Random()::nextInt);
+    }
+
+    TurnEngine(
+            GameState state,
+            DiscardPile discardPile,
+            ExplodingKittenResolver resolver,
+            Map<CardType, CardEffect> effects,
+            RandomSource random
     ) {
         this.state = Objects.requireNonNull(
                 state,
@@ -52,6 +70,7 @@ public final class TurnEngine implements TurnActions {
         }
 
         this.effects = Map.copyOf(checkedEffects);
+        this.random = Objects.requireNonNull(random, "Random source must not be null.");
     }
 
     @Override
@@ -152,6 +171,61 @@ public final class TurnEngine implements TurnActions {
             return PlayResult.turnEnded();
         }
         return PlayResult.continueTurn(outcome.getRevealedCards());
+    }
+
+    @Override
+    public PlayResult playCard(PlayCommand command) {
+        Objects.requireNonNull(command, "Play command must not be null.");
+        if (pendingKitten != null) {
+            return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
+        }
+        if (command.getSecondHandIndex().isEmpty()) {
+            return PlayResult.rejected(PlayFailure.CARD_NOT_PLAYABLE);
+        }
+        return playCatPair(command);
+    }
+
+    private PlayResult playCatPair(PlayCommand command) {
+        Player player = state.getCurrentPlayer();
+        int first = command.getFirstHandIndex();
+        int second = command.getSecondHandIndex().getAsInt();
+        List<Card> hand = player.getHand();
+        if (first >= hand.size() || second >= hand.size()) {
+            return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
+        }
+        Card firstCard = hand.get(first);
+        Card secondCard = hand.get(second);
+        if (first == second || !isMatchingCatPair(firstCard, secondCard)) {
+            return PlayResult.rejected(PlayFailure.INVALID_SELECTION);
+        }
+        return transferCatPair(player, command.getTargetPlayerIndex().getAsInt(),
+                first, second);
+    }
+
+    private static boolean isMatchingCatPair(Card first, Card second) {
+        return CAT_TYPES.contains(first.getType()) && first.getType() == second.getType();
+    }
+
+    private PlayResult transferCatPair(Player player, int seat, int first, int second) {
+        List<Player> players = state.getPlayers();
+        if (seat >= players.size()) {
+            return PlayResult.rejected(PlayFailure.INVALID_TARGET);
+        }
+        Player target = players.get(seat);
+        if (target == player || target.isEliminated()) {
+            return PlayResult.rejected(PlayFailure.INVALID_TARGET);
+        }
+        int targetHandSize = target.getHand().size();
+        if (targetHandSize == 0) {
+            return PlayResult.rejected(PlayFailure.TARGET_HAND_EMPTY);
+        }
+        int stolenIndex = random.nextInt(targetHandSize);
+        Card stolen = target.removeCardAt(stolenIndex);
+        Card higher = player.removeCardAt(Math.max(first, second));
+        Card lower = player.removeCardAt(Math.min(first, second));
+        discardPile.discardAll(List.of(lower, higher));
+        player.addCard(stolen);
+        return PlayResult.continueTurn(List.of());
     }
 
     private void finishOneTurn() {
