@@ -25,7 +25,7 @@ these values through public queries and the fixture's real objects.
 | CAT-05 | A holds one Cat Card and one non-cat card. | Select both cards and a valid target. | Returns `REJECTED / INVALID_SELECTION`. Confirm mixed-type mapping in W9-A review. | :white_check_mark: |
 | CAT-06 | A's hand size is `n`. | First hand index equals `n`; second index is valid. | Returns `REJECTED / INVALID_HAND_INDEX`. | :white_check_mark: |
 | CAT-07 | A's hand size is `n`. | First hand index is valid; second index equals `n`. | Returns `REJECTED / INVALID_HAND_INDEX`. | :white_check_mark: |
-| CAT-08 | A is in seat 0. | Select a matching pair and target seat 0. | Returns `REJECTED / INVALID_TARGET`. | :x: |
+| CAT-08 | A is in seat 0. | Select a matching pair and target seat 0. | Returns `REJECTED / INVALID_TARGET`. | :white_check_mark: |
 | CAT-09 | The original table has `n` seats. | Select a matching pair and target seat `n`. | Returns `REJECTED / INVALID_TARGET`. | :x: |
 | CAT-10 | A and B are active; C in seat 2 has been eliminated. | Select a matching pair and target seat 2. | Returns `REJECTED / INVALID_TARGET`. | :x: |
 | CAT-11 | The selected seat belongs to another active player with an empty hand. | Select a matching pair and that seat. | Returns `REJECTED / TARGET_HAND_EMPTY`. | :x: |
