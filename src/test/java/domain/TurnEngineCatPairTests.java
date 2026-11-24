@@ -2,6 +2,8 @@ package domain;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -119,6 +121,54 @@ class TurnEngineCatPairTests {
         assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
         assertSame(deckTop, current.getHand().get(2));
         assertSame(target, state.getCurrentPlayer());
+    }
+
+    @Test
+    void PlayCard_WithDifferentCatTypes_RejectsWithoutChangingState() {
+        Player current = playerWith("Player 1", new Card(CardType.TACOCAT),
+                new Card(CardType.BEARD_CAT));
+        assertRejectionPreservesGame(rejectionGame(current, eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
+    private static GameState rejectionGame(Player... players) {
+        Deck deck = Deck.fromTopToBottom(List.of(new Card(CardType.SHUFFLE),
+                new Card(CardType.NOPE)));
+        return new GameState(List.of(players), deck);
+    }
+
+    private static Player matchingCatHand() {
+        return playerWith("Player 1", new Card(CardType.TACOCAT), new Card(CardType.TACOCAT));
+    }
+
+    private static Player eligibleTarget() {
+        return playerWith("Player 2", new Card(CardType.FAVOR));
+    }
+
+    private static void assertRejectionPreservesGame(
+            GameState state, Function<TurnEngine, PlayResult> submit, PlayFailure expected
+    ) {
+        List<List<Card>> hands = state.getPlayers().stream()
+                .map(player -> List.copyOf(player.getHand()))
+                .collect(Collectors.toList());
+        Player current = state.getCurrentPlayer();
+        TurnEngine engine = engineFor(state, bound -> {
+            throw new AssertionError("A rejected selection must not use randomness.");
+        });
+        PlayResult result = submit.apply(engine);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(expected, result.getFailure());
+        assertEquals(hands, state.getPlayers().stream()
+                .map(Player::getHand).collect(Collectors.toList()));
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(2, engine.getSnapshot().getDeckSize());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(state.getPlayers().get(1), state.getCurrentPlayer());
+        assertEquals(CardType.NOPE, state.getDeck().drawCard().getType());
     }
 
     private static Player playerWith(String name, Card... hand) {
