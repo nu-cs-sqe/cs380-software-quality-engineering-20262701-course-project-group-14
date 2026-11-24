@@ -529,9 +529,18 @@ public class GamePlayControllerTests {
 
     @Test
     public void HandlePlay_RejectedCatPair_ShowsFeedbackAndDoesNotRetry() {
+        assertPairRejectionShowsFeedback(PlayFailure.INVALID_TARGET);
+    }
+
+    @Test
+    public void HandlePlay_CatPairTargetNowEmpty_ShowsFeedbackAndDoesNotRetry() {
+        assertPairRejectionShowsFeedback(PlayFailure.TARGET_HAND_EMPTY);
+    }
+
+    private static void assertPairRejectionShowsFeedback(PlayFailure failure) {
         GameSnapshot snapshot = catPairSnapshot(playerWith("Target", CardType.ATTACK));
         PairActions actions = new PairActions(snapshot);
-        actions.commandResult = PlayResult.rejected(PlayFailure.INVALID_TARGET);
+        actions.commandResult = PlayResult.rejected(failure);
         PairRecordingView view = new PairRecordingView();
         view.secondCard = OptionalInt.of(2);
         view.targetSeat = OptionalInt.of(1);

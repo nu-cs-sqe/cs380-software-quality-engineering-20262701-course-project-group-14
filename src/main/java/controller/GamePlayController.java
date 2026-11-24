@@ -176,6 +176,7 @@ public final class GamePlayController {
             case CARD_NOT_PLAYABLE:
             case INVALID_SELECTION:
             case INVALID_TARGET:
+            case TARGET_HAND_EMPTY:
                 return "play.card-not-playable";
             case PRECONDITION_NOT_MET:
                 return "play.precondition-not-met";
