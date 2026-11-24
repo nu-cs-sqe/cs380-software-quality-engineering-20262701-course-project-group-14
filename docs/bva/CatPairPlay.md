@@ -22,7 +22,7 @@ these values through public queries and the fixture's real objects.
 | CAT-02 | A's matching cards are at positions 0 and 2, with another card between them. | `pair(2, 0, 1)` | Transfers one card, discards the two selected cards, and preserves the intervening card. | :white_check_mark: |
 | CAT-03 | A holds a matching pair. | `pair(0, 0, 1)` | Returns `REJECTED / INVALID_SELECTION`. | :white_check_mark: |
 | CAT-04 | Selected cards are two different Cat Card types. | Select both cards and a valid target. | Returns `REJECTED / INVALID_SELECTION`. | :white_check_mark: |
-| CAT-05 | A holds one Cat Card and one non-cat card. | Select both cards and a valid target. | Returns `REJECTED / INVALID_SELECTION`. Confirm mixed-type mapping in W9-A review. | :x: |
+| CAT-05 | A holds one Cat Card and one non-cat card. | Select both cards and a valid target. | Returns `REJECTED / INVALID_SELECTION`. Confirm mixed-type mapping in W9-A review. | :white_check_mark: |
 | CAT-06 | A's hand size is `n`. | First hand index equals `n`; second index is valid. | Returns `REJECTED / INVALID_HAND_INDEX`. | :x: |
 | CAT-07 | A's hand size is `n`. | First hand index is valid; second index equals `n`. | Returns `REJECTED / INVALID_HAND_INDEX`. | :x: |
 | CAT-08 | A is in seat 0. | Select a matching pair and target seat 0. | Returns `REJECTED / INVALID_TARGET`. | :x: |

@@ -171,6 +171,15 @@ class TurnEngineCatPairTests {
         assertEquals(CardType.NOPE, state.getDeck().drawCard().getType());
     }
 
+    @Test
+    void PlayCard_WithCatAndNonCat_RejectsWithoutChangingState() {
+        Player current = playerWith("Player 1", new Card(CardType.TACOCAT),
+                new Card(CardType.SKIP));
+        assertRejectionPreservesGame(rejectionGame(current, eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
