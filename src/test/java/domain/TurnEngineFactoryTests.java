@@ -74,6 +74,14 @@ public class TurnEngineFactoryTests {
         assertEquals("Game state must not be null.", exception.getMessage());
     }
 
+    @Test
+    public void Create_WithNullRandom_RejectsRandom() {
+        GameState state = new GameState(List.of(new Player("Player 1")), emptyDeck());
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> TurnEngineFactory.create(state, null));
+        assertEquals("Random source must not be null.", exception.getMessage());
+    }
+
     private static Deck emptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
