@@ -487,6 +487,20 @@ public class GamePlayControllerTests {
         assertEquals(1, candidate.getHandSize());
     }
 
+    @Test
+    public void HandlePlay_CloseTargetChooser_SubmitsNoPlay() {
+        Player target = playerWith("Target", CardType.ATTACK);
+        PairActions actions = new PairActions(catPairSnapshot(target));
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(1, view.targetCandidates.size());
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertEquals(0, ((RecordingView) view).renderCalls);
+    }
+
     private static GameSnapshot catPairSnapshot(Player... others) {
         List<Player> players = new ArrayList<>();
         players.add(playerWith("Player 1", CardType.TACOCAT, CardType.SKIP,
