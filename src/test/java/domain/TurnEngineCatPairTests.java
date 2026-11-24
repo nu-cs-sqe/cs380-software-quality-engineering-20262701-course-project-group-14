@@ -43,6 +43,25 @@ class TurnEngineCatPairTests {
         assertSame(deckBottom, deck.drawCard());
     }
 
+    @Test
+    void PlayCard_WithPairInReverseOrder_PreservesInterveningCard() {
+        Card held = new Card(CardType.SKIP);
+        Card transferred = new Card(CardType.FAVOR);
+        Player current = playerWith("Player 1", new Card(CardType.TACOCAT),
+                held, new Card(CardType.TACOCAT));
+        Player target = playerWith("Player 2", transferred);
+        GameState state = new GameState(List.of(current, target),
+                Deck.fromTopToBottom(List.of()));
+        TurnEngine engine = engineFor(state, bound -> 0);
+
+        PlayResult result = engine.playCard(PlayCommand.pair(2, 0, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(held, transferred), current.getHand());
+        assertEquals(List.of(), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
