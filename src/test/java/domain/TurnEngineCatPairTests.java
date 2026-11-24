@@ -286,6 +286,31 @@ class TurnEngineCatPairTests {
         assertSame(current, state.getCurrentPlayer());
     }
 
+    @Test
+    void PlayCard_WithTwoAttackTurns_RemainsCurrentUntilTwoDraws() {
+        Card gift = new Card(CardType.FAVOR);
+        Player attacker = playerWith("Player 1", new Card(CardType.ATTACK), gift);
+        Player attacked = playerWith("Player 2", new Card(CardType.TACOCAT),
+                new Card(CardType.TACOCAT));
+        GameState state = rejectionGame(attacker, attacked);
+        DiscardPile discard = new DiscardPile();
+        TurnEngine engine = new TurnEngine(state, discard, new ExplodingKittenResolver(discard),
+                Map.of(CardType.ATTACK, new AttackEffect()), bound -> 0);
+        assertEquals(PlayStatus.TURN_ENDED, engine.playCard(0).getStatus());
+        assertSame(attacked, state.getCurrentPlayer());
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 0));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(gift), attacked.getHand());
+        assertEquals(3, engine.getSnapshot().getDiscardPileSize());
+        assertSame(attacked, state.getCurrentPlayer());
+        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, engine.draw().getStatus());
+        assertSame(attacked, state.getCurrentPlayer());
+        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, engine.draw().getStatus());
+        assertSame(attacker, state.getCurrentPlayer());
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {

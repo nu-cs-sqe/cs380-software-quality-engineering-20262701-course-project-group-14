@@ -34,7 +34,7 @@ these values through public queries and the fixture's real objects.
 | CAT-14 | A selected a Cat Card and a legal target. | `playCard(PlayCommand.targeted(0, 1))` | Returns `REJECTED / INVALID_SELECTION` because the second card is absent. Confirm this mapping in W9-A review. | :white_check_mark: |
 | CAT-15 | The target holds exactly one card. | Select a legal pair; fixed random result `0`. | Transfers the target's only card and continues A's turn. | :white_check_mark: |
 | CAT-16 | B holds `[ATTACK, SKIP, FAVOR]`. | Select a legal pair; fixed random result `targetHandSize - 1`, which is `2`. | Transfers `FAVOR` and leaves B's remaining hand in order. | :white_check_mark: |
-| CAT-17 | A legal pair exists and A has two outstanding turns after an Attack. | Submit the pair and a valid target. | Returns `CONTINUE_TURN`; A remains current with two turns outstanding. | :x: |
+| CAT-17 | A legal pair exists and A has two outstanding turns after an Attack. | Submit the pair and a valid target. | Returns `CONTINUE_TURN`; A remains current with two turns outstanding. | :white_check_mark: |
 | CAT-18 | Defuse placement is pending. | Submit an otherwise valid pair. | Returns `REJECTED / DEFUSE_RESOLUTION_REQUIRED`; Defuse remains pending. | :x: |
 | CAT-19 | A Favor gift is pending. | Submit an otherwise valid pair. | Returns `REJECTED / ACTION_PENDING`; the Favor responder and state are preserved. | :x: |
 | CAT-20 | A Nope response is pending. | Submit an otherwise valid pair. | Returns `REJECTED / ACTION_PENDING`; the Nope responder and state are preserved. | :x: |
