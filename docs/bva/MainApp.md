@@ -43,3 +43,10 @@
 - State: The valid fixed state from NAV-03 exists.
 - Input: view = null.
 - Expected: Throws NullPointerException with "Game play view must not be null.". Current player and deck size remain unchanged.
+
+### NAV-08 — Play Attack through the gameplay startup
+
+- Implemented: :white_check_mark:
+- State: The fixed session is initialized, and Player 1 holds Attack at index 3.
+- Input: Play Attack, then trigger the draw event twice.
+- Expected: Attack leaves Player 1's hand, and one card enters the discard pile. Player 2 stays current after the first draw and holds both drawn cards after the second. Player 1 then becomes current.

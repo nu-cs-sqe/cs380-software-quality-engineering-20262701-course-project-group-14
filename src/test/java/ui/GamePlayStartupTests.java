@@ -13,6 +13,7 @@ import java.util.function.IntConsumer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -161,6 +162,33 @@ public class GamePlayStartupTests {
         assertEquals("Game play view must not be null.", exception.getMessage());
         assertSame(state.getPlayers().get(0), state.getCurrentPlayer());
         assertEquals(2, state.getDeck().size());
+    }
+
+    @Test
+    public void StartGameplay_AttackEventRequiresTwoDrawsBeforePassingTurn() {
+        GameState state = fixedGame();
+        Player first = state.getPlayers().get(0);
+        Player second = state.getPlayers().get(1);
+        Card attack = first.getHand().get(3);
+        RecordingView view = new RecordingView();
+        MainApp.startGameplay(state, view);
+
+        view.play.accept(3);
+
+        assertEquals(1, view.snapshot.getDiscardPileSize());
+        assertFalse(first.getHand().contains(attack));
+        assertSame(second, state.getCurrentPlayer());
+
+        view.draw.run();
+
+        assertSame(second, state.getCurrentPlayer());
+        assertEquals(9, second.getHand().size());
+
+        view.draw.run();
+
+        assertSame(first, state.getCurrentPlayer());
+        assertEquals(10, second.getHand().size());
+        assertEquals("Player 1", view.snapshot.getCurrentPlayerName());
     }
 
 }

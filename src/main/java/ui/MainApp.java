@@ -3,19 +3,14 @@ package ui;
 import controller.GamePlayController;
 import controller.GamePlayViewPort;
 import controller.GameSetupController;
-import domain.DiscardPile;
-import domain.ExplodingKittenResolver;
 import domain.GameState;
 import domain.TurnActions;
-import domain.TurnEngine;
-import java.util.Map;
+import domain.TurnEngineFactory;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import domain.CardType;
-import domain.SkipEffect;
 
 public final class MainApp extends Application {
     @Override
@@ -49,17 +44,8 @@ public final class MainApp extends Application {
     }
 
     static void startGameplay(GameState state, GamePlayViewPort view) {
-        TurnActions actions = createTurnActions(state);
+        TurnActions actions = TurnEngineFactory.create(state);
         new GamePlayController(actions, view).initialize();
-    }
-
-    private static TurnActions createTurnActions(GameState state) {
-        DiscardPile discardPile = new DiscardPile();
-        ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile);
-        return new TurnEngine(
-                state, discardPile, resolver,
-                Map.of(CardType.SKIP, new SkipEffect())
-        );
     }
 
     static void startGame(
