@@ -180,9 +180,22 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
             return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
         }
         if (command.getSecondHandIndex().isEmpty()) {
-            return PlayResult.rejected(PlayFailure.CARD_NOT_PLAYABLE);
+            return playSingleCommand(command);
         }
         return playCatPair(command);
+    }
+
+    private PlayResult playSingleCommand(PlayCommand command) {
+        int handIndex = command.getFirstHandIndex();
+        List<Card> hand = state.getCurrentPlayer().getHand();
+        if (handIndex >= hand.size()) {
+            return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
+        }
+        if (CAT_TYPES.contains(hand.get(handIndex).getType())
+                || command.getTargetPlayerIndex().isPresent()) {
+            return PlayResult.rejected(PlayFailure.INVALID_SELECTION);
+        }
+        return playCard(handIndex);
     }
 
     private PlayResult playCatPair(PlayCommand command) {

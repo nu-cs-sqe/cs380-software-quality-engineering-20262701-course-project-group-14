@@ -225,6 +225,12 @@ class TurnEngineCatPairTests {
                 PlayFailure.TARGET_HAND_EMPTY);
     }
 
+    @Test
+    void PlayCard_WithSingleCatCommand_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.single(0)), PlayFailure.INVALID_SELECTION);
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
