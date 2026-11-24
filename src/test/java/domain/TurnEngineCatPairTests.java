@@ -201,6 +201,13 @@ class TurnEngineCatPairTests {
                 PlayFailure.INVALID_TARGET);
     }
 
+    @Test
+    void PlayCard_WithTargetAtSeatCount_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 2)),
+                PlayFailure.INVALID_TARGET);
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
