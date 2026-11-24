@@ -554,6 +554,20 @@ public class GamePlayControllerTests {
         assertEquals(1, ((RecordingView) view).renderCalls);
     }
 
+    @Test
+    public void HandlePlay_CatPairWithoutEligibleTarget_ShowsFeedbackAndDoesNotPlay() {
+        PairActions actions = new PairActions(catPairSnapshot(playerWith("Empty")));
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals("play.card-not-playable", ((RecordingView) view).messageKey);
+        assertNull(view.targetCandidates);
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertEquals(0, actions.commandCalls);
+    }
+
     private static GameSnapshot catPairSnapshot(Player... others) {
         List<Player> players = new ArrayList<>();
         players.add(playerWith("Player 1", CardType.TACOCAT, CardType.SKIP,

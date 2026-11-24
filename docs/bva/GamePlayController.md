@@ -91,5 +91,7 @@ the public controller entry. Each cancellation case starts with a fresh fixture.
 
 | GPC-CAT-08 | The selected target's hand empties before submission and the engine returns `TARGET_HAND_EMPTY`. | Confirm the original choices. | Shows the existing rejection feedback, renders the latest snapshot, and submits once. | :white_check_mark: |
 
+| GPC-CAT-09 | A second Cat Card matches and all other active players are empty-handed. | Choose the second card. | Shows the existing rejection feedback without opening a target chooser or submitting a play. | :white_check_mark: |
+
 Use the same interaction for all five Cat Card types. Cover the production
 assembly and all five types in [W9-IT05](../testing/cat-pair-integration.md).

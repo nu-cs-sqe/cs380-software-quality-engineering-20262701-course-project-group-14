@@ -97,6 +97,7 @@ public final class GamePlayController {
         }
         List<PlayerSummary> targets = eligibleTargets(snapshot);
         if (targets.isEmpty()) {
+            showPlayFailure(PlayFailure.TARGET_HAND_EMPTY);
             return;
         }
         OptionalInt target = choiceView.requestTargetPlayer(targets);
