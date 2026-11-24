@@ -1,7 +1,8 @@
 # W9-IT05: Cat Card Pair Play
 
 - **Owner:** Xiaoyi Wang
-- **Status:** Planned
+- **Status:** All five pair-play examples passed on the local draft-engine
+  baseline. Production startup and manual verification are pending.
 - **Related:** [Cat Card pair-play BVA](../bva/CatPairPlay.md), CAT-01,
   CAT-12, CAT-13, and CAT-24
 
