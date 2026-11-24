@@ -26,6 +26,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -87,6 +89,30 @@ class CatPairJavaFxSmokeTests {
             assertTrue(back.isVisible());
             back.fire();
             assertTrue(scene.getRoot() instanceof GameSetupView);
+        }));
+    }
+
+    @Test
+    void FixedGame_StartAfterReturningToSetup_OpensANewGame() throws Exception {
+        runInJavaFx(() -> exerciseWinner((scene, controller) -> {
+            Node finishedGame = scene.getRoot();
+            ((Button) scene.lookup("#return-to-setup")).fire();
+            assertTrue(scene.getRoot() instanceof GameSetupView);
+
+            TextField playerCount = (TextField) scene.lookup(".text-field");
+            assertNotNull(playerCount);
+            playerCount.setText("2");
+            Button start = scene.getRoot().lookupAll(".button").stream()
+                    .filter(node -> "Start Game".equals(node.getAccessibleText()))
+                    .map(Button.class::cast)
+                    .findFirst().orElseThrow();
+            start.fire();
+
+            assertTrue(scene.getRoot() instanceof GamePlayView);
+            assertNotSame(finishedGame, scene.getRoot());
+            assertEquals(8, scene.getRoot().lookupAll(".card-button").size());
+            assertFalse(scene.lookup("#draw-card").isDisabled());
+            assertFalse(scene.lookup("#return-to-setup").isVisible());
         }));
     }
 

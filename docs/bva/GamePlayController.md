@@ -103,3 +103,7 @@ assembly and all five types in [W9-IT05](../testing/cat-pair-integration.md).
 | GPC-GO-03 | `setOnReturnToSetup(Runnable)`, `handleReturnToSetup()` | The terminal view displays the winner. Register the setup callback and click the return button. | Runs the callback and returns to a fresh setup screen, preserving the old game. | :white_check_mark: |
 | GPC-GO-04 | `handleReturnToSetup()` | A game is still in progress. A return event reaches the controller. | Leaves the active game in place. | :white_check_mark: |
 | GPC-GO-05 | `setOnReturnToSetup(Runnable)` | A controller exists. Supply `null`. | Throws `NullPointerException`. | :white_check_mark: |
+
+The JavaFX smoke test continues GPC-GO-03 by entering `2` on the setup screen
+and starting a new game. It verifies that the same window shows eight starting
+cards and enables drawing. The finished game's state is preserved.
