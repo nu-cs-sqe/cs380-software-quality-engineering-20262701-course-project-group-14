@@ -501,6 +501,32 @@ public class GamePlayControllerTests {
         assertEquals(0, ((RecordingView) view).renderCalls);
     }
 
+    @Test
+    public void HandlePlay_ConfirmCatPair_SubmitsOnceWithOriginalIndicesAndRenders() {
+        GameSnapshot initial = catPairSnapshot(playerWith("Empty"),
+                playerWith("Second target", CardType.ATTACK),
+                playerWith("Chosen target", CardType.FAVOR));
+        GameSnapshot latest = GameSnapshot.create("Player 1",
+                List.of(CardType.SKIP, CardType.BEARD_CAT, CardType.FAVOR),
+                initial.getDeckSize(), 2, 4, TurnPhase.ACTIONS_ALLOWED);
+        PairActions actions = new PairActions(initial);
+        actions.commandResult = PlayResult.continueTurn(List.of());
+        actions.afterPlay = latest;
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+        view.targetSeat = OptionalInt.of(3);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(1, actions.commandCalls);
+        assertEquals(0, actions.submitted.getFirstHandIndex());
+        assertEquals(2, actions.submitted.getSecondHandIndex().orElseThrow());
+        assertEquals(3, actions.submitted.getTargetPlayerIndex().orElseThrow());
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertEquals(1, ((RecordingView) view).renderCalls);
+        assertSame(latest, ((RecordingView) view).renderedSnapshot);
+    }
+
     private static GameSnapshot catPairSnapshot(Player... others) {
         List<Player> players = new ArrayList<>();
         players.add(playerWith("Player 1", CardType.TACOCAT, CardType.SKIP,
@@ -518,6 +544,11 @@ public class GamePlayControllerTests {
     }
 
     private static final class PairActions extends StubActions implements CommandPlayActions {
+        private PlayResult commandResult;
+        private PlayCommand submitted;
+        private GameSnapshot afterPlay;
+        private int commandCalls;
+
         private PairActions(GameSnapshot snapshot) {
             super(snapshot);
             super.playResult = PlayResult.rejected(PlayFailure.INVALID_SELECTION);
@@ -525,13 +556,27 @@ public class GamePlayControllerTests {
 
         @Override
         public PlayResult playCard(PlayCommand command) {
-            throw new AssertionError("No play is submitted when a chooser closes.");
+            if (commandResult == null) {
+                throw new AssertionError("No play is expected in this scenario.");
+            }
+            commandCalls++;
+            submitted = command;
+            return commandResult;
+        }
+
+        @Override
+        public GameSnapshot getSnapshot() {
+            if (commandCalls > 0 && afterPlay != null) {
+                return afterPlay;
+            }
+            return super.getSnapshot();
         }
     }
 
     private static final class PairRecordingView extends RecordingView implements CatPairViewPort {
         private List<Integer> matchingHandIndices;
         private OptionalInt secondCard = OptionalInt.empty();
+        private OptionalInt targetSeat = OptionalInt.empty();
         private List<PlayerSummary> targetCandidates;
 
         @Override
@@ -543,7 +588,7 @@ public class GamePlayControllerTests {
         @Override
         public OptionalInt requestTargetPlayer(List<PlayerSummary> candidates) {
             targetCandidates = candidates;
-            return OptionalInt.empty();
+            return targetSeat;
         }
     }
 

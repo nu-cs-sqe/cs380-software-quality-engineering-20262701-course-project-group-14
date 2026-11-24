@@ -6,6 +6,7 @@ import domain.DefuseResult;
 import domain.DrawResult;
 import domain.DrawStatus;
 import domain.GameSnapshot;
+import domain.PlayCommand;
 import domain.PlayFailure;
 import domain.PlayResult;
 import domain.PlayerSummary;
@@ -60,7 +61,10 @@ public final class GamePlayController {
         if (requestCatPair(handIndex)) {
             return;
         }
-        PlayResult result = actions.playCard(handIndex);
+        presentPlayResult(actions.playCard(handIndex));
+    }
+
+    private void presentPlayResult(PlayResult result) {
         showRevealedCards(result);
         showPlayFailure(result.getFailure());
         view.render(actions.getSnapshot());
@@ -81,15 +85,31 @@ public final class GamePlayController {
         if (matchingIndices.isEmpty()) {
             return false;
         }
-        CatPairViewPort choiceView = (CatPairViewPort) view;
-        OptionalInt second = choiceView.requestSecondCard(matchingIndices);
-        if (second.isPresent() && matchingIndices.contains(second.getAsInt())) {
-            List<PlayerSummary> targets = eligibleTargets(snapshot);
-            if (!targets.isEmpty()) {
-                choiceView.requestTargetPlayer(targets);
-            }
-        }
+        chooseCatPair(snapshot, handIndex, matchingIndices);
         return true;
+    }
+
+    private void chooseCatPair(GameSnapshot snapshot, int firstIndex, List<Integer> matching) {
+        CatPairViewPort choiceView = (CatPairViewPort) view;
+        OptionalInt second = choiceView.requestSecondCard(matching);
+        if (second.isEmpty() || !matching.contains(second.getAsInt())) {
+            return;
+        }
+        List<PlayerSummary> targets = eligibleTargets(snapshot);
+        if (targets.isEmpty()) {
+            return;
+        }
+        OptionalInt target = choiceView.requestTargetPlayer(targets);
+        if (target.isEmpty() || !includesSeat(targets, target.getAsInt())) {
+            return;
+        }
+        CommandPlayActions commandActions = (CommandPlayActions) actions;
+        PlayCommand command = PlayCommand.pair(firstIndex, second.getAsInt(), target.getAsInt());
+        presentPlayResult(commandActions.playCard(command));
+    }
+
+    private static boolean includesSeat(List<PlayerSummary> targets, int seat) {
+        return targets.stream().anyMatch(player -> player.getPlayerIndex() == seat);
     }
 
     private static List<PlayerSummary> eligibleTargets(GameSnapshot snapshot) {
