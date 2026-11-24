@@ -180,6 +180,13 @@ class TurnEngineCatPairTests {
                 PlayFailure.INVALID_SELECTION);
     }
 
+    @Test
+    void PlayCard_WithFirstIndexAtHandSize_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(2, 1, 1)),
+                PlayFailure.INVALID_HAND_INDEX);
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
