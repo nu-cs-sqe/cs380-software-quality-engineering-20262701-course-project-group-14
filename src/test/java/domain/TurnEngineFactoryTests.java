@@ -67,6 +67,13 @@ public class TurnEngineFactoryTests {
         assertEquals(1, actions.getSnapshot().getDiscardPileSize());
     }
 
+    @Test
+    public void Create_WithRandomAndNullState_RejectsState() {
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> TurnEngineFactory.create(null, bound -> 0));
+        assertEquals("Game state must not be null.", exception.getMessage());
+    }
+
     private static Deck emptyDeck() {
         Deck deck = new Deck();
         for (CardType type : CardType.values()) {
