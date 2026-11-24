@@ -1,5 +1,7 @@
 package controller;
 
+import domain.CardType;
+import domain.CommandPlayActions;
 import domain.DefuseResult;
 import domain.DrawResult;
 import domain.DrawStatus;
@@ -7,8 +9,12 @@ import domain.GameSnapshot;
 import domain.PlayFailure;
 import domain.PlayResult;
 import domain.TurnActions;
+import domain.TurnPhase;
+import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class GamePlayController {
     private final TurnActions actions;
@@ -50,10 +56,39 @@ public final class GamePlayController {
     }
 
     public void handlePlayCard(int handIndex) {
+        if (requestCatPair(handIndex)) {
+            return;
+        }
         PlayResult result = actions.playCard(handIndex);
         showRevealedCards(result);
         showPlayFailure(result.getFailure());
         view.render(actions.getSnapshot());
+    }
+
+    private boolean requestCatPair(int handIndex) {
+        if (!(view instanceof CatPairViewPort) || !(actions instanceof CommandPlayActions)) {
+            return false;
+        }
+        GameSnapshot snapshot = actions.getSnapshot();
+        List<CardType> hand = snapshot.getCurrentPlayerHand();
+        if (snapshot.getPhase() != TurnPhase.ACTIONS_ALLOWED
+                || handIndex < 0 || handIndex >= hand.size()
+                || !hand.get(handIndex).isCatCard()) {
+            return false;
+        }
+        List<Integer> matchingIndices = matchingCards(hand, handIndex);
+        if (matchingIndices.isEmpty()) {
+            return false;
+        }
+        ((CatPairViewPort) view).requestSecondCard(matchingIndices);
+        return true;
+    }
+
+    private static List<Integer> matchingCards(List<CardType> hand, int selectedIndex) {
+        CardType selected = hand.get(selectedIndex);
+        return IntStream.range(0, hand.size())
+                .filter(index -> index != selectedIndex && hand.get(index) == selected)
+                .boxed().collect(Collectors.toUnmodifiableList());
     }
 
     private void showRevealedCards(PlayResult result) {

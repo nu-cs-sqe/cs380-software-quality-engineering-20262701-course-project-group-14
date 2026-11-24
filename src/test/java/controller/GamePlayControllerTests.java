@@ -437,6 +437,49 @@ public class GamePlayControllerTests {
     }
 
 
+    @Test
+    public void HandlePlay_CatCard_OffersOnlyItsMatchingOriginalHandIndex() {
+        PairActions actions = new PairActions(catPairSnapshot());
+        PairRecordingView view = new PairRecordingView();
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(List.of(2), view.matchingHandIndices);
+    }
+
+    private static GameSnapshot catPairSnapshot() {
+        return GameSnapshot.create("Player 1",
+                List.of(CardType.TACOCAT, CardType.SKIP, CardType.TACOCAT, CardType.BEARD_CAT),
+                2, 0, 2, TurnPhase.ACTIONS_ALLOWED);
+    }
+
+    private static final class PairActions extends StubActions implements domain.CommandPlayActions {
+        private PairActions(GameSnapshot snapshot) {
+            super(snapshot);
+            super.playResult = PlayResult.rejected(PlayFailure.INVALID_SELECTION);
+        }
+
+        @Override
+        public PlayResult playCard(domain.PlayCommand command) {
+            throw new AssertionError("No play is submitted when a chooser closes.");
+        }
+    }
+
+    private static final class PairRecordingView extends RecordingView implements CatPairViewPort {
+        private List<Integer> matchingHandIndices;
+
+        @Override
+        public OptionalInt requestSecondCard(List<Integer> candidates) {
+            matchingHandIndices = candidates;
+            return OptionalInt.empty();
+        }
+
+        @Override
+        public OptionalInt requestTargetPlayer(List<domain.PlayerSummary> candidates) {
+            throw new AssertionError("No target is requested when the second-card chooser closes.");
+        }
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -448,7 +491,7 @@ public class GamePlayControllerTests {
         );
     }
 
-    private static final class StubActions implements TurnActions {
+    private static class StubActions implements TurnActions {
         private final GameSnapshot snapshot;
         private final DrawResult drawResult;
         private PlayResult playResult;
@@ -508,7 +551,7 @@ public class GamePlayControllerTests {
         }
     }
 
-    private static final class RecordingView implements GamePlayViewPort {
+    private static class RecordingView implements GamePlayViewPort {
         private Runnable drawAction = () -> { };
         private IntConsumer playCardAction = index -> { };
         private Runnable chooseDefusePositionAction = () -> { };

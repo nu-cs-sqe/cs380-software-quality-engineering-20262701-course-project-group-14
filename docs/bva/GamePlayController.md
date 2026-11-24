@@ -81,7 +81,7 @@ the public controller entry. Each cancellation case starts with a fresh fixture.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GPC-CAT-01 | The current hand is `[TACOCAT, SKIP, TACOCAT, BEARD_CAT]`. | Click hand index `0`. | The second-card chooser receives original index `2` as its only candidate. | :x: |
+| GPC-CAT-01 | The current hand is `[TACOCAT, SKIP, TACOCAT, BEARD_CAT]`. | Click hand index `0`. | The second-card chooser receives original index `2` as its only candidate. | :white_check_mark: |
 | GPC-CAT-02 | A matching second card is available. | Click the first card and close the second-card chooser. | Neither the target chooser nor a play entry is invoked. | :x: |
 | GPC-CAT-03 | Seat `0` is current, seat `1` is eliminated, seat `2` is active with an empty hand, and seat `3` is active with cards. | Select the second matching card. | The target chooser receives only seat `3` and receives no private card identities. | :x: |
 | GPC-CAT-04 | A second card and an eligible target are available. | Choose the second card and close the target chooser. | No play command or legacy single-card play is submitted. | :x: |

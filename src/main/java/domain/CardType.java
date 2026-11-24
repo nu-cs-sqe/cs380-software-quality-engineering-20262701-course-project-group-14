@@ -9,9 +9,23 @@ public enum CardType {
     SHUFFLE,
     SEE_THE_FUTURE,
     NOPE,
-    TACOCAT,
-    CATTERMELON,
-    HAIRY_POTATO_CAT,
-    BEARD_CAT,
-    RAINBOW_RALPHING_CAT
+    TACOCAT(true),
+    CATTERMELON(true),
+    HAIRY_POTATO_CAT(true),
+    BEARD_CAT(true),
+    RAINBOW_RALPHING_CAT(true);
+
+    private final boolean catCard;
+
+    CardType() {
+        this(false);
+    }
+
+    CardType(boolean catCard) {
+        this.catCard = catCard;
+    }
+
+    public boolean isCatCard() {
+        return catCard;
+    }
 }

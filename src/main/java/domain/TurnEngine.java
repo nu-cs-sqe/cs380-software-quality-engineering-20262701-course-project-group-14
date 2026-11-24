@@ -1,18 +1,12 @@
 package domain;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class TurnEngine implements TurnActions, CommandPlayActions {
-    private static final Set<CardType> CAT_TYPES = EnumSet.of(
-            CardType.TACOCAT, CardType.CATTERMELON, CardType.HAIRY_POTATO_CAT,
-            CardType.BEARD_CAT, CardType.RAINBOW_RALPHING_CAT);
-
     private final GameState state;
     private final DiscardPile discardPile;
     private final ExplodingKittenResolver resolver;
@@ -194,7 +188,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         if (handIndex >= hand.size()) {
             return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
         }
-        if (CAT_TYPES.contains(hand.get(handIndex).getType())
+        if (hand.get(handIndex).getType().isCatCard()
                 || command.getTargetPlayerIndex().isPresent()) {
             return PlayResult.rejected(PlayFailure.INVALID_SELECTION);
         }
@@ -219,7 +213,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     }
 
     private static boolean isMatchingCatPair(Card first, Card second) {
-        return CAT_TYPES.contains(first.getType()) && first.getType() == second.getType();
+        return first.getType().isCatCard() && first.getType() == second.getType();
     }
 
     private PlayResult transferCatPair(Player player, int seat, int first, int second) {
