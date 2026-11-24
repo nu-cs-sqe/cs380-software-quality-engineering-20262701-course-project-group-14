@@ -650,6 +650,17 @@ public class GamePlayControllerTests {
         assertEquals(0, view.renderCalls);
     }
 
+    @Test
+    public void SetOnReturnToSetup_WithNullAction_Throws() {
+        GamePlayController controller = new GamePlayController(
+                new StubActions(createSnapshot(7)), new RecordingView());
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> controller.setOnReturnToSetup(null));
+
+        assertEquals("Return-to-setup action must not be null.", error.getMessage());
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
