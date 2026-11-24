@@ -35,6 +35,12 @@
 | TE-19 | Selected effect can play and returns `endsTurn = false`. | A valid hand index | Removes the selected card, executes the effect once, discards the played card, preserves revealed-card order, and does not advance the player. | :white_check_mark: (tested with effect and discard pile stubs) |
 | TE-20 | Selected effect can play and returns `endsTurn = true`; at least two players are alive. | A valid hand index | Removes and discards the selected card, executes the effect once, advances exactly once, and returns `TURN_ENDED`. | :white_check_mark: (tested with effect, discard pile and GameState stubs) |
 | TE-21 | Engine was built from a mutable effects map that was later changed. | Play a card whose original mapping was removed or replaced in the source map | Uses the mapping captured at construction time. | implemented in TE-08 |
+| TE-29 | Player 1 plays Attack during an ordinary turn. | Valid Attack hand index | Attack is discarded; Player 2 becomes current and receives two turns. After Player 2 completes one normal draw, Player 2 remains current; after the second, Player 1 becomes current. | :white_check_mark: |
+| TE-30 | Player 2 has two Attack turns remaining and immediately plays Attack. | Valid Attack hand index | Player 3 becomes current and receives four turns. | :white_check_mark: |
+| TE-31 | Player 2 completes one of two Attack turns, then plays Attack. | Valid Attack hand index | Player 3 becomes current and receives three turns. | :white_check_mark: |
+| TE-32 | Player 2 has two Attack turns and plays Skip. | Valid Skip hand index | Skip is discarded; Player 2 remains current with one turn remaining. | :white_check_mark: |
+| TE-33 | Player 2 has two Attack turns, draws a Kitten and successfully Defuses it. | Valid Defuse position | Player 2 remains current with one turn remaining. | :white_check_mark: |
+| TE-34 | Player 2 has Attack turns remaining and is eliminated by a Kitten. | Draw | Player 3 becomes current with one ordinary turn; Player 2's remaining Attack debt is cleared. | :white_check_mark: |
 
 ## Method under test: `resolveDefuse(int position)`
 
@@ -101,4 +107,24 @@ Expected result:
 - Player 2's hand stays unchanged and Player 2 becomes current.
 - Deck order and size stay unchanged.
 - Phase remains ACTIONS_ALLOWED.
-```
+
+### F2-03 — Consecutive ordinary turns (IT-05)
+
+- Methods under test: TurnEngine.draw(), getSnapshot().
+- State: Two living players each hold one Defuse; Player 1 is current;
+  deck order is [ATTACK, SHUFFLE]; shared discard pile is empty.
+- Action: Draw once as Player 1, then once as Player 2.
+- Expected: Current player changes 1 -> 2 -> 1; each hand grows to two;
+  each player receives the expected card; deck and discard sizes are zero;
+  phase remains ACTIONS_ALLOWED.
+- Implemented: :white_check_mark:
+
+### F2-04 — Empty-deck integration (IT-02)
+
+- Methods under test: TurnEngine.draw(), getSnapshot().
+- State: Two living players each hold one Defuse; Player 1 is current;
+  deck and discard pile are empty; phase is ACTIONS_ALLOWED.
+- Action: Attempt to draw.
+- Expected: EMPTY_DECK with no drawn card; both hands, current player,
+  deck, discard pile and phase remain unchanged.
+- Implemented: :white_check_mark:

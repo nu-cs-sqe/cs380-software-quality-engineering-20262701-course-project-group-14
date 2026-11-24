@@ -11,6 +11,8 @@ public final class TurnEngine implements TurnActions {
     private final ExplodingKittenResolver resolver;
     private final Map<CardType, CardEffect> effects;
     private Card pendingKitten;
+    private int remainingTurns = 1;
+    private boolean attackTurnsActive;
 
     public TurnEngine(
             GameState state,
@@ -82,7 +84,7 @@ public final class TurnEngine implements TurnActions {
                 state.getCurrentPlayer(), pendingKitten, state.getDeck(), position);
         if (result == DefuseResult.DEFUSED) {
             pendingKitten = null;
-            state.advanceCurrentPlayer();
+            finishOneTurn();
         }
         return result;
     }
@@ -103,7 +105,7 @@ public final class TurnEngine implements TurnActions {
 
         Card drawnCard = deck.drawCard();
         state.getCurrentPlayer().addCard(drawnCard);
-        state.advanceCurrentPlayer();
+        finishOneTurn();
         return DrawResult.normal(drawnCard.getType());
     }
 
@@ -114,7 +116,7 @@ public final class TurnEngine implements TurnActions {
             pendingKitten = drawnKitten;
             return DrawResult.defuseRequired();
         }
-        state.advanceCurrentPlayer();
+        advanceAfterElimination();
         return DrawResult.playerEliminated();
     }
 
@@ -140,10 +142,39 @@ public final class TurnEngine implements TurnActions {
         Card playedCard = currentPlayer.removeCardAt(handIndex);
         EffectOutcome outcome = effect.play(currentPlayer, deck);
         discardPile.discard(playedCard);
+        if (outcome.getTurnDirective()
+                == TurnDirective.ATTACK_NEXT_PLAYER) {
+            attackNextPlayer();
+            return PlayResult.turnEnded();
+        }
         if (outcome.endsTurn()) {
-            state.advanceCurrentPlayer();
+            finishOneTurn();
             return PlayResult.turnEnded();
         }
         return PlayResult.continueTurn(outcome.getRevealedCards());
+    }
+
+    private void finishOneTurn() {
+        remainingTurns--;
+        if (remainingTurns == 0) {
+            state.advanceCurrentPlayer();
+            remainingTurns = 1;
+            attackTurnsActive = false;
+        }
+    }
+
+    private void attackNextPlayer() {
+        int turnsForNextPlayer = attackTurnsActive
+                ? remainingTurns + 2
+                : 2;
+        state.advanceCurrentPlayer();
+        remainingTurns = turnsForNextPlayer;
+        attackTurnsActive = true;
+    }
+
+    private void advanceAfterElimination() {
+        remainingTurns = 1;
+        attackTurnsActive = false;
+        state.advanceCurrentPlayer();
     }
 }
