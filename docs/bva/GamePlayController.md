@@ -88,9 +88,7 @@ the public controller entry. Each cancellation case starts with a fresh fixture.
 | GPC-CAT-05 | Hand indices `0` and `2` match. Eligible targets are seats `2` and `3`, in that order. | Click `0`, choose `2`, then select seat `3` from the target chooser. | Submits `PlayCommand.pair(0, 2, 3)` exactly once and renders the latest snapshot when the result is `CONTINUE_TURN`. | :white_check_mark: |
 | GPC-CAT-06 | A submitted pair is rejected with `INVALID_TARGET`. | Confirm both choices. | Shows localized rejection feedback, renders the latest snapshot, and submits no replacement command. | :white_check_mark: |
 | GPC-CAT-07 | The legacy play entry rejects a single Cat Card with `INVALID_SELECTION`. | Click hand index `0` before the pair chooser is connected. | Shows the existing `play.card-not-playable` message and renders the latest snapshot. | :white_check_mark: |
-
 | GPC-CAT-08 | The selected target's hand empties before submission and the engine returns `TARGET_HAND_EMPTY`. | Confirm the original choices. | Shows the existing rejection feedback, renders the latest snapshot, and submits once. | :white_check_mark: |
-
 | GPC-CAT-09 | A second Cat Card matches and all other active players are empty-handed. | Choose the second card. | Shows the existing rejection feedback without opening a target chooser or submitting a play. | :white_check_mark: |
 
 Use the same interaction for all five Cat Card types. Cover the production
