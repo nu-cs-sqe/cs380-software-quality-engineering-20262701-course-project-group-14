@@ -1,6 +1,7 @@
 package ui;
 
 import controller.CatPairViewPort;
+import controller.GameOverViewPort;
 import domain.CardType;
 import domain.GameSnapshot;
 import domain.PlayerSummary;
@@ -58,7 +59,7 @@ import javafx.util.Duration;
  * - Cat-pair combo lift & contextual unfurling parchment rule scroll
  */
 public final class GamePlayView extends StackPane
-        implements CatPairViewPort {
+        implements CatPairViewPort, GameOverViewPort {
     private static final ResourceBundle GAME_OVER_TEXT =
             ResourceBundle.getBundle("ui.GameOverMessages");
     private static final Map<String, String> MESSAGES = Map.ofEntries(
@@ -171,6 +172,7 @@ public final class GamePlayView extends StackPane
     private final StackPane deckCountHolder = new StackPane();
     private final HBox fuseGauge = new HBox(3);
     private final Button drawButton = new Button();
+    private final Button returnToSetupButton = new Button();
     private final StackPane drawHintHolder = new StackPane();
 
     private final Button choosePositionButton = new Button();
@@ -226,6 +228,7 @@ public final class GamePlayView extends StackPane
     private HandPairSelection handPairSelection;
 
     private Runnable onDraw = () -> { };
+    private Runnable onReturnToSetup = () -> { };
     private Runnable onChooseDefusePosition = () -> { };
     private IntConsumer onPlayCard = index -> { };
 
@@ -260,6 +263,7 @@ public final class GamePlayView extends StackPane
                 deckCountHolder,
                 fuseGauge,
                 drawButton,
+                returnToSetupButton,
                 drawHintHolder,
                 discardPileHolder,
                 discardCountBadge,
@@ -325,6 +329,11 @@ public final class GamePlayView extends StackPane
 
     public void setOnPlayCard(IntConsumer action) {
         onPlayCard = action;
+    }
+
+    @Override
+    public void setOnReturnToSetup(Runnable action) {
+        onReturnToSetup = action;
     }
 
     public void setOnChooseDefusePosition(Runnable action) {
@@ -594,6 +603,12 @@ public final class GamePlayView extends StackPane
         drawButton.setAccessibleText("Draw Card");
         drawButton.setOnAction(event -> triggerDrawWithFlight());
 
+        returnToSetupButton.setId("return-to-setup");
+        returnToSetupButton.getStyleClass().add("draw-button");
+        returnToSetupButton.setText(GAME_OVER_TEXT.getString("return-to-setup"));
+        returnToSetupButton.setOnAction(event -> onReturnToSetup.run());
+        returnToSetupButton.setVisible(false);
+
         drawHintHolder.setAlignment(Pos.CENTER);
 
         discardPileHolder.setAlignment(Pos.CENTER);
@@ -793,6 +808,7 @@ public final class GamePlayView extends StackPane
         double defuseBtnW = 310;
         double defuseBtnH = 50;
         choosePositionButton.resizeRelocate(Math.round(centerX - defuseBtnW * 0.5), deckY + deckBoxH + 28, defuseBtnW, defuseBtnH);
+        returnToSetupButton.resizeRelocate(Math.round(centerX - 110), deckY + deckBoxH + 28, 220, 48);
 
         double futureW = 248;
         futureOverlay.resizeRelocate(deckX - 104, deckY - 20,
@@ -1019,6 +1035,7 @@ public final class GamePlayView extends StackPane
         drawHintHolder.setVisible(danger);
         choosePositionButton.setDisable(turnActionsDisabled);
         choosePositionButton.setVisible(danger);
+        returnToSetupButton.setVisible(winnerMessage != null);
     }
 
     private void updateFuture() {

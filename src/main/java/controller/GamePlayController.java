@@ -21,6 +21,7 @@ import java.util.stream.IntStream;
 public final class GamePlayController {
     private final TurnActions actions;
     private final GamePlayViewPort view;
+    private Runnable onReturnToSetup = () -> { };
 
     public GamePlayController(
             TurnActions actions,
@@ -40,7 +41,20 @@ public final class GamePlayController {
         view.setOnDraw(this::handleDraw);
         view.setOnPlayCard(this::handlePlayCard);
         view.setOnChooseDefusePosition(this::handleChooseDefusePosition);
+        if (view instanceof GameOverViewPort) {
+            ((GameOverViewPort) view).setOnReturnToSetup(this::handleReturnToSetup);
+        }
         view.render(actions.getSnapshot());
+    }
+
+    public void setOnReturnToSetup(Runnable action) {
+        onReturnToSetup = Objects.requireNonNull(action, "Return-to-setup action must not be null.");
+    }
+
+    public void handleReturnToSetup() {
+        if (actions.getSnapshot().getPhase() == TurnPhase.GAME_OVER) {
+            onReturnToSetup.run();
+        }
     }
 
     public void handleDraw() {

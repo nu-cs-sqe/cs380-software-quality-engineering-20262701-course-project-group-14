@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
@@ -66,17 +66,28 @@ class CatPairJavaFxSmokeTests {
 
     @Test
     void FixedGame_LastOpponentEliminated_ShowsWinnerAndLocksPlay() throws Exception {
-        runInJavaFx(() -> exerciseWinner(controller -> { }));
+        runInJavaFx(() -> exerciseWinner((scene, controller) -> { }));
     }
 
     @Test
     void FixedGame_LateDrawAfterGameOver_KeepsWinnerVisible() throws Exception {
-        runInJavaFx(() -> exerciseWinner(GamePlayController::handleDraw));
+        runInJavaFx(() -> exerciseWinner((scene, controller) -> controller.handleDraw()));
     }
 
     @Test
     void FixedGame_LatePlayAfterGameOver_KeepsWinnerVisible() throws Exception {
-        runInJavaFx(() -> exerciseWinner(controller -> controller.handlePlayCard(0)));
+        runInJavaFx(() -> exerciseWinner((scene, controller) -> controller.handlePlayCard(0)));
+    }
+
+    @Test
+    void FixedGame_ReturnToSetup_OpensFreshSetupInTheSameWindow() throws Exception {
+        runInJavaFx(() -> exerciseWinner((scene, controller) -> {
+            Button back = (Button) scene.lookup("#return-to-setup");
+            assertNotNull(back);
+            assertTrue(back.isVisible());
+            back.fire();
+            assertTrue(scene.getRoot() instanceof GameSetupView);
+        }));
     }
 
     private static void runInJavaFx(Runnable exercise) throws Exception {
@@ -92,7 +103,7 @@ class CatPairJavaFxSmokeTests {
         finished.get(20, TimeUnit.SECONDS);
     }
 
-    private static void exerciseWinner(Consumer<GamePlayController> afterGameOver) {
+    private static void exerciseWinner(BiConsumer<Scene, GamePlayController> afterGameOver) {
         Player first = playerWith("First");
         Card held = new Card(CardType.TACOCAT);
         Player winner = playerWith("Winner", held);
@@ -108,9 +119,9 @@ class CatPairJavaFxSmokeTests {
         GamePlayView view = new GamePlayView();
         TurnEngine engine = new TurnEngine(state, discard, elimination, Map.of());
         GamePlayController controller = new GamePlayController(engine, view);
-        controller.initialize();
         Stage stage = new Stage();
         Scene scene = new Scene(view, 960, 760);
+        MainApp.bindGameplayNavigation(scene, controller);
         stage.setScene(scene);
         try {
             stage.show();
@@ -124,8 +135,10 @@ class CatPairJavaFxSmokeTests {
             assertTrue(card.getAccessibleText().contains("locked"));
             card.fire();
             draw.fire();
-            afterGameOver.accept(controller);
-            assertEquals("Winner wins!", scene.lookup("#gameplay-message").getAccessibleText());
+            afterGameOver.accept(scene, controller);
+            if (scene.getRoot() == view) {
+                assertEquals("Winner wins!", scene.lookup("#gameplay-message").getAccessibleText());
+            }
             assertEquals(List.of(held), winner.getHand());
             assertSame(winner, state.getCurrentPlayer());
         } finally {

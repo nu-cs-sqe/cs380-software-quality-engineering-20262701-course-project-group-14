@@ -1,7 +1,6 @@
 package ui;
 
 import controller.GamePlayController;
-import controller.GamePlayViewPort;
 import controller.GameSetupController;
 import domain.GameState;
 import domain.TurnEngineFactory;
@@ -16,6 +15,16 @@ public final class MainApp extends Application {
     public void start(Stage stage) {
         GameSetupView view = new GameSetupView();
         Scene scene = new Scene(view, 900, 760);
+        configureSetup(scene, view);
+
+        stage.setTitle("Exploding Kittens");
+        stage.setMinWidth(780);
+        stage.setMinHeight(700);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private static void configureSetup(Scene scene, GameSetupView view) {
         view.setOnStart(() -> startGame(
                 view.getPlayerCountInput(),
                 state -> showGameplay(scene, state),
@@ -28,22 +37,21 @@ public final class MainApp extends Application {
                         "Missing game-setup.css"
                 ).toExternalForm()
         );
-
-        stage.setTitle("Exploding Kittens");
-        stage.setMinWidth(780);
-        stage.setMinHeight(700);
-        stage.setScene(scene);
-        stage.show();
     }
 
     static void showGameplay(Scene scene, GameState state) {
         GamePlayView gameplay = new GamePlayView();
-        startGameplay(state, gameplay);
+        bindGameplayNavigation(scene, new GamePlayController(TurnEngineFactory.create(state), gameplay));
         scene.setRoot(gameplay);
     }
 
-    static void startGameplay(GameState state, GamePlayViewPort view) {
-        new GamePlayController(TurnEngineFactory.create(state), view).initialize();
+    static void bindGameplayNavigation(Scene scene, GamePlayController controller) {
+        controller.setOnReturnToSetup(() -> {
+            GameSetupView setup = new GameSetupView();
+            configureSetup(scene, setup);
+            scene.setRoot(setup);
+        });
+        controller.initialize();
     }
 
     static void startGame(

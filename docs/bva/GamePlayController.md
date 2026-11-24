@@ -100,3 +100,6 @@ assembly and all five types in [W9-IT05](../testing/cat-pair-integration.md).
 |---|---|---|---|---|
 | GPC-GO-01 | `handleDraw()` | The game has ended and a draw event reaches the controller. | Refreshes the terminal snapshot and preserves the winner message. | :white_check_mark: |
 | GPC-GO-02 | `handlePlayCard(int)` | The game has ended and a card click reaches the controller. | Refreshes the terminal snapshot and preserves the winner message. | :white_check_mark: |
+| GPC-GO-03 | `setOnReturnToSetup(Runnable)`, `handleReturnToSetup()` | The terminal view displays the winner. Register the setup callback and click the return button. | Runs the callback and returns to a fresh setup screen, preserving the old game. | :white_check_mark: |
+| GPC-GO-04 | `handleReturnToSetup()` | A game is still in progress. A return event reaches the controller. | Leaves the active game in place. | :x: |
+| GPC-GO-05 | `setOnReturnToSetup(Runnable)` | A controller exists. Supply `null`. | Throws `NullPointerException`. | :x: |

@@ -9,5 +9,6 @@
 
 The local window test uses a hand-written resolver adapter for the elimination
 outcome. The winner message and action locks passed in that window. Final
-acceptance still requires the reviewed resolver, a full game through normal
-startup, and the return-to-setup interaction.
+acceptance still requires the reviewed resolver and a full game through normal
+startup. The window test also verified that the return button replaces gameplay
+with a fresh setup screen in the same window while preserving the old game.
