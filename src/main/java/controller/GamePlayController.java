@@ -8,6 +8,7 @@ import domain.DrawStatus;
 import domain.GameSnapshot;
 import domain.PlayFailure;
 import domain.PlayResult;
+import domain.PlayerSummary;
 import domain.TurnActions;
 import domain.TurnPhase;
 import java.util.List;
@@ -80,8 +81,22 @@ public final class GamePlayController {
         if (matchingIndices.isEmpty()) {
             return false;
         }
-        ((CatPairViewPort) view).requestSecondCard(matchingIndices);
+        CatPairViewPort choiceView = (CatPairViewPort) view;
+        OptionalInt second = choiceView.requestSecondCard(matchingIndices);
+        if (second.isPresent() && matchingIndices.contains(second.getAsInt())) {
+            List<PlayerSummary> targets = eligibleTargets(snapshot);
+            if (!targets.isEmpty()) {
+                choiceView.requestTargetPlayer(targets);
+            }
+        }
         return true;
+    }
+
+    private static List<PlayerSummary> eligibleTargets(GameSnapshot snapshot) {
+        return snapshot.getPlayers().stream()
+                .filter(player -> player.getPlayerIndex() != snapshot.getCurrentPlayerIndex())
+                .filter(player -> !player.isEliminated() && player.getHandSize() > 0)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     private static List<Integer> matchingCards(List<CardType> hand, int selectedIndex) {

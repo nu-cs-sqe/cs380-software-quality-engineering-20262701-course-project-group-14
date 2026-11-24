@@ -1,13 +1,22 @@
 package controller;
 
+import domain.Card;
 import domain.CardType;
+import domain.CommandPlayActions;
+import domain.Deck;
 import domain.DefuseResult;
 import domain.DrawResult;
 import domain.GameSnapshot;
+import domain.GameState;
+import domain.PlayCommand;
 import domain.PlayFailure;
 import domain.PlayResult;
+import domain.Player;
+import domain.PlayerSummary;
 import domain.TurnActions;
+import domain.TurnEngineFactory;
 import domain.TurnPhase;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
@@ -456,38 +465,71 @@ public class GamePlayControllerTests {
 
         assertEquals(List.of(2), view.matchingHandIndices);
         assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertNull(view.targetCandidates);
     }
 
-    private static GameSnapshot catPairSnapshot() {
-        return GameSnapshot.create("Player 1",
-                List.of(CardType.TACOCAT, CardType.SKIP, CardType.TACOCAT, CardType.BEARD_CAT),
-                2, 0, 2, TurnPhase.ACTIONS_ALLOWED);
+    @Test
+    public void HandlePlay_CatPair_OffersOnlyEligibleTargetAtOriginalSeat() {
+        Player eliminated = playerWith("Eliminated", CardType.FAVOR);
+        eliminated.eliminate();
+        Player empty = playerWith("Empty");
+        Player target = playerWith("Target", CardType.ATTACK);
+        PairActions actions = new PairActions(catPairSnapshot(eliminated, empty, target));
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(1, view.targetCandidates.size());
+        PlayerSummary candidate = view.targetCandidates.get(0);
+        assertEquals(3, candidate.getPlayerIndex());
+        assertEquals("Target", candidate.getName());
+        assertEquals(1, candidate.getHandSize());
     }
 
-    private static final class PairActions extends StubActions implements domain.CommandPlayActions {
+    private static GameSnapshot catPairSnapshot(Player... others) {
+        List<Player> players = new ArrayList<>();
+        players.add(playerWith("Player 1", CardType.TACOCAT, CardType.SKIP,
+                CardType.TACOCAT, CardType.BEARD_CAT));
+        players.addAll(List.of(others));
+        return TurnEngineFactory.create(new GameState(players, new Deck())).getSnapshot();
+    }
+
+    private static Player playerWith(String name, CardType... types) {
+        Player player = new Player(name);
+        for (CardType type : types) {
+            player.addCard(new Card(type));
+        }
+        return player;
+    }
+
+    private static final class PairActions extends StubActions implements CommandPlayActions {
         private PairActions(GameSnapshot snapshot) {
             super(snapshot);
             super.playResult = PlayResult.rejected(PlayFailure.INVALID_SELECTION);
         }
 
         @Override
-        public PlayResult playCard(domain.PlayCommand command) {
+        public PlayResult playCard(PlayCommand command) {
             throw new AssertionError("No play is submitted when a chooser closes.");
         }
     }
 
     private static final class PairRecordingView extends RecordingView implements CatPairViewPort {
         private List<Integer> matchingHandIndices;
+        private OptionalInt secondCard = OptionalInt.empty();
+        private List<PlayerSummary> targetCandidates;
 
         @Override
         public OptionalInt requestSecondCard(List<Integer> candidates) {
             matchingHandIndices = candidates;
-            return OptionalInt.empty();
+            return secondCard;
         }
 
         @Override
-        public OptionalInt requestTargetPlayer(List<domain.PlayerSummary> candidates) {
-            throw new AssertionError("No target is requested when the second-card chooser closes.");
+        public OptionalInt requestTargetPlayer(List<PlayerSummary> candidates) {
+            targetCandidates = candidates;
+            return OptionalInt.empty();
         }
     }
 
