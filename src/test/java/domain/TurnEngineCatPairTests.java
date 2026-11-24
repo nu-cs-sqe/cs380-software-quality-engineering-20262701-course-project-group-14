@@ -208,6 +208,15 @@ class TurnEngineCatPairTests {
                 PlayFailure.INVALID_TARGET);
     }
 
+    @Test
+    void PlayCard_WithEliminatedTarget_RejectsWithoutChangingState() {
+        Player eliminated = playerWith("Player 3", new Card(CardType.SKIP));
+        eliminated.eliminate();
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget(), eliminated),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 2)),
+                PlayFailure.INVALID_TARGET);
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
