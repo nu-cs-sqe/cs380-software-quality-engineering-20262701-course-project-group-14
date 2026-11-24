@@ -40,5 +40,5 @@ these values through public queries and the fixture's real objects.
 | CAT-20 | A Nope response is pending. | Submit an otherwise valid pair. | Returns `REJECTED / ACTION_PENDING`; the Nope responder and state are preserved. | :x: |
 | CAT-21 | The game is over. | Submit an otherwise valid pair. | Returns `REJECTED / GAME_OVER`; the winner is preserved. | :x: |
 | CAT-22 | A game is in progress. | `playCard((PlayCommand) null)` | Throws `NullPointerException`; gameplay state is preserved. | :white_check_mark: |
-| CAT-23 | Normal actions are allowed and the legacy entry is available. | `playCard(-1)` | Preserves the prior `REJECTED / INVALID_HAND_INDEX` behavior. Confirm the adapter behavior in W9-A review. | :x: |
+| CAT-23 | Normal actions are allowed and the legacy entry is available. | `playCard(-1)` | Preserves the prior `REJECTED / INVALID_HAND_INDEX` behavior. Confirm the adapter behavior in W9-A review. | :white_check_mark: |
 | CAT-24 | A holds two cards of one supported type, tested separately for all five types. | Submit a legal pair and a valid target with a fixed random result. | `TACOCAT`, `CATTERMELON`, `HAIRY_POTATO_CAT`, `BEARD_CAT`, and `RAINBOW_RALPHING_CAT` each produce the expected discard and transfer without ending the turn. | :white_check_mark: |

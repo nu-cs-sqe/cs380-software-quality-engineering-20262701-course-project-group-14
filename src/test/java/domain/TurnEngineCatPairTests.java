@@ -373,6 +373,12 @@ class TurnEngineCatPairTests {
         assertEquals(CardType.NOPE, state.getDeck().drawCard().getType());
     }
 
+    @Test
+    void PlayCard_WithNegativeLegacyIndex_PreservesRejectionResult() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(-1), PlayFailure.INVALID_HAND_INDEX);
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
