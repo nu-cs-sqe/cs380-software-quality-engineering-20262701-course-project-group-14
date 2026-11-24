@@ -30,7 +30,7 @@ these values through public queries and the fixture's real objects.
 | CAT-10 | A and B are active; C in seat 2 has been eliminated. | Select a matching pair and target seat 2. | Returns `REJECTED / INVALID_TARGET`. | :white_check_mark: |
 | CAT-11 | The selected seat belongs to another active player with an empty hand. | Select a matching pair and that seat. | Returns `REJECTED / TARGET_HAND_EMPTY`. | :white_check_mark: |
 | CAT-12 | A's first card is a Cat Card. | `playCard(PlayCommand.single(0))` | Returns `REJECTED / INVALID_SELECTION`. | :white_check_mark: |
-| CAT-13 | A's first card is a Cat Card. | `playCard(0)` | Returns the same `REJECTED / INVALID_SELECTION` as the command entry. | :x: |
+| CAT-13 | A's first card is a Cat Card. | `playCard(0)` | Returns the same `REJECTED / INVALID_SELECTION` as the command entry. | :white_check_mark: |
 | CAT-14 | A selected a Cat Card and a legal target. | `playCard(PlayCommand.targeted(0, 1))` | Returns `REJECTED / INVALID_SELECTION` because the second card is absent. Confirm this mapping in W9-A review. | :x: |
 | CAT-15 | The target holds exactly one card. | Select a legal pair; fixed random result `0`. | Transfers the target's only card and continues A's turn. | :x: |
 | CAT-16 | B holds `[ATTACK, SKIP, FAVOR]`. | Select a legal pair; fixed random result `targetHandSize - 1`, which is `2`. | Transfers `FAVOR` and leaves B's remaining hand in order. | :x: |

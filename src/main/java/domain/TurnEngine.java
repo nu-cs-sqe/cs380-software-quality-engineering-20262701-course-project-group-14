@@ -141,14 +141,16 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
 
     @Override
     public PlayResult playCard(int handIndex) {
-        if (pendingKitten != null) {
-            return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
+        if (handIndex < 0) {
+            PlayFailure failure = pendingKitten != null
+                    ? PlayFailure.DEFUSE_RESOLUTION_REQUIRED
+                    : PlayFailure.INVALID_HAND_INDEX;
+            return PlayResult.rejected(failure);
         }
-        Player currentPlayer = state.getCurrentPlayer();
-        int handSize = currentPlayer.getHand().size();
-        if (handIndex < 0 || handIndex >= handSize) {
-            return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
-        }
+        return playCard(PlayCommand.single(handIndex));
+    }
+
+    private PlayResult playRegisteredEffect(Player currentPlayer, int handIndex) {
         Card selectedCard = currentPlayer.getHand().get(handIndex);
         CardEffect effect = effects.get(selectedCard.getType());
         if (effect == null) {
@@ -187,7 +189,8 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
 
     private PlayResult playSingleCommand(PlayCommand command) {
         int handIndex = command.getFirstHandIndex();
-        List<Card> hand = state.getCurrentPlayer().getHand();
+        Player player = state.getCurrentPlayer();
+        List<Card> hand = player.getHand();
         if (handIndex >= hand.size()) {
             return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
         }
@@ -195,7 +198,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
                 || command.getTargetPlayerIndex().isPresent()) {
             return PlayResult.rejected(PlayFailure.INVALID_SELECTION);
         }
-        return playCard(handIndex);
+        return playRegisteredEffect(player, handIndex);
     }
 
     private PlayResult playCatPair(PlayCommand command) {
