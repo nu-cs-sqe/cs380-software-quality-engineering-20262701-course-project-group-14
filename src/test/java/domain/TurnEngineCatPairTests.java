@@ -311,6 +311,43 @@ class TurnEngineCatPairTests {
         assertSame(attacker, state.getCurrentPlayer());
     }
 
+    @Test
+    void PlayCard_WithDefusePending_RejectsPairAndKeepsPendingTurn() {
+        Card first = new Card(CardType.TACOCAT);
+        Card second = new Card(CardType.TACOCAT);
+        Card defuse = new Card(CardType.DEFUSE);
+        Player current = playerWith("Player 1", first, second, defuse);
+        Player target = eligibleTarget();
+        List<Card> targetHand = List.copyOf(target.getHand());
+        Deck deck = Deck.fromTopToBottom(List.of(new Card(CardType.EXPLODING_KITTEN),
+                new Card(CardType.SHUFFLE)));
+        GameState state = new GameState(List.of(current, target), deck);
+        DiscardPile discard = new DiscardPile();
+        ExplodingKittenResolver waiting = new ExplodingKittenResolver(discard) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card kitten) {
+                return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+            }
+        };
+        TurnEngine engine = new TurnEngine(state, discard, waiting, Map.of(), bound -> {
+            throw new AssertionError("A pending Defuse must prevent card selection.");
+        });
+        assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, engine.draw().getStatus());
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.DEFUSE_RESOLUTION_REQUIRED, result.getFailure());
+        assertEquals(List.of(first, second, defuse), current.getHand());
+        assertEquals(targetHand, target.getHand());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
+        assertEquals(DrawStatus.REJECTED_PENDING_DEFUSE, engine.draw().getStatus());
+        assertEquals(1, deck.size());
+        assertEquals(CardType.SHUFFLE, deck.drawCard().getType());
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
