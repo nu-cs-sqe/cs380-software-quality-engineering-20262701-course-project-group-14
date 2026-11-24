@@ -8,8 +8,10 @@ import domain.Player;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -17,6 +19,8 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -26,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,17 +84,28 @@ class CatPairJavaFxSmokeTests {
         try {
             stage.show();
             MainApp.showGameplay(scene, state);
-            clickPairWith(scene, () -> choose("Tacocat", ButtonData.CANCEL_CLOSE), null);
+            selectFirstInHand(scene);
+            handCard(scene, 1).fire();
+            assertTrue(hasState(handCard(scene, 0), "pair-first"));
+            handCard(scene, 0).fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "",
+                    KeyCode.ESCAPE, false, false, false, false));
+            assertFalse(hasState(handCard(scene, 0), "pair-first"));
+            assertFalse(hasState(handCard(scene, 2), "pair-match"));
             assertEquals(List.of(first, held, second), current.getHand());
             assertEquals(List.of(gift), target.getHand());
 
-            clickPairWith(scene, () -> choose("Hand position 3", ButtonData.OK_DONE),
-                    () -> choose("Target", ButtonData.CANCEL_CLOSE));
+            selectFirstInHand(scene);
+            handCard(scene, 0).fire();
+            assertFalse(hasState(handCard(scene, 0), "pair-first"));
+
+            selectFirstInHand(scene);
+            clickMatchingCard(scene, ButtonData.CANCEL_CLOSE);
+            assertFalse(hasState(handCard(scene, 0), "pair-first"));
             assertEquals(List.of(first, held, second), current.getHand());
             assertEquals(List.of(gift), target.getHand());
 
-            clickPairWith(scene, () -> choose("Hand position 3", ButtonData.OK_DONE),
-                    () -> choose("Target", ButtonData.OK_DONE));
+            selectFirstInHand(scene);
+            clickMatchingCard(scene, ButtonData.OK_DONE);
             assertEquals(List.of(held, gift), current.getHand());
             assertEquals(List.of(), target.getHand());
             assertSame(current, state.getCurrentPlayer());
@@ -105,31 +121,51 @@ class CatPairJavaFxSmokeTests {
         }
     }
 
-    private static void clickPairWith(Scene scene, Runnable firstChoice, Runnable targetChoice) {
-        Button firstCard = (Button) scene.lookup("#hand-card-0");
-        assertNotNull(firstCard);
-        CompletableFuture<Void> driven = new CompletableFuture<>();
-        scheduleChoice(driven, firstChoice, targetChoice);
-        firstCard.fire();
-        assertTrue(driven.isDone(), "Clicking a Cat Card must open the chooser.");
-        driven.join();
+    private static Button handCard(Scene scene, int index) {
+        Button card = (Button) scene.lookup("#hand-card-" + index);
+        assertNotNull(card);
+        return card;
     }
 
-    private static void scheduleChoice(CompletableFuture<Void> driven, Runnable choice, Runnable next) {
+    private static boolean hasState(Button card, String state) {
+        return card.getPseudoClassStates().contains(PseudoClass.getPseudoClass(state));
+    }
+
+    private static void selectFirstInHand(Scene scene) {
+        AtomicBoolean selecting = new AtomicBoolean(true);
+        AtomicBoolean openedDialog = new AtomicBoolean();
+        Platform.runLater(() -> {
+            if (selecting.get()) {
+                Window.getWindows().stream().filter(window -> dialogPane(window) != null)
+                        .findFirst().ifPresent(window -> {
+                            openedDialog.set(true);
+                            window.hide();
+                        });
+            }
+        });
+        handCard(scene, 0).fire();
+        selecting.set(false);
+        assertFalse(openedDialog.get(), "The first click stays in the hand.");
+        assertTrue(hasState(handCard(scene, 0), "pair-first"));
+        assertFalse(hasState(handCard(scene, 1), "pair-match"));
+        assertTrue(hasState(handCard(scene, 2), "pair-match"));
+    }
+
+    private static void clickMatchingCard(Scene scene, ButtonData action) {
+        CompletableFuture<Void> driven = new CompletableFuture<>();
         Platform.runLater(() -> {
             try {
-                choice.run();
-                if (next == null) {
-                    driven.complete(null);
-                } else {
-                    scheduleChoice(driven, next, null);
-                }
+                choose("Target", action);
+                driven.complete(null);
             } catch (Throwable failure) {
                 driven.completeExceptionally(failure);
                 List.copyOf(Window.getWindows()).stream().filter(window -> dialogPane(window) != null)
                         .forEach(Window::hide);
             }
         });
+        handCard(scene, 2).fire();
+        assertTrue(driven.isDone(), "The matching card opens the target chooser.");
+        driven.join();
     }
 
     private static void choose(String expectedOption, ButtonData action) {

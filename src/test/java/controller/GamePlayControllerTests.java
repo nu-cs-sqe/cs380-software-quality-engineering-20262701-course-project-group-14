@@ -621,9 +621,10 @@ public class GamePlayControllerTests {
         private List<PlayerSummary> targetCandidates;
 
         @Override
-        public OptionalInt requestSecondCard(List<Integer> candidates) {
+        public void requestSecondCard(int firstHandIndex, List<Integer> candidates,
+                                      IntConsumer onMatchSelected) {
             matchingHandIndices = candidates;
-            return secondCard;
+            secondCard.ifPresent(onMatchSelected);
         }
 
         @Override

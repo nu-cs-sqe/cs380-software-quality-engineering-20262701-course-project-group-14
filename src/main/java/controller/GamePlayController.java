@@ -85,16 +85,17 @@ public final class GamePlayController {
         if (matchingIndices.isEmpty()) {
             return false;
         }
-        chooseCatPair(snapshot, handIndex, matchingIndices);
+        CatPairViewPort choiceView = (CatPairViewPort) view;
+        choiceView.requestSecondCard(handIndex, matchingIndices, secondIndex -> {
+            if (matchingIndices.contains(secondIndex)) {
+                chooseCatPairTarget(snapshot, handIndex, secondIndex);
+            }
+        });
         return true;
     }
 
-    private void chooseCatPair(GameSnapshot snapshot, int firstIndex, List<Integer> matching) {
+    private void chooseCatPairTarget(GameSnapshot snapshot, int firstIndex, int secondIndex) {
         CatPairViewPort choiceView = (CatPairViewPort) view;
-        OptionalInt second = choiceView.requestSecondCard(matching);
-        if (second.isEmpty() || !matching.contains(second.getAsInt())) {
-            return;
-        }
         List<PlayerSummary> targets = eligibleTargets(snapshot);
         if (targets.isEmpty()) {
             showPlayFailure(PlayFailure.TARGET_HAND_EMPTY);
@@ -105,7 +106,7 @@ public final class GamePlayController {
             return;
         }
         CommandPlayActions commandActions = (CommandPlayActions) actions;
-        PlayCommand command = PlayCommand.pair(firstIndex, second.getAsInt(), target.getAsInt());
+        PlayCommand command = PlayCommand.pair(firstIndex, secondIndex, target.getAsInt());
         presentPlayResult(commandActions.playCard(command));
     }
 

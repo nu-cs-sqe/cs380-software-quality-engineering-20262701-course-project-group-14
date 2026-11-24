@@ -54,9 +54,16 @@ Record the tested revision, exact Gradle command, parameterized results, and
 PR in the existing Integration Testing Plan on the Project Board. Track this
 acceptance under W9-IT05. Run the manual prompt and cancellation checks in
 the actual application once fixed-game startup is available. The JavaFX smoke
-test exercises a live window with a fixed state, including both cancellation
-paths, the transferred card in the rendered hand, and both matching faces in
-the discard pile. Run it in a graphical session using:
+test exercises a live window with a fixed state. The player clicks both cards
+in the hand. The first click highlights all matching candidates and opens no
+dialog. Clicking the first card again or pressing Escape cancels the selection.
+Clicking a nonmatching card preserves the selection and submits no play.
+Selecting the second card opens the target dialog. Closing it preserves both
+hands. Confirming a target updates the rendered hand and both discard faces.
+
+The draft view reports the selected original hand index through a callback
+after the second click. The team can reconcile this adapter with the shared
+Week 9 interface before merging. Run the smoke test in a graphical session using:
 
 ```bash
 CS380_RUN_JAVAFX_SMOKE=1 ./gradlew test --rerun --tests 'ui.CatPairJavaFxSmokeTests'

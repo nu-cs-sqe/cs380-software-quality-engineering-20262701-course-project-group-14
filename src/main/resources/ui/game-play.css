@@ -173,6 +173,18 @@
     -fx-border-color: #FFE08C;
 }
 
+.card-button:pair-first {
+    -fx-border-color: #FFB84D;
+}
+
+.card-button:pair-match {
+    -fx-border-color: #FFF1D6;
+}
+
+.card-button:pair-unavailable {
+    -fx-opacity: 0.55;
+}
+
 .card-name {
     -fx-text-fill: #FFF1D6;
     -fx-font-size: 12px;

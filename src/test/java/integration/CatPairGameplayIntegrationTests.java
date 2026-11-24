@@ -138,9 +138,10 @@ class CatPairGameplayIntegrationTests {
         private List<Integer> targetSeats;
 
         @Override
-        public OptionalInt requestSecondCard(List<Integer> indices) {
+        public void requestSecondCard(int firstHandIndex, List<Integer> indices,
+                                      IntConsumer onMatchSelected) {
             handIndices = indices;
-            return OptionalInt.of(2);
+            onMatchSelected.accept(2);
         }
 
         @Override

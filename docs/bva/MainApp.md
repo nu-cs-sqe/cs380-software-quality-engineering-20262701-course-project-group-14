@@ -11,4 +11,4 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| NAV-CAT-01 | A valid fixed game has a matching Cat Card pair and one eligible target. | Open gameplay, cancel each chooser in separate attempts, then confirm both choices. | Opens the playable JavaFX view with the shared engine. Cancellation preserves both hands. A confirmed pair transfers the selected card, updates the rendered hand, and keeps the current player. | :white_check_mark: |
+| NAV-CAT-01 | A valid fixed game has a matching Cat Card pair and one eligible target. | Open gameplay. Cancel the inline selection and target prompt in separate attempts, then click two matching hand cards and confirm the target. | The first click highlights the matching hand cards. Cancellation preserves both hands. A confirmed pair transfers the selected card, updates the rendered hand, and keeps the current player. | :white_check_mark: |
