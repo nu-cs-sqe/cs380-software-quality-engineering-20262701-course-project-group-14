@@ -156,6 +156,8 @@ public final class GamePlayController {
 
     private String drawMessageKey(DrawResult result) {
         switch (result.getStatus()) {
+            case GAME_OVER:
+                return "game.over";
             case EMPTY_DECK:
                 return "draw.empty-deck";
             case REJECTED_PENDING_DEFUSE:

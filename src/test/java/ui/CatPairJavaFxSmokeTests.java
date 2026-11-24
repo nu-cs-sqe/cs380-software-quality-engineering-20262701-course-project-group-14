@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
@@ -65,7 +66,12 @@ class CatPairJavaFxSmokeTests {
 
     @Test
     void FixedGame_LastOpponentEliminated_ShowsWinnerAndLocksPlay() throws Exception {
-        runInJavaFx(CatPairJavaFxSmokeTests::exerciseWinner);
+        runInJavaFx(() -> exerciseWinner(controller -> { }));
+    }
+
+    @Test
+    void FixedGame_LateDrawAfterGameOver_KeepsWinnerVisible() throws Exception {
+        runInJavaFx(() -> exerciseWinner(GamePlayController::handleDraw));
     }
 
     private static void runInJavaFx(Runnable exercise) throws Exception {
@@ -81,7 +87,7 @@ class CatPairJavaFxSmokeTests {
         finished.get(20, TimeUnit.SECONDS);
     }
 
-    private static void exerciseWinner() {
+    private static void exerciseWinner(Consumer<GamePlayController> afterGameOver) {
         Player first = playerWith("First");
         Card held = new Card(CardType.TACOCAT);
         Player winner = playerWith("Winner", held);
@@ -96,7 +102,8 @@ class CatPairJavaFxSmokeTests {
         };
         GamePlayView view = new GamePlayView();
         TurnEngine engine = new TurnEngine(state, discard, elimination, Map.of());
-        new GamePlayController(engine, view).initialize();
+        GamePlayController controller = new GamePlayController(engine, view);
+        controller.initialize();
         Stage stage = new Stage();
         Scene scene = new Scene(view, 960, 760);
         stage.setScene(scene);
@@ -112,6 +119,8 @@ class CatPairJavaFxSmokeTests {
             assertTrue(card.getAccessibleText().contains("locked"));
             card.fire();
             draw.fire();
+            afterGameOver.accept(controller);
+            assertEquals("Winner wins!", scene.lookup("#gameplay-message").getAccessibleText());
             assertEquals(List.of(held), winner.getHand());
             assertSame(winner, state.getCurrentPlayer());
         } finally {

@@ -62,6 +62,7 @@ public final class GamePlayView extends StackPane
     private static final ResourceBundle GAME_OVER_TEXT =
             ResourceBundle.getBundle("ui.GameOverMessages");
     private static final Map<String, String> MESSAGES = Map.ofEntries(
+            Map.entry("game.over", GAME_OVER_TEXT.getString("closed")),
             Map.entry("draw.normal-card", "Card drawn. Next player's turn."),
             Map.entry("draw.empty-deck", "The draw pile is empty."),
             Map.entry(
