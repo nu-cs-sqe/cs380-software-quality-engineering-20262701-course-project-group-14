@@ -244,6 +244,26 @@ class TurnEngineCatPairTests {
                 PlayFailure.INVALID_SELECTION);
     }
 
+    @Test
+    void PlayCard_WithOneTargetCard_TransfersOnlyCard() {
+        Player current = matchingCatHand();
+        Card gift = new Card(CardType.FAVOR);
+        Player target = playerWith("Player 2", gift);
+        GameState state = rejectionGame(current, target);
+        TurnEngine engine = engineFor(state, bound -> {
+            assertEquals(1, bound);
+            return 0;
+        });
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(gift), current.getHand());
+        assertEquals(List.of(), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+        assertSame(current, state.getCurrentPlayer());
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
