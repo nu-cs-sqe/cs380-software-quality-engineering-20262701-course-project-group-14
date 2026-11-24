@@ -99,4 +99,4 @@ assembly and all five types in [W9-IT05](../testing/cat-pair-integration.md).
 | ID | Method under test | State and input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GPC-GO-01 | `handleDraw()` | The game has ended and a draw event reaches the controller. | Refreshes the terminal snapshot and preserves the winner message. | :white_check_mark: |
-| GPC-GO-02 | `handlePlayCard(int)` | The game has ended and a card click reaches the controller. | Refreshes the terminal snapshot and preserves the winner message. | :x: |
+| GPC-GO-02 | `handlePlayCard(int)` | The game has ended and a card click reaches the controller. | Refreshes the terminal snapshot and preserves the winner message. | :white_check_mark: |

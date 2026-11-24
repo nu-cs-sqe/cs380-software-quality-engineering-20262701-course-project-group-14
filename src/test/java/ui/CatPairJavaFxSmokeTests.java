@@ -74,6 +74,11 @@ class CatPairJavaFxSmokeTests {
         runInJavaFx(() -> exerciseWinner(GamePlayController::handleDraw));
     }
 
+    @Test
+    void FixedGame_LatePlayAfterGameOver_KeepsWinnerVisible() throws Exception {
+        runInJavaFx(() -> exerciseWinner(controller -> controller.handlePlayCard(0)));
+    }
+
     private static void runInJavaFx(Runnable exercise) throws Exception {
         CompletableFuture<Void> finished = new CompletableFuture<>();
         Platform.runLater(() -> {

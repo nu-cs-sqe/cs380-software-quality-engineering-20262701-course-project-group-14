@@ -175,6 +175,8 @@ public final class GamePlayController {
 
     private String playFailureMessageKey(PlayFailure failure) {
         switch (failure) {
+            case GAME_OVER:
+                return "game.over";
             case INVALID_HAND_INDEX:
                 return "play.invalid-hand-index";
             case CARD_NOT_PLAYABLE:
