@@ -10,6 +10,8 @@ public final class GameSnapshot {
     private final int discardPileSize;
     private final int alivePlayerCount;
     private final TurnPhase phase;
+    private final List<PlayerSummary> players;
+    private final int currentPlayerIndex;
 
     private GameSnapshot(
             String currentPlayerName,
@@ -25,6 +27,23 @@ public final class GameSnapshot {
         this.discardPileSize = discardPileSize;
         this.alivePlayerCount = alivePlayerCount;
         this.phase = phase;
+        this.players = List.of();
+        this.currentPlayerIndex = 0;
+    }
+
+    private GameSnapshot(GameSnapshot base, List<PlayerSummary> players, int currentPlayerIndex) {
+        this.currentPlayerName = base.currentPlayerName;
+        this.currentPlayerHand = base.currentPlayerHand;
+        this.deckSize = base.deckSize;
+        this.discardPileSize = base.discardPileSize;
+        this.alivePlayerCount = base.alivePlayerCount;
+        this.phase = base.phase;
+        this.players = List.copyOf(players);
+        this.currentPlayerIndex = currentPlayerIndex;
+    }
+
+    GameSnapshot withPlayerSummaries(List<PlayerSummary> players, int currentPlayerIndex) {
+        return new GameSnapshot(this, players, currentPlayerIndex);
     }
 
     public static GameSnapshot create(
@@ -105,5 +124,13 @@ public final class GameSnapshot {
 
     public TurnPhase getPhase() {
         return phase;
+    }
+
+    public List<PlayerSummary> getPlayers() {
+        return players;
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
     }
 }

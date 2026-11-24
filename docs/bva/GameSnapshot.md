@@ -57,3 +57,11 @@
 |---|---|---|---|---|
 | GSP-21 | A snapshot was created in `ACTIONS_ALLOWED`. | None | Returns `ACTIONS_ALLOWED` and never returns `null`. | implemented in GSP-01 |
 | GSP-22 | A snapshot was created in `AWAITING_DEFUSE_POSITION`. | None | Returns `AWAITING_DEFUSE_POSITION`. | :white_check_mark: |
+
+## Methods under test: `getPlayers()` and `getCurrentPlayerIndex()`
+
+These cases use the local draft-engine baseline for controller integration.
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GSP-24 | Three seats exist and the middle player has been eliminated. An active player has already become current in seat `2`. | Read a gameplay snapshot from `TurnEngine`. | Returns player summaries in original seat order, including the eliminated seat, and reports current seat `2`. The list is immutable and its hand counts remain fixed when the live hands change. | :white_check_mark: |

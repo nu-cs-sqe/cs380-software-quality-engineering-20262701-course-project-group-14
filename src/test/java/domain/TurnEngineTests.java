@@ -9,8 +9,36 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TurnEngineTests {
+
+    @Test
+    public void GetSnapshot_WithEliminatedSeat_PreservesSeatOrderAndCounts() {
+        Player first = new Player("First");
+        Player eliminated = new Player("Eliminated");
+        eliminated.eliminate();
+        Player current = new Player("Current");
+        current.addCard(new Card(CardType.TACOCAT));
+        GameState state = new GameState(List.of(first, eliminated, current), new Deck());
+        state.advanceCurrentPlayer();
+        TurnActions engine = TurnEngineFactory.create(state);
+
+        GameSnapshot snapshot = engine.getSnapshot();
+
+        List<PlayerSummary> players = snapshot.getPlayers();
+        assertEquals(3, players.size());
+        assertEquals(0, players.get(0).getPlayerIndex());
+        assertEquals(1, players.get(1).getPlayerIndex());
+        assertEquals(2, players.get(2).getPlayerIndex());
+        assertTrue(players.get(1).isEliminated());
+        assertEquals("Current", players.get(2).getName());
+        assertEquals(2, snapshot.getCurrentPlayerIndex());
+        assertThrows(UnsupportedOperationException.class, () -> players.remove(0));
+        current.addCard(new Card(CardType.SKIP));
+        assertEquals(1, players.get(2).getHandSize());
+        assertEquals(2, engine.getSnapshot().getPlayers().get(2).getHandSize());
+    }
 
     @Test
     public void Constructor_WithValidDependencies_StartsWithActionsAllowed() {

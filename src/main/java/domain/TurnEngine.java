@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class TurnEngine implements TurnActions, CommandPlayActions {
     private final GameState state;
@@ -73,12 +74,22 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         List<CardType> hand = currentPlayer.getHand().stream()
                 .map(Card::getType)
                 .collect(Collectors.toList());
-        long alivePlayers = state.getPlayers().stream()
-                .filter(player -> !player.isEliminated())
+        List<Player> players = state.getPlayers();
+        List<PlayerSummary> summaries = IntStream.range(0, players.size())
+                .mapToObj(index -> playerSummary(index, players.get(index)))
+                .collect(Collectors.toList());
+        long alivePlayers = summaries.stream()
+                .filter(summary -> !summary.isEliminated())
                 .count();
 
         return GameSnapshot.create(currentPlayer.getName(), hand, state.getDeck().size(),
-                discardPile.size(), Math.toIntExact(alivePlayers), getPhase());
+                discardPile.size(), Math.toIntExact(alivePlayers), getPhase())
+                .withPlayerSummaries(summaries, players.indexOf(currentPlayer));
+    }
+
+    private static PlayerSummary playerSummary(int seat, Player player) {
+        return PlayerSummary.create(seat, player.getName(), player.getHand().size(),
+                player.isEliminated());
     }
 
     @Override
