@@ -23,15 +23,14 @@ public class TurnEngineFactoryTests {
     }
 
     @Test
-    public void Create_WithAttack_RegistersEffectAndAssignsTurnDebt() {
+    public void Create_WithAttack_PassesTurnAfterTwoDraws() {
         Player first = new Player("Player 1");
         Player second = new Player("Player 2");
         first.addCard(new Card(CardType.ATTACK));
         Deck deck = emptyDeck();
-        deck.addCards(List.of(
-                new Card(CardType.SKIP),
-                new Card(CardType.FAVOR)
-        ));
+        Card skip = new Card(CardType.SKIP);
+        Card favor = new Card(CardType.FAVOR);
+        deck.addCards(List.of(skip, favor));
         GameState state = new GameState(List.of(first, second), deck);
         TurnActions actions = TurnEngineFactory.create(state);
 
@@ -41,11 +40,20 @@ public class TurnEngineFactoryTests {
         assertEquals(0, first.getHand().size());
         assertSame(second, state.getCurrentPlayer());
         assertEquals(1, actions.getSnapshot().getDiscardPileSize());
+        assertEquals(2, actions.getSnapshot().getRemainingTurns());
 
-        DrawResult drawResult = actions.draw();
+        DrawResult firstDraw = actions.draw();
 
-        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, drawResult.getStatus());
+        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, firstDraw.getStatus());
         assertSame(second, state.getCurrentPlayer());
+        assertEquals(1, actions.getSnapshot().getRemainingTurns());
+
+        DrawResult secondDraw = actions.draw();
+
+        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, secondDraw.getStatus());
+        assertSame(first, state.getCurrentPlayer());
+        assertEquals(1, actions.getSnapshot().getRemainingTurns());
+        assertEquals(List.of(skip, favor), second.getHand());
     }
 
     @Test
