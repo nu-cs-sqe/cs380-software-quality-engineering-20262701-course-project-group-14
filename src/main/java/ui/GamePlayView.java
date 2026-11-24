@@ -1,10 +1,12 @@
 package ui;
 
-import controller.GamePlayViewPort;
+import controller.CatPairViewPort;
 import domain.CardType;
 import domain.GameSnapshot;
+import domain.PlayerSummary;
 import domain.TurnPhase;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,7 +55,7 @@ import javafx.util.Duration;
  * - Cat-pair combo lift & contextual unfurling parchment rule scroll
  */
 public final class GamePlayView extends StackPane
-        implements GamePlayViewPort {
+        implements CatPairViewPort {
     private static final Map<String, String> MESSAGES = Map.ofEntries(
             Map.entry("draw.normal-card", "Card drawn. Next player's turn."),
             Map.entry("draw.empty-deck", "The draw pile is empty."),
@@ -357,6 +359,36 @@ public final class GamePlayView extends StackPane
         dimOverlay.setVisible(true);
         try {
             return DefusePositionDialog.show(owner, stylesheetUrl, minimum, maximum);
+        } finally {
+            dimOverlay.setVisible(false);
+        }
+    }
+
+    @Override
+    public OptionalInt requestSecondCard(List<Integer> matchingHandIndices) {
+        Map<Integer, String> options = new LinkedHashMap<>();
+        for (int index : matchingHandIndices) {
+            String name = CardCatalog.lookup(hand.get(index).name()).name;
+            options.put(index, CatPairChoiceDialog.text("second.option", name, index + 1));
+        }
+        return requestCatPairChoice("second.title", options);
+    }
+
+    @Override
+    public OptionalInt requestTargetPlayer(List<PlayerSummary> candidates) {
+        Map<Integer, String> options = new LinkedHashMap<>();
+        for (PlayerSummary player : candidates) {
+            options.put(player.getPlayerIndex(), CatPairChoiceDialog.text("target.option",
+                    player.getName(), player.getHandSize()));
+        }
+        return requestCatPairChoice("target.title", options);
+    }
+
+    private OptionalInt requestCatPairChoice(String titleKey, Map<Integer, String> options) {
+        Window owner = getScene() == null ? null : getScene().getWindow();
+        dimOverlay.setVisible(true);
+        try {
+            return CatPairChoiceDialog.show(owner, stylesheetUrl, titleKey, options);
         } finally {
             dimOverlay.setVisible(false);
         }
@@ -1271,6 +1303,7 @@ public final class GamePlayView extends StackPane
 
         Button button = new Button();
         button.getStyleClass().add("card-button");
+        button.setId("hand-card-" + handIndex);
         button.setGraphic(card);
         button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         button.setPadding(Insets.EMPTY);

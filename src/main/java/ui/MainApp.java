@@ -1,16 +1,12 @@
 package ui;
 
+import controller.GamePlayController;
+import controller.GamePlayViewPort;
 import controller.GameSetupController;
-import domain.Card;
-import domain.CardType;
-import domain.GameSnapshot;
 import domain.GameState;
-import domain.Player;
-import domain.TurnPhase;
-import java.util.List;
+import domain.TurnEngineFactory;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -40,17 +36,14 @@ public final class MainApp extends Application {
         stage.show();
     }
 
-    private static void showGameplay(Scene scene, GameState state) {
+    static void showGameplay(Scene scene, GameState state) {
         GamePlayView gameplay = new GamePlayView();
-        Player currentPlayer = state.getCurrentPlayer();
-        List<CardType> hand = currentPlayer.getHand().stream()
-                .map(Card::getType)
-                .collect(Collectors.toList());
-        GameSnapshot initial = GameSnapshot.create(currentPlayer.getName(), hand,
-                state.getDeck().size(), 0, state.getPlayers().size(), TurnPhase.ACTIONS_ALLOWED);
-        gameplay.render(initial);
-        gameplay.disableTurnActions();
+        startGameplay(state, gameplay);
         scene.setRoot(gameplay);
+    }
+
+    static void startGameplay(GameState state, GamePlayViewPort view) {
+        new GamePlayController(TurnEngineFactory.create(state), view).initialize();
     }
 
     static void startGame(

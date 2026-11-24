@@ -2,8 +2,9 @@
 
 - **Owner:** Xiaoyi Wang
 - **Status:** All five pair-play examples and the single-card rejection passed
-  through the factory on the local draft-engine baseline. Production startup
-  and manual verification are pending.
+  through the factory on the local draft-engine baseline. The opt-in JavaFX
+  smoke test also passed through the real view and startup assembly. Repeat
+  the scenario on the reviewed baseline before merging.
 - **Controller check:** All five types also passed through the registered
   play callback with a test view. The scenario selects original hand index `2`
   and seat `3` after filtering eliminated and empty-handed players.
@@ -52,4 +53,13 @@ fresh state. A view adapter can drive the interaction without launching JavaFX.
 Record the tested revision, exact Gradle command, parameterized results, and
 PR in the existing Integration Testing Plan on the Project Board. Track this
 acceptance under W9-IT05. Run the manual prompt and cancellation checks in
-the actual application once fixed-game startup is available.
+the actual application once fixed-game startup is available. The JavaFX smoke
+test exercises a live window with a fixed state, including both cancellation
+paths and a completed pair. Run it in a graphical session using:
+
+```bash
+CS380_RUN_JAVAFX_SMOKE=1 ./gradlew test --rerun --tests 'ui.CatPairJavaFxSmokeTests'
+```
+
+The draft resolver remains a dependency for rounds that draw an Exploding
+Kitten. The pair-play smoke test does not draw from the deck.
