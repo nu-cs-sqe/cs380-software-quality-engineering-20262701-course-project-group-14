@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TurnEngineCatPairTests {
 
@@ -346,6 +347,30 @@ class TurnEngineCatPairTests {
         assertEquals(DrawStatus.REJECTED_PENDING_DEFUSE, engine.draw().getStatus());
         assertEquals(1, deck.size());
         assertEquals(CardType.SHUFFLE, deck.drawCard().getType());
+    }
+
+    @Test
+    void PlayCard_WithNullCommand_ThrowsWithoutChangingState() {
+        Player current = matchingCatHand();
+        Player target = eligibleTarget();
+        List<Card> currentHand = List.copyOf(current.getHand());
+        List<Card> targetHand = List.copyOf(target.getHand());
+        GameState state = rejectionGame(current, target);
+        TurnEngine engine = engineFor(state, bound -> {
+            throw new AssertionError("A null command must not use randomness.");
+        });
+
+        assertThrows(NullPointerException.class, () -> engine.playCard((PlayCommand) null));
+
+        assertEquals(currentHand, current.getHand());
+        assertEquals(targetHand, target.getHand());
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(2, engine.getSnapshot().getDeckSize());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(target, state.getCurrentPlayer());
+        assertEquals(CardType.NOPE, state.getDeck().drawCard().getType());
     }
 
     private static Player playerWith(String name, Card... hand) {
