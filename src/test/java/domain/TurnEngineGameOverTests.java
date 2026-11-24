@@ -61,6 +61,17 @@ class TurnEngineGameOverTests {
         game.assertGameUnchanged();
     }
 
+    @Test
+    void ResolveDefuse_AfterGameOver_LeavesFinalStateUnchanged() {
+        FinalTurn game = new FinalTurn();
+        game.engine.draw();
+
+        DefuseResult result = game.engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.NOT_AWAITING_DEFUSE, result);
+        game.assertGameUnchanged();
+    }
+
     private static final class FinalTurn {
         private final Player loser = new Player("Loser");
         private final Player winner = new Player("Winner");
