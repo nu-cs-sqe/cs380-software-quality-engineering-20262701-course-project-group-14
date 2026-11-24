@@ -71,3 +71,22 @@
 - State: Valid actions and view exist. The snapshot has 4 cards in the deck. The view selects position 2 and the actions return DEFUSED.
 - Input: Initialize the controller, then trigger the view's position-selection event.
 - Expected: The view is asked for a position in [0, 4], resolveDefuse(2) is called once, the success message appears, and the snapshot is rendered. Total render count is 2.
+
+## Method under test: `handlePlayCard(int handIndex)` for Cat Card selection
+
+These cases use the proposed Week 9 view and command interfaces. The controller
+collects selections and presents results. The engine validates each submitted
+command and applies all game rules. Use a hand-written view adapter and exercise
+the public controller entry. Each cancellation case starts with a fresh fixture.
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GPC-CAT-01 | The current hand is `[TACOCAT, SKIP, TACOCAT, BEARD_CAT]`. | Click hand index `0`. | The second-card chooser receives original index `2` as its only candidate. | :x: |
+| GPC-CAT-02 | A matching second card is available. | Click the first card and close the second-card chooser. | Neither the target chooser nor a play entry is invoked. | :x: |
+| GPC-CAT-03 | Seat `0` is current, seat `1` is eliminated, seat `2` is active with an empty hand, and seat `3` is active with cards. | Select the second matching card. | The target chooser receives only seat `3` and receives no private card identities. | :x: |
+| GPC-CAT-04 | A second card and an eligible target are available. | Choose the second card and close the target chooser. | No play command or legacy single-card play is submitted. | :x: |
+| GPC-CAT-05 | Hand indices `0` and `2` match. Eligible targets are seats `2` and `3`, in that order. | Click `0`, choose `2`, then select seat `3` from the target chooser. | Submits `PlayCommand.pair(0, 2, 3)` exactly once and renders the latest snapshot when the result is `CONTINUE_TURN`. | :x: |
+| GPC-CAT-06 | A submitted pair is rejected with `INVALID_TARGET`. | Confirm both choices. | Shows localized rejection feedback, renders the latest snapshot, and submits no replacement command. | :x: |
+
+Use the same interaction for all five Cat Card types. Cover the production
+assembly and all five types in [W9-IT05](../testing/cat-pair-integration.md).
