@@ -1,11 +1,17 @@
 package ui;
 
+import controller.GamePlayController;
 import domain.Card;
 import domain.CardType;
 import domain.Deck;
+import domain.DiscardPile;
+import domain.ExplodingKittenResolver;
+import domain.ExplosionOutcome;
 import domain.GameState;
 import domain.Player;
+import domain.TurnEngine;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,16 +60,63 @@ class CatPairJavaFxSmokeTests {
 
     @Test
     void FixedGame_CancelsThenPlaysPairThroughRealWindow() throws Exception {
+        runInJavaFx(CatPairJavaFxSmokeTests::exerciseWindow);
+    }
+
+    @Test
+    void FixedGame_LastOpponentEliminated_ShowsWinnerAndLocksPlay() throws Exception {
+        runInJavaFx(CatPairJavaFxSmokeTests::exerciseWinner);
+    }
+
+    private static void runInJavaFx(Runnable exercise) throws Exception {
         CompletableFuture<Void> finished = new CompletableFuture<>();
         Platform.runLater(() -> {
             try {
-                exerciseWindow();
+                exercise.run();
                 finished.complete(null);
             } catch (Throwable failure) {
                 finished.completeExceptionally(failure);
             }
         });
         finished.get(20, TimeUnit.SECONDS);
+    }
+
+    private static void exerciseWinner() {
+        Player first = playerWith("First");
+        Card held = new Card(CardType.TACOCAT);
+        Player winner = playerWith("Winner", held);
+        GameState state = new GameState(List.of(first, winner), new Deck());
+        DiscardPile discard = new DiscardPile();
+        ExplodingKittenResolver elimination = new ExplodingKittenResolver(discard) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card kitten) {
+                player.eliminate();
+                return ExplosionOutcome.PLAYER_ELIMINATED;
+            }
+        };
+        GamePlayView view = new GamePlayView();
+        TurnEngine engine = new TurnEngine(state, discard, elimination, Map.of());
+        new GamePlayController(engine, view).initialize();
+        Stage stage = new Stage();
+        Scene scene = new Scene(view, 960, 760);
+        stage.setScene(scene);
+        try {
+            stage.show();
+            Button draw = (Button) scene.lookup("#draw-card");
+            assertNotNull(draw);
+            draw.fire();
+
+            assertEquals("Winner wins!", scene.lookup("#gameplay-message").getAccessibleText());
+            assertTrue(draw.isDisabled());
+            Button card = handCard(scene, 0);
+            assertTrue(card.getAccessibleText().contains("locked"));
+            card.fire();
+            draw.fire();
+            assertEquals(List.of(held), winner.getHand());
+            assertSame(winner, state.getCurrentPlayer());
+        } finally {
+            stage.close();
+        }
     }
 
     private static void exerciseWindow() {

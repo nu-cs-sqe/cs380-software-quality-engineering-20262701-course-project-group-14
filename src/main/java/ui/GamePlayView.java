@@ -5,6 +5,7 @@ import domain.CardType;
 import domain.GameSnapshot;
 import domain.PlayerSummary;
 import domain.TurnPhase;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.IntConsumer;
 import javafx.animation.Animation;
@@ -57,6 +59,8 @@ import javafx.util.Duration;
  */
 public final class GamePlayView extends StackPane
         implements CatPairViewPort {
+    private static final ResourceBundle GAME_OVER_TEXT =
+            ResourceBundle.getBundle("ui.GameOverMessages");
     private static final Map<String, String> MESSAGES = Map.ofEntries(
             Map.entry("draw.normal-card", "Card drawn. Next player's turn."),
             Map.entry("draw.empty-deck", "The draw pile is empty."),
@@ -203,6 +207,7 @@ public final class GamePlayView extends StackPane
     // ---- state ----
     private boolean compact;
     private String playerName = "";
+    private String winnerMessage;
     private int deckSize;
     private int initialDeckMax = 20;
     private int discardSize;
@@ -233,6 +238,7 @@ public final class GamePlayView extends StackPane
 
         buildBanner();
         buildTopTableStrip();
+        messageRibbon.setId("gameplay-message");
         buildTavernProps();
         buildArenaStations();
         discardPileHolder.setId("discard-pile");
@@ -344,6 +350,13 @@ public final class GamePlayView extends StackPane
         hand = List.copyOf(snapshot.getCurrentPlayerHand());
         boolean wasDanger = danger;
         danger = snapshot.getPhase() == TurnPhase.AWAITING_DEFUSE_POSITION;
+        turnActionsDisabled = snapshot.getPhase() == TurnPhase.GAME_OVER;
+        winnerMessage = turnActionsDisabled
+                ? MessageFormat.format(GAME_OVER_TEXT.getString("winner"), playerName)
+                : null;
+        if (turnActionsDisabled) {
+            currentWarning = false;
+        }
 
         background.setTension(danger, deckSize <= LOW_DECK_THRESHOLD);
         refreshCatSprite();
@@ -575,6 +588,7 @@ public final class GamePlayView extends StackPane
         fuseGauge.setAlignment(Pos.CENTER);
 
         drawButton.getStyleClass().add("draw-button");
+        drawButton.setId("draw-card");
         drawButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         drawButton.setAccessibleText("Draw Card");
         drawButton.setOnAction(event -> triggerDrawWithFlight());
@@ -821,6 +835,7 @@ public final class GamePlayView extends StackPane
                 ? messageIcon.getImage().getWidth() + messageRibbon.getSpacing() : 0;
         double maxTextW = ribbonWidth - insets.getLeft() - insets.getRight() - warningWidth;
         String text = messageText();
+        messageRibbon.setAccessibleText(text);
         messageHolder.getChildren().setAll(
                 bodyText(text, 2, GameTheme.CREAM, maxTextW, "msg-text"));
         messageRibbon.pseudoClassStateChanged(DANGER, currentWarning);
@@ -829,6 +844,9 @@ public final class GamePlayView extends StackPane
     }
 
     private String messageText() {
+        if (winnerMessage != null) {
+            return winnerMessage;
+        }
         if (handPairSelection != null) {
             return CatPairChoiceDialog.text("hand.select-match");
         }
