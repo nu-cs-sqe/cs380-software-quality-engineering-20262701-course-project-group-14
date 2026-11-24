@@ -87,6 +87,7 @@ the public controller entry. Each cancellation case starts with a fresh fixture.
 | GPC-CAT-04 | A second card and an eligible target are available. | Choose the second card and close the target chooser. | No play command or legacy single-card play is submitted. | :x: |
 | GPC-CAT-05 | Hand indices `0` and `2` match. Eligible targets are seats `2` and `3`, in that order. | Click `0`, choose `2`, then select seat `3` from the target chooser. | Submits `PlayCommand.pair(0, 2, 3)` exactly once and renders the latest snapshot when the result is `CONTINUE_TURN`. | :x: |
 | GPC-CAT-06 | A submitted pair is rejected with `INVALID_TARGET`. | Confirm both choices. | Shows localized rejection feedback, renders the latest snapshot, and submits no replacement command. | :x: |
+| GPC-CAT-07 | The legacy play entry rejects a single Cat Card with `INVALID_SELECTION`. | Click hand index `0` before the pair chooser is connected. | Shows the existing `play.card-not-playable` message and renders the latest snapshot. | :white_check_mark: |
 
 Use the same interaction for all five Cat Card types. Cover the production
 assembly and all five types in [W9-IT05](../testing/cat-pair-integration.md).

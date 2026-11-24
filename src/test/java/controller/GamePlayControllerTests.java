@@ -254,6 +254,21 @@ public class GamePlayControllerTests {
     }
 
     @Test
+    public void HandlePlay_InvalidSelection_ShowsFailureAndRenders() {
+        GameSnapshot snapshot = createSnapshot(7);
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.rejected(PlayFailure.INVALID_SELECTION);
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals("play.card-not-playable", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
+    @Test
     public void HandlePlay_PreconditionNotMet_ShowsFailureAndRenders() {
         GameSnapshot snapshot = createSnapshot(7);
         StubActions actions = new StubActions(snapshot);
