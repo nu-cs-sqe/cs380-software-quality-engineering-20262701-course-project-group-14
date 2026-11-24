@@ -13,6 +13,7 @@ import domain.TurnEngine;
 import domain.TurnEngineFactory;
 import domain.TurnPhase;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -50,6 +51,35 @@ class CatPairGameplayIntegrationTests {
         assertEquals(List.of(held, transferred), current.getHand());
         assertEquals(List.of(leftWithTarget), target.getHand());
         assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(2, deck.size());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(target, state.getCurrentPlayer());
+        assertEquals(CardType.NOPE, deck.drawCard().getType());
+    }
+
+    @Test
+    void FactoryGame_WithSingleCatCard_RejectsWithoutChangingTheGame() {
+        Player current = new Player("Player 1");
+        Player target = new Player("Player 2");
+        Card cat = new Card(CardType.TACOCAT);
+        Card gift = new Card(CardType.FAVOR);
+        current.addCard(cat);
+        target.addCard(gift);
+        Deck deck = fixedDeck();
+        GameState state = new GameState(List.of(current, target), deck);
+        TurnEngine engine = TurnEngineFactory.create(state, bound -> {
+            throw new AssertionError("A single Cat Card cannot select a target card.");
+        });
+
+        PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.INVALID_SELECTION, result.getFailure());
+        assertEquals(List.of(cat), current.getHand());
+        assertEquals(List.of(gift), target.getHand());
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
         assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
         assertSame(current, state.getCurrentPlayer());
         assertEquals(2, deck.size());
