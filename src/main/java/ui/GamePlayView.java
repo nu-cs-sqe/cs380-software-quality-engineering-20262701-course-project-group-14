@@ -6,6 +6,7 @@ import domain.GameSnapshot;
 import domain.PlayerSummary;
 import domain.TurnPhase;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -230,6 +231,7 @@ public final class GamePlayView extends StackPane
         buildTopTableStrip();
         buildTavernProps();
         buildArenaStations();
+        discardPileHolder.setId("discard-pile");
         buildParchmentScroll();
         buildHandHud();
 
@@ -934,6 +936,8 @@ public final class GamePlayView extends StackPane
         for (int i = 0; i < knownCount; i++) {
             CardCatalog.Info info = CardCatalog.lookup(recentDiscards.get(i).name());
             ImageView face = PixelArt.view(CardCatalog.face(info, true, CardCatalog.Face.READY));
+            face.getStyleClass().add("discard-face");
+            face.setAccessibleText(info.name);
             int slot = fillerCount + i;
             face.setLayoutX(baseX + (slot - totalVisible * 0.5) * spreadX);
             face.setLayoutY(baseY - i * 3);
@@ -1145,15 +1149,21 @@ public final class GamePlayView extends StackPane
         double startY = handFanPane.getLayoutY() + source.getLayoutY() + source.getTranslateY();
         double angle = source.getRotate();
         onPlayCard.accept(handIndex);
-        if (discardSize == previousDiscardSize + 1) {
-            recentDiscards.addAll(previousDiscards);
-            recentDiscards.add(type);
-            if (recentDiscards.size() > DISPLAYED_DISCARDS) {
-                recentDiscards.remove(0);
-            }
-            updateDiscard();
+        int discarded = discardSize - previousDiscardSize;
+        if (discarded == 1 || (discarded == 2 && type.isCatCard())) {
+            showPlayedCards(previousDiscards, type, discarded);
             launchPlayCardFlight(info, startX, startY, angle);
         }
+    }
+
+    private void showPlayedCards(List<CardType> previousDiscards, CardType type, int count) {
+        recentDiscards.addAll(previousDiscards);
+        recentDiscards.addAll(Collections.nCopies(count, type));
+        int excess = recentDiscards.size() - DISPLAYED_DISCARDS;
+        if (excess > 0) {
+            recentDiscards.subList(0, excess).clear();
+        }
+        updateDiscard();
     }
 
     // ------------------------------------------------------------------

@@ -8,7 +8,9 @@ import domain.Player;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -94,6 +96,10 @@ class CatPairJavaFxSmokeTests {
             Button renderedCard = (Button) scene.lookup("#hand-card-1");
             assertNotNull(renderedCard);
             assertTrue(renderedCard.getAccessibleText().contains("Favor"));
+            Node discardPile = scene.lookup("#discard-pile");
+            assertNotNull(discardPile);
+            assertEquals(List.of("Tacocat", "Tacocat"), discardPile.lookupAll(".discard-face")
+                    .stream().map(Node::getAccessibleText).collect(Collectors.toList()));
         } finally {
             stage.close();
         }

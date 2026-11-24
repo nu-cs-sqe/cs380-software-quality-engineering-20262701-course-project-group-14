@@ -55,7 +55,8 @@ PR in the existing Integration Testing Plan on the Project Board. Track this
 acceptance under W9-IT05. Run the manual prompt and cancellation checks in
 the actual application once fixed-game startup is available. The JavaFX smoke
 test exercises a live window with a fixed state, including both cancellation
-paths and a completed pair. Run it in a graphical session using:
+paths, the transferred card in the rendered hand, and both matching faces in
+the discard pile. Run it in a graphical session using:
 
 ```bash
 CS380_RUN_JAVAFX_SMOKE=1 ./gradlew test --rerun --tests 'ui.CatPairJavaFxSmokeTests'
