@@ -264,6 +264,28 @@ class TurnEngineCatPairTests {
         assertSame(current, state.getCurrentPlayer());
     }
 
+    @Test
+    void PlayCard_WithLastTargetIndex_LeavesOtherCardsInOrder() {
+        Player current = matchingCatHand();
+        Card first = new Card(CardType.ATTACK);
+        Card middle = new Card(CardType.SKIP);
+        Card last = new Card(CardType.FAVOR);
+        Player target = playerWith("Player 2", first, middle, last);
+        GameState state = rejectionGame(current, target);
+        TurnEngine engine = engineFor(state, bound -> {
+            assertEquals(3, bound);
+            return 2;
+        });
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(last), current.getHand());
+        assertEquals(List.of(first, middle), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+        assertSame(current, state.getCurrentPlayer());
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
