@@ -4,6 +4,9 @@
 - **Status:** All five pair-play examples and the single-card rejection passed
   through the factory on the local draft-engine baseline. Production startup
   and manual verification are pending.
+- **Controller check:** All five types also passed through the registered
+  play callback with a test view. The scenario selects original hand index `2`
+  and seat `3` after filtering eliminated and empty-handed players.
 - **Related:** [Cat Card pair-play BVA](../bva/CatPairPlay.md), CAT-01,
   CAT-12, CAT-13, and CAT-24
 
