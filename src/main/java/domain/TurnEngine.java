@@ -187,6 +187,9 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     @Override
     public PlayResult playCard(PlayCommand command) {
         Objects.requireNonNull(command, "Play command must not be null.");
+        if (gameOver) {
+            return PlayResult.rejected(PlayFailure.GAME_OVER);
+        }
         if (pendingKitten != null) {
             return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
         }

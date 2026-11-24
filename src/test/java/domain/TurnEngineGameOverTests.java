@@ -24,6 +24,18 @@ class TurnEngineGameOverTests {
         assertEquals(0, snapshot.getRemainingTurns());
     }
 
+    @Test
+    void PlayCard_CatPairAfterGameOver_RejectsAndPreservesWinner() {
+        FinalTurn game = new FinalTurn();
+        game.engine.draw();
+
+        PlayResult result = game.engine.playCard(PlayCommand.pair(0, 1, 0));
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.GAME_OVER, result.getFailure());
+        game.assertGameUnchanged();
+    }
+
     private static final class FinalTurn {
         private final Player loser = new Player("Loser");
         private final Player winner = new Player("Winner");
@@ -46,6 +58,18 @@ class TurnEngineGameOverTests {
             engine = new TurnEngine(state, discard, elimination, Map.of(), bound -> {
                 throw new AssertionError("Game-over actions must not use randomness.");
             });
+        }
+
+        private void assertGameUnchanged() {
+            GameSnapshot snapshot = engine.getSnapshot();
+            assertEquals(TurnPhase.GAME_OVER, snapshot.getPhase());
+            assertEquals(OptionalInt.of(1), snapshot.getWinnerIndex());
+            assertEquals(0, snapshot.getRemainingTurns());
+            assertEquals(List.of(CardType.TACOCAT, CardType.TACOCAT), snapshot.getCurrentPlayerHand());
+            assertEquals(List.of(), loser.getHand());
+            assertEquals(1, deck.size());
+            assertEquals(CardType.SKIP, deck.peekTopCard().getType());
+            assertEquals(0, discard.size());
         }
     }
 }
