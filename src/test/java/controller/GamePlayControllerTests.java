@@ -527,6 +527,24 @@ public class GamePlayControllerTests {
         assertSame(latest, ((RecordingView) view).renderedSnapshot);
     }
 
+    @Test
+    public void HandlePlay_RejectedCatPair_ShowsFeedbackAndDoesNotRetry() {
+        GameSnapshot snapshot = catPairSnapshot(playerWith("Target", CardType.ATTACK));
+        PairActions actions = new PairActions(snapshot);
+        actions.commandResult = PlayResult.rejected(PlayFailure.INVALID_TARGET);
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+        view.targetSeat = OptionalInt.of(1);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(1, actions.commandCalls);
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertEquals("play.card-not-playable", ((RecordingView) view).messageKey);
+        assertSame(snapshot, ((RecordingView) view).renderedSnapshot);
+        assertEquals(1, ((RecordingView) view).renderCalls);
+    }
+
     private static GameSnapshot catPairSnapshot(Player... others) {
         List<Player> players = new ArrayList<>();
         players.add(playerWith("Player 1", CardType.TACOCAT, CardType.SKIP,
