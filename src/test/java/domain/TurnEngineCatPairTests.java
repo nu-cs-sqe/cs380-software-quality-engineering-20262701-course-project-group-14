@@ -62,6 +62,35 @@ class TurnEngineCatPairTests {
         assertEquals(2, engine.getSnapshot().getDiscardPileSize());
     }
 
+    @Test
+    void PlayCard_WithDuplicatePairIndex_RejectsWithoutChangingState() {
+        Card first = new Card(CardType.TACOCAT);
+        Card second = new Card(CardType.TACOCAT);
+        Card gift = new Card(CardType.FAVOR);
+        Card deckTop = new Card(CardType.SHUFFLE);
+        Player current = playerWith("Player 1", first, second);
+        Player target = playerWith("Player 2", gift);
+        Deck deck = Deck.fromTopToBottom(List.of(deckTop));
+        GameState state = new GameState(List.of(current, target), deck);
+        TurnEngine engine = engineFor(state, bound -> {
+            throw new AssertionError("An invalid pair must not choose a target card.");
+        });
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 0, 1));
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.INVALID_SELECTION, result.getFailure());
+        assertEquals(List.of(first, second), current.getHand());
+        assertEquals(List.of(gift), target.getHand());
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(1, deck.size());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(deckTop, current.getHand().get(2));
+        assertSame(target, state.getCurrentPlayer());
+    }
+
     private static Player playerWith(String name, Card... hand) {
         Player player = new Player(name);
         for (Card card : hand) {
