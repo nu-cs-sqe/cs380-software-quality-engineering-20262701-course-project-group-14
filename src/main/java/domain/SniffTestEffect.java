@@ -15,7 +15,10 @@ public final class SniffTestEffect implements CardEffect {
     @Override
     public EffectOutcome play(Player player, Deck deck) {
         Card topCard = deck.drawCard();
-        deck.insertAt(topCard, 0);
+        int position = topCard.getType() == CardType.EXPLODING_KITTEN
+                ? deck.size()
+                : 0;
+        deck.insertAt(topCard, position);
         return new EffectOutcome(false, List.of(topCard.getType()));
     }
 }

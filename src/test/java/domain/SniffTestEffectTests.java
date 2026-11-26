@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -80,6 +81,25 @@ public class SniffTestEffectTests {
         assertEquals(List.of(CardType.SKIP), outcome.getRevealedCards());
         assertEquals(hand, player.getHand());
         assertEquals(List.of(skip, kitten), drain(deck));
+    }
+
+    @Test
+    public void Play_WithKittenOnTop_MovesSameKittenToBottom() {
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        Card skip = new Card(CardType.SKIP);
+        Card attack = new Card(CardType.ATTACK);
+        Deck deck = Deck.fromTopToBottom(List.of(kitten, skip, attack));
+        Player player = playerHolding(new Card(CardType.FAVOR));
+        List<Card> hand = List.copyOf(player.getHand());
+
+        EffectOutcome outcome = new SniffTestEffect().play(player, deck);
+
+        assertFalse(outcome.endsTurn());
+        assertEquals(List.of(CardType.EXPLODING_KITTEN), outcome.getRevealedCards());
+        assertEquals(hand, player.getHand());
+        List<Card> after = drain(deck);
+        assertEquals(List.of(skip, attack, kitten), after);
+        assertSame(kitten, after.get(2));
     }
 
     private static Player playerHolding(Card... cards) {
