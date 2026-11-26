@@ -26,7 +26,9 @@ public class DiscardPile {
     }
 
     public Optional<Card> top() {
-        return Optional.empty();
+        return cards.isEmpty()
+                ? Optional.empty()
+                : Optional.of(cards.get(cards.size() - 1));
     }
 
     public int size() {

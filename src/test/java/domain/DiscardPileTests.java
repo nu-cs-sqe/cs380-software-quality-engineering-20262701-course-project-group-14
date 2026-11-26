@@ -150,4 +150,16 @@ public class DiscardPileTests {
         assertTrue(pile.top().isEmpty());
         assertEquals(0, pile.size());
     }
+
+    @Test
+    public void Top_AfterTwoDiscards_ReturnsNewestCard() {
+        DiscardPile pile = new DiscardPile();
+        Card skip = new Card(CardType.SKIP);
+        Card attack = new Card(CardType.ATTACK);
+        pile.discard(skip);
+        pile.discard(attack);
+
+        assertSame(attack, pile.top().orElseThrow());
+        assertEquals(2, pile.size());
+    }
 }
