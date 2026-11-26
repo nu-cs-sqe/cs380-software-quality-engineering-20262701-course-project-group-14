@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SniffTestEffectTests {
@@ -21,6 +22,19 @@ public class SniffTestEffectTests {
         assertTrue(canPlay);
         assertEquals(hand, player.getHand());
         assertEquals(List.of(skip), drain(deck));
+    }
+
+    @Test
+    public void CanPlay_WithEmptyDeck_ReturnsFalseWithoutMutation() {
+        Deck deck = Deck.fromTopToBottom(List.of());
+        Player player = playerHolding(new Card(CardType.SNIFF_TEST));
+        List<Card> hand = List.copyOf(player.getHand());
+
+        boolean canPlay = new SniffTestEffect().canPlay(player, deck);
+
+        assertFalse(canPlay);
+        assertEquals(hand, player.getHand());
+        assertEquals(0, deck.size());
     }
 
     private static Player playerHolding(Card... cards) {

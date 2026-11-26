@@ -6,7 +6,7 @@ public final class SniffTestEffect implements CardEffect {
 
     @Override
     public boolean canPlay(Player player, Deck deck) {
-        return true;
+        return deck.size() > 0;
     }
 
     @Override
