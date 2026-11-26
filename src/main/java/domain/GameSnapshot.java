@@ -2,6 +2,7 @@ package domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 public final class GameSnapshot {
@@ -143,6 +144,10 @@ public final class GameSnapshot {
     public OptionalInt getWinnerIndex() {
         return phase == TurnPhase.GAME_OVER && !players.isEmpty()
                 ? OptionalInt.of(currentPlayerIndex) : OptionalInt.empty();
+    }
+
+    public Optional<CardType> getTopDiscard() {
+        return Optional.empty();
     }
 
     public int getRemainingTurns() {

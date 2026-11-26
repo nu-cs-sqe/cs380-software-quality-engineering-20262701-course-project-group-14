@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GameSnapshotTests {
@@ -297,5 +298,19 @@ public class GameSnapshotTests {
         );
 
         assertEquals(3, snapshot.getDiscardPileSize());
+    }
+
+    @Test
+    public void Create_WithoutDiscardDetails_HasNoTopDiscard() {
+        GameSnapshot snapshot = GameSnapshot.create(
+                "Player 1",
+                List.of(CardType.ATTACK),
+                10,
+                3,
+                2,
+                TurnPhase.ACTIONS_ALLOWED
+        );
+
+        assertTrue(snapshot.getTopDiscard().isEmpty());
     }
 }

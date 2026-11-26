@@ -76,6 +76,6 @@ These cases use the local draft-engine baseline for controller integration.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSP-26 | A snapshot was created with `create(...)` only. | None | Returns `Optional.empty()`. | :x: |
+| GSP-26 | A snapshot was created with `create(...)` only. | None | Returns `Optional.empty()`. | :white_check_mark: |
 | GSP-27 | Player 1 played Skip through `TurnEngine`; the discard pile was empty before. | Read the gameplay snapshot. | Returns `SKIP`. | :x: |
 | GSP-28 | A Defuse resolved a Kitten after Player 1 played Skip, so Defuse is the newest discard. | Read the gameplay snapshot. | Returns `DEFUSE`, the newest discard, not the earlier Skip. | :x: |
