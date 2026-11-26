@@ -6,9 +6,14 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.NoSuchElementException;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Random;
+import java.util.Set;
 
 public class Deck {
+    // Team-invented cards are added during setup, not to the original deck.
+    private static final Set<CardType> ORIGINAL_CARDS =
+            EnumSet.of(CardType.SNIFF_TEST);
     private final List<Card> cards = new ArrayList<>();
     private final Random random;
     // Creates the complete original 56-card deck without shuffling
@@ -20,6 +25,9 @@ public class Deck {
         this(random, List.of());
 
         for (CardType type : CardType.values()) {
+            if (ORIGINAL_CARDS.contains(type)) {
+                continue;
+            }
             int count = 4;
 
             if (type == CardType.DEFUSE) {
