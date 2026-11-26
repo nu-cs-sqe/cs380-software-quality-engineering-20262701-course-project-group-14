@@ -14,7 +14,7 @@ import javafx.util.Duration;
 /**
  * Refined pixel-art tavern stage:
  * - Warm cocoa-oak wall planks with checkerboard dithering, knots, iron nails & slow-breathing lantern
- * - Smooth beveled mahogany & oak plank tabletop with rich 2px wood grain & subtle mouse light parallax
+ * - Smooth beveled mahogany & oak plank tabletop with rich 2px wood grain & warm overhead light
  * - Inlaid rounded burgundy felt mat with double gold-leaf pinstripe, carved card cradles & paw compass
  * - Master-crafted scale-3 PixelData tavern stein & dagger-pinned wax-seal scroll matching the pixel cat
  */
@@ -38,6 +38,7 @@ final class TavernBackground extends Pane {
     private static final Color NAIL_SHINE = Color.web("#E0AA58", 0.35);
 
     private final Canvas canvas = new Canvas();
+    private final Canvas ambientCanvas = new Canvas();
     private final Image lanternA = PixelArt.sprite(PixelData.LANTERN_A, LANTERN_SCALE, PixelArt.TAVERN_PALETTE);
     private final Image lanternB = PixelArt.sprite(PixelData.LANTERN_B, LANTERN_SCALE, PixelArt.TAVERN_PALETTE);
     private final Image moonSprite = PixelArt.sprite(PixelData.MOON, 3);
@@ -60,28 +61,27 @@ final class TavernBackground extends Pane {
     private boolean danger;
     private boolean lowDeck;
 
-    private double parallaxX;
-    private double parallaxY;
-
     TavernBackground() {
         setMouseTransparent(true);
-        getChildren().add(canvas);
+        getChildren().addAll(canvas, ambientCanvas);
         canvas.widthProperty().bind(widthProperty());
         canvas.heightProperty().bind(heightProperty());
+        ambientCanvas.widthProperty().bind(widthProperty());
+        ambientCanvas.heightProperty().bind(heightProperty());
         widthProperty().addListener(o -> draw());
         heightProperty().addListener(o -> draw());
 
         ambientPulse = new Timeline(
                 new KeyFrame(Duration.millis(900), e -> {
                     alternateAmbientFrame = !alternateAmbientFrame;
-                    draw();
+                    drawAmbient();
                 })
         );
         ambientPulse.setCycleCount(Animation.INDEFINITE);
         emberPulse = new Timeline(
                 new KeyFrame(Duration.millis(650), e -> {
                     alternateEmberFrame = !alternateEmberFrame;
-                    draw();
+                    drawAmbient();
                 })
         );
         emberPulse.setCycleCount(Animation.INDEFINITE);
@@ -120,17 +120,6 @@ final class TavernBackground extends Pane {
 
     static double feltLeft(double width, double feltWidth) {
         return snap2((width - feltWidth) * 0.5);
-    }
-
-    /** Subtle 2.5D tabletop spotlight shift following cursor movement (-1..1). */
-    void setLightParallax(double normX, double normY) {
-        double nextX = Math.max(-1.0, Math.min(1.0, normX)) * 8.0;
-        double nextY = Math.max(-1.0, Math.min(1.0, normY)) * 5.0;
-        if (Math.abs(nextX - parallaxX) > 0.75 || Math.abs(nextY - parallaxY) > 0.75) {
-            parallaxX = nextX;
-            parallaxY = nextY;
-            draw();
-        }
     }
 
     @Override
@@ -204,15 +193,30 @@ final class TavernBackground extends Pane {
         drawPlankGrain(gc, 0, 12, w, wallH - 12, 11, true);
         drawCeilingBeam(gc, w, compact);
 
-        // 3. Left wall WANTED poster & right wall starry night window
         drawWantedPoster(gc, w);
-        drawNightWindow(gc, w, compact);
-
-        // 4. Upper-left hanging lantern (slow, calm 2-frame breath)
-        drawLantern(gc);
-
-        // 5. Refined beveled mahogany & oak-plank tabletop + inlaid burgundy felt mat
         drawRefinedTable(gc, w, h, wallH, compact);
+        drawAmbient();
+    }
+
+    private void drawAmbient() {
+        double w = getWidth();
+        double h = getHeight();
+        if (w <= 0 || h <= 0) {
+            return;
+        }
+        GraphicsContext gc = ambientCanvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, w, h);
+        boolean compact = w < COMPACT_BELOW;
+
+        // Keep animated wall light above the table's upper edge.
+        gc.save();
+        gc.beginPath();
+        gc.rect(0, 0, w, 114);
+        gc.clip();
+        drawNightWindow(gc, w, compact);
+        drawLantern(gc);
+        gc.restore();
+        drawCenterMedallion(gc, w, compact ? 256 : 272);
     }
 
     private void drawCeilingBeam(GraphicsContext gc, double w, boolean compact) {
@@ -426,14 +430,14 @@ final class TavernBackground extends Pane {
         int woodBottom = danger ? 0xFF240C11 : 0xFF422C21;
         drawDitheredWood(gc, 0, tableTopY, w, tableH, woodTop, woodBottom, 12);
 
-        // Smooth warm overhead tavern light pool with subtle cursor parallax
+        // Warm overhead tavern light pool
         gc.setFill(danger ? Color.web("#FF4D63", 0.04) : Color.web("#FFC27A", 0.042));
         for (int i = 0; i < 6; i++) {
             double k = 1.0 - i * 0.14;
             double rx = w * 0.48 * k;
             double ry = tableH * 0.56 * k;
-            gc.fillOval(w * 0.5 + parallaxX - rx,
-                    tableTopY + tableH * 0.46 + parallaxY - ry, rx * 2, ry * 2);
+            gc.fillOval(w * 0.5 - rx,
+                    tableTopY + tableH * 0.46 - ry, rx * 2, ry * 2);
         }
 
         drawPlankGrain(gc, 0, tableTopY, w, tableH, 29, true);
@@ -483,8 +487,8 @@ final class TavernBackground extends Pane {
         for (int i = 0; i < 4; i++) {
             double rx = feltW * (0.42 - i * 0.08);
             double ry = feltH * (0.44 - i * 0.08);
-            gc.fillOval(w * 0.5 + parallaxX * 0.6 - rx,
-                    feltY + feltH * 0.48 + parallaxY * 0.6 - ry, rx * 2, ry * 2);
+            gc.fillOval(w * 0.5 - rx,
+                    feltY + feltH * 0.48 - ry, rx * 2, ry * 2);
         }
 
         gc.setStroke(Color.web("#D4A056", 0.58));
@@ -508,9 +512,6 @@ final class TavernBackground extends Pane {
         double discardX = Math.round(centerX + propGap);
         double discardY = compact ? 176 : 186;
         drawCardCradle(gc, discardX + 4, discardY + 4, discardBoxW - 8, discardBoxH - 8);
-
-        // Calm Centerpiece Emblem (static gilded compass-paw; bomb appears ONLY in danger!)
-        drawCenterMedallion(gc, w, compact ? 256 : 272);
 
         // Master-crafted scale-3 pixel-art tavern props on the oak side wings
         drawCraftedSideProps(gc, w, tableTopY, topInset, compact);

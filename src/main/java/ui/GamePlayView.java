@@ -39,7 +39,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -294,13 +293,6 @@ public final class GamePlayView extends StackPane
             }
         });
 
-        // Subtle 2.5D tabletop spotlight parallax when moving cursor over the table
-        addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
-            double w = Math.max(1, getWidth());
-            double h = Math.max(1, getHeight());
-            background.setLightParallax((e.getX() / w) * 2.0 - 1.0, (e.getY() / h) * 2.0 - 1.0);
-        });
-        setOnMouseExited(event -> background.setLightParallax(0, 0));
         addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ESCAPE && handPairSelection != null) {
                 clearHandPairSelection();

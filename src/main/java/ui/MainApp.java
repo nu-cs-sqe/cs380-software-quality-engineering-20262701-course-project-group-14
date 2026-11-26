@@ -1,6 +1,7 @@
 package ui;
 
 import controller.GamePlayController;
+import controller.GamePlayViewPort;
 import controller.GameSetupController;
 import domain.GameState;
 import domain.TurnEngineFactory;
@@ -41,8 +42,16 @@ public final class MainApp extends Application {
 
     static void showGameplay(Scene scene, GameState state) {
         GamePlayView gameplay = new GamePlayView();
-        bindGameplayNavigation(scene, new GamePlayController(TurnEngineFactory.create(state), gameplay));
+        bindGameplayNavigation(scene, createController(state, gameplay));
         scene.setRoot(gameplay);
+    }
+
+    static void startGameplay(GameState state, GamePlayViewPort view) {
+        createController(state, view).initialize();
+    }
+
+    private static GamePlayController createController(GameState state, GamePlayViewPort view) {
+        return new GamePlayController(TurnEngineFactory.create(state), view);
     }
 
     static void bindGameplayNavigation(Scene scene, GamePlayController controller) {
