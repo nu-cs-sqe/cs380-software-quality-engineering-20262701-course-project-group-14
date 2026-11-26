@@ -148,6 +148,21 @@ public class SniffTestEffectTests {
         assertEquals(0, deck.size());
     }
 
+    @Test
+    public void Play_WithNullPlayer_ThrowsWithoutChangingDeck() {
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        Card skip = new Card(CardType.SKIP);
+        Deck deck = Deck.fromTopToBottom(List.of(kitten, skip));
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new SniffTestEffect().play(null, deck)
+        );
+
+        assertEquals("Player must not be null.", exception.getMessage());
+        assertEquals(List.of(kitten, skip), drain(deck));
+    }
+
     private static Player playerHolding(Card... cards) {
         Player player = new Player("Player 1");
         for (Card card : cards) {
