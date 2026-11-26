@@ -676,6 +676,21 @@ public class GamePlayControllerTests {
         assertEquals(1, view.renderCalls);
     }
 
+    @Test
+    public void HandlePlay_SniffTestFindsSafeCard_ShowsPreviewAndSafeMessage() {
+        StubActions actions = new StubActions(handSnapshot(CardType.SNIFF_TEST));
+        actions.playResult = PlayResult.continueTurn(List.of(CardType.SKIP));
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals(1, view.futureCardsCalls);
+        assertEquals(List.of(CardType.SKIP), view.futureCards);
+        assertEquals("sniff.safe", view.messageKey);
+        assertEquals(1, view.renderCalls);
+    }
+
     private static GameSnapshot handSnapshot(CardType card) {
         return GameSnapshot.create("Player 1", List.of(card), 3, 0, 2,
                 TurnPhase.ACTIONS_ALLOWED);
