@@ -14,6 +14,9 @@ public final class SniffTestEffect implements CardEffect {
 
     @Override
     public EffectOutcome play(Player player, Deck deck) {
+        if (deck.size() == 0) {
+            throw new IllegalStateException("Sniff Test requires a non-empty deck.");
+        }
         Card topCard = deck.drawCard();
         int position = topCard.getType() == CardType.EXPLODING_KITTEN
                 ? deck.size()

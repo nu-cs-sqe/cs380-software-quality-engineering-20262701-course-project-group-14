@@ -134,6 +134,20 @@ public class SniffTestEffectTests {
         assertSame(topKitten, after.get(2));
     }
 
+    @Test
+    public void Play_WithEmptyDeck_ThrowsWithoutChangingDeck() {
+        Deck deck = Deck.fromTopToBottom(List.of());
+        Player player = playerHolding(new Card(CardType.SKIP));
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> new SniffTestEffect().play(player, deck)
+        );
+
+        assertEquals("Sniff Test requires a non-empty deck.", exception.getMessage());
+        assertEquals(0, deck.size());
+    }
+
     private static Player playerHolding(Card... cards) {
         Player player = new Player("Player 1");
         for (Card card : cards) {
