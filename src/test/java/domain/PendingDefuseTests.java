@@ -41,4 +41,11 @@ public class PendingDefuseTests {
                 exception.getMessage()
         );
     }
+
+    @Test
+    public void GetPhase_WithPendingKitten_ReturnsAwaitingDefusePosition() {
+        PendingAction pending = new PendingDefuse(new Card(CardType.EXPLODING_KITTEN));
+
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, pending.getPhase());
+    }
 }

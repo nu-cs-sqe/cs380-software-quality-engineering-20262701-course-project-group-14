@@ -2,7 +2,7 @@ package domain;
 
 import java.util.Objects;
 
-final class PendingDefuse {
+final class PendingDefuse implements PendingAction {
     private final Card kitten;
 
     PendingDefuse(Card kitten) {
@@ -16,5 +16,10 @@ final class PendingDefuse {
 
     public Card getKitten() {
         return kitten;
+    }
+
+    @Override
+    public TurnPhase getPhase() {
+        return TurnPhase.AWAITING_DEFUSE_POSITION;
     }
 }

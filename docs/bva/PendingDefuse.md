@@ -17,7 +17,7 @@ engine still validates positions, calls the resolver, and completes the turn.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| PD-04 | A pending Defuse holds an Exploding Kitten. | None | Returns `AWAITING_DEFUSE_POSITION`. | :x: |
+| PD-04 | A pending Defuse holds an Exploding Kitten. | None | Returns `AWAITING_DEFUSE_POSITION`. | :white_check_mark: |
 
 ## Getter coverage
 
