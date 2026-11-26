@@ -379,6 +379,7 @@ public final class GamePlayView extends StackPane
         int newDiscardSize = snapshot.getDiscardPileSize();
         if (newDiscardSize != discardSize) {
             recentDiscards.clear();
+            snapshot.getTopDiscard().ifPresent(recentDiscards::add);
         }
         discardSize = newDiscardSize;
         aliveCount = snapshot.getAlivePlayerCount();
@@ -1578,6 +1579,7 @@ public final class GamePlayView extends StackPane
     }
 
     private void showPlayedCards(List<CardType> previousDiscards, CardType type, int count) {
+        recentDiscards.clear();
         recentDiscards.addAll(previousDiscards);
         recentDiscards.addAll(Collections.nCopies(count, type));
         int excess = recentDiscards.size() - DISPLAYED_DISCARDS;
