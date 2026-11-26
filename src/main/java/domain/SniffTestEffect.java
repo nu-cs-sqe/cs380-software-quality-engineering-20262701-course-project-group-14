@@ -15,6 +15,7 @@ public final class SniffTestEffect implements CardEffect {
     @Override
     public EffectOutcome play(Player player, Deck deck) {
         Objects.requireNonNull(player, "Player must not be null.");
+        Objects.requireNonNull(deck, "Deck must not be null.");
         if (deck.size() == 0) {
             throw new IllegalStateException("Sniff Test requires a non-empty deck.");
         }
