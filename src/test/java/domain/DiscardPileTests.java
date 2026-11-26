@@ -162,4 +162,14 @@ public class DiscardPileTests {
         assertSame(attack, pile.top().orElseThrow());
         assertEquals(2, pile.size());
     }
+
+    @Test
+    public void Top_AfterDiscardingList_ReturnsLastCardOfList() {
+        DiscardPile pile = new DiscardPile();
+        Card skip = new Card(CardType.SKIP);
+        Card nope = new Card(CardType.NOPE);
+        pile.discardAll(List.of(skip, nope));
+
+        assertSame(nope, pile.top().orElseThrow());
+    }
 }
