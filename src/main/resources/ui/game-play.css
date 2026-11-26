@@ -55,10 +55,62 @@
     -fx-border-color: #FF8A99 transparent #8A1F32 transparent;
 }
 
-.alive-coaster {
-    -fx-background-color: #120A07, #120A07, #8F6A43, #8F6A43, #2A1A13, #2A1A13;
+/* ---------- seat plaques along the top of the felt ---------- */
+
+.seat-plaque {
+    -fx-background-color: #120A07, #120A07, #6E5036, #6E5036, #2A1A13, #2A1A13;
     -fx-background-insets: 0 3 0 3, 3 0 3 0, 2 5 2 5, 5 2 5 2, 4 7 4 7, 7 4 7 4;
     -fx-background-radius: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 6, 0, 0, 3);
+}
+
+.seat-plaque:current {
+    -fx-background-color: #120A07, #120A07, #FFE08C, #FFE08C, #3D2618, #3D2618;
+    -fx-effect: dropshadow(gaussian, rgba(255, 196, 92, 0.55), 14, 0.15, 0, 0);
+}
+
+.seat-plaque:out {
+    -fx-background-color: #0D0806, #0D0806, #3A2A20, #3A2A20, #1A110C, #1A110C;
+    -fx-opacity: 0.78;
+}
+
+.seat-turn-tag {
+    -fx-background-color: #FFB84D;
+    -fx-border-color: #160D09;
+    -fx-border-width: 1;
+    -fx-padding: 2 4 2 4;
+}
+
+.seat-name {
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- tavern chronicle parchment ---------- */
+
+.chronicle {
+    -fx-background-color: #120A07, #120A07, #8F6A43, #8F6A43, #EADBBA, #F3E6C9;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 2 6 2 6, 6 2 6 2, 6 10 6 10, 10 6 10 6;
+    -fx-background-radius: 0;
+    -fx-border-color: #FFF8EA transparent #6E4D37 transparent;
+    -fx-border-width: 2 0 2 0;
+    -fx-border-insets: 2 6 2 6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 16, 0, 0, 7);
+}
+
+.chronicle:danger {
+    -fx-background-color: #120A07, #120A07, #B81D35, #B81D35, #F3D9CF, #F7E4DA;
+}
+
+.chronicle-past,
+.chronicle-now {
+    -fx-text-fill: #24150E;
+    -fx-font-size: 12px;
+}
+
+.chronicle-past {
+    -fx-text-fill: #7A5B43;
 }
 
 .prop-button {
