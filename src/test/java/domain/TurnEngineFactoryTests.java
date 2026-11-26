@@ -104,6 +104,24 @@ public class TurnEngineFactoryTests {
     }
 
     @Test
+    public void Create_WithSniffTestAndEmptyDeck_RejectsWithoutPlaying() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Card sniffTest = new Card(CardType.SNIFF_TEST);
+        first.addCard(sniffTest);
+        GameState state = new GameState(List.of(first, second), emptyDeck());
+        TurnActions actions = TurnEngineFactory.create(state);
+
+        PlayResult result = actions.playCard(0);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.PRECONDITION_NOT_MET, result.getFailure());
+        assertEquals(List.of(sniffTest), first.getHand());
+        assertEquals(0, actions.getSnapshot().getDiscardPileSize());
+        assertSame(first, state.getCurrentPlayer());
+    }
+
+    @Test
     public void Create_WithRandomAndNullState_RejectsState() {
         NullPointerException exception = assertThrows(NullPointerException.class,
                 () -> TurnEngineFactory.create(null, bound -> 0));
