@@ -182,6 +182,15 @@ class TurnEngineCatPairTests {
     }
 
     @Test
+    void PlayCard_WithMatchingNonCatPair_RejectsWithoutChangingState() {
+        Player current = playerWith("Player 1", new Card(CardType.SKIP),
+                new Card(CardType.SKIP));
+        assertRejectionPreservesGame(rejectionGame(current, eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
+    @Test
     void PlayCard_WithFirstIndexAtHandSize_RejectsWithoutChangingState() {
         assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
                 engine -> engine.playCard(PlayCommand.pair(2, 1, 1)),
