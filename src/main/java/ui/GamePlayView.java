@@ -31,6 +31,7 @@ import javafx.animation.TranslateTransition;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
@@ -200,6 +201,13 @@ public final class GamePlayView extends StackPane
     private final HBox handChip = new HBox();
     private final HBox keyHintPill = new HBox();
 
+    // ---- atmosphere: candle glow, drifting dust and a vignette that turns red in danger ----
+    private final Region candleGlow = new Region();
+    private final Pane dustLayer = new Pane();
+    private final Region vignette = new Region();
+    private final List<Animation> ambience = new ArrayList<>();
+    private Timeline dangerPulse;
+
     // ---- root layers ----
     private final Pane stageLayer = new Pane();
     private final Pane fxLayer = new Pane();
@@ -299,7 +307,10 @@ public final class GamePlayView extends StackPane
         handoffOverlay = buildHandoffOverlay();
         victoryOverlay = buildVictoryOverlay();
 
-        getChildren().addAll(background, stageLayer, fxLayer, handoffOverlay, victoryOverlay, dimOverlay);
+        buildAtmosphere();
+
+        getChildren().addAll(background, candleGlow, dustLayer, stageLayer, vignette, fxLayer,
+                handoffOverlay, victoryOverlay, dimOverlay);
         stageLayer.setPickOnBounds(false);
         handFanPane.setPickOnBounds(false);
         sceneProperty().addListener((property, previousScene, scene) -> {
@@ -357,6 +368,7 @@ public final class GamePlayView extends StackPane
     public void render(GameSnapshot snapshot) {
         handPairSelection = null;
         String newName = snapshot.getCurrentPlayerName();
+        boolean turnChanged = !playerName.isEmpty() && !Objects.equals(newName, playerName);
         if (!Objects.equals(newName, playerName)) {
             futureCards = List.of();
             updateFuture();
@@ -389,10 +401,20 @@ public final class GamePlayView extends StackPane
         }
 
         background.setTension(danger, deckSize <= LOW_DECK_THRESHOLD);
+        vignette.pseudoClassStateChanged(DANGER, danger);
+        if (danger && !wasDanger && getScene() != null) {
+            dangerPulse.playFromStart();
+        } else if (!danger && wasDanger) {
+            dangerPulse.stop();
+            vignette.setOpacity(1.0);
+        }
         refreshCatSprite();
         refreshAll();
         if (danger && !wasDanger) {
             shakeTable();
+        }
+        if (turnChanged) {
+            announceTurn();
         }
     }
 
@@ -693,6 +715,81 @@ public final class GamePlayView extends StackPane
         futureChips.setAlignment(Pos.CENTER);
         futureOverlay.getChildren().addAll(futureTitleHolder, futureChips);
         futureOverlay.setVisible(false);
+    }
+
+    private void buildAtmosphere() {
+        candleGlow.getStyleClass().add("candle-glow");
+        candleGlow.setMouseTransparent(true);
+        candleGlow.setCache(true);
+        candleGlow.setCacheHint(CacheHint.SPEED);
+        Timeline flicker = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(candleGlow.opacityProperty(), 0.82)),
+                new KeyFrame(Duration.millis(380), new KeyValue(candleGlow.opacityProperty(), 1.0)),
+                new KeyFrame(Duration.millis(520), new KeyValue(candleGlow.opacityProperty(), 0.9)),
+                new KeyFrame(Duration.millis(910), new KeyValue(candleGlow.opacityProperty(), 0.97)),
+                new KeyFrame(Duration.millis(1300), new KeyValue(candleGlow.opacityProperty(), 0.82))
+        );
+        flicker.setCycleCount(Animation.INDEFINITE);
+        ambience.add(flicker);
+
+        dustLayer.setMouseTransparent(true);
+        for (int i = 0; i < 12; i++) {
+            Region mote = new Region();
+            mote.getStyleClass().add("dust-mote");
+            double size = i % 3 == 0 ? 3 : 2;
+            fixSize(mote, size, size);
+            mote.setCache(true);
+            dustLayer.getChildren().add(mote);
+            ambience.add(driftMote(mote, i));
+        }
+
+        vignette.getStyleClass().add("vignette");
+        vignette.setMouseTransparent(true);
+        dangerPulse = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(vignette.opacityProperty(), 1.0)),
+                new KeyFrame(Duration.millis(650), new KeyValue(vignette.opacityProperty(), 0.55)),
+                new KeyFrame(Duration.millis(1300), new KeyValue(vignette.opacityProperty(), 1.0))
+        );
+        dangerPulse.setCycleCount(Animation.INDEFINITE);
+
+        sceneProperty().addListener((obs, oldScene, scene) -> {
+            for (Animation animation : ambience) {
+                if (scene != null) {
+                    animation.play();
+                } else {
+                    animation.stop();
+                }
+            }
+            if (scene == null) {
+                dangerPulse.stop();
+            }
+        });
+    }
+
+    /** One dust mote drifting up through the candle light, on its own slow, offset cycle. */
+    private Animation driftMote(Region mote, int seed) {
+        double startX = 0.06 + 0.88 * ((seed * 53) % 12) / 11.0;
+        double startY = 0.35 + 0.5 * ((seed * 29) % 7) / 6.0;
+        double travel = 0.18 + 0.05 * (seed % 4);
+        double sway = (seed % 2 == 0 ? 1 : -1) * (10 + seed % 5 * 4);
+        Duration period = Duration.seconds(9 + (seed % 5) * 1.7);
+        mote.layoutXProperty().bind(widthProperty().multiply(startX));
+        mote.layoutYProperty().bind(heightProperty().multiply(startY));
+        Timeline drift = new Timeline(
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(mote.translateYProperty(), 0),
+                        new KeyValue(mote.translateXProperty(), 0),
+                        new KeyValue(mote.opacityProperty(), 0)),
+                new KeyFrame(period.multiply(0.2), new KeyValue(mote.opacityProperty(), 0.7)),
+                new KeyFrame(period.multiply(0.8), new KeyValue(mote.opacityProperty(), 0.5)),
+                new KeyFrame(period,
+                        new KeyValue(mote.translateYProperty(), -travel * 760, Interpolator.EASE_BOTH),
+                        new KeyValue(mote.translateXProperty(), sway, Interpolator.EASE_BOTH),
+                        new KeyValue(mote.opacityProperty(), 0))
+        );
+        drift.setCycleCount(Animation.INDEFINITE);
+        drift.setDelay(Duration.seconds((seed * 0.83) % 6));
+        return drift;
     }
 
     private void buildParchmentScroll() {
@@ -1146,12 +1243,9 @@ public final class GamePlayView extends StackPane
         deckStackHolder.setTranslateY(0);
         drawButton.setGraphic(PixelArt.textView("DRAW", 3, blocked ? DIM_TEXT : GameTheme.PLATE));
 
+        // The phase chip, the Kitten button and the chronicle already explain the danger state.
         drawHintHolder.getChildren().clear();
-        if (danger) {
-            drawHintHolder.getChildren().add(
-                    PixelArt.textView("PLACE KITTEN FIRST", 2, GameTheme.DANGER));
-        }
-        drawHintHolder.setVisible(danger);
+        drawHintHolder.setVisible(false);
         choosePositionButton.setDisable(turnActionsDisabled);
         choosePositionButton.setVisible(danger);
         returnToSetupButton.setVisible(winnerMessage != null);
@@ -1798,6 +1892,17 @@ public final class GamePlayView extends StackPane
         fallback.setMinHeight(Region.USE_PREF_SIZE);
         fallback.setMaxWidth(maxWidth);
         return fallback;
+    }
+
+    private void announceTurn() {
+        nameHolder.setOpacity(0);
+        nameHolder.setTranslateX(-10);
+        FadeTransition fade = new FadeTransition(Duration.millis(260), nameHolder);
+        fade.setToValue(1);
+        TranslateTransition slide = new TranslateTransition(Duration.millis(260), nameHolder);
+        slide.setToX(0);
+        slide.setInterpolator(Interpolator.EASE_OUT);
+        new ParallelTransition(fade, slide).play();
     }
 
     private void shakeTable() {
