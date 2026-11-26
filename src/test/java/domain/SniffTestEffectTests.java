@@ -102,6 +102,21 @@ public class SniffTestEffectTests {
         assertSame(kitten, after.get(2));
     }
 
+    @Test
+    public void Play_WithOnlyKittenInDeck_LeavesDeckUnchanged() {
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        Deck deck = Deck.fromTopToBottom(List.of(kitten));
+        Player player = playerHolding(new Card(CardType.SKIP));
+
+        EffectOutcome outcome = new SniffTestEffect().play(player, deck);
+
+        assertFalse(outcome.endsTurn());
+        assertEquals(List.of(CardType.EXPLODING_KITTEN), outcome.getRevealedCards());
+        List<Card> after = drain(deck);
+        assertEquals(1, after.size());
+        assertSame(kitten, after.get(0));
+    }
+
     private static Player playerHolding(Card... cards) {
         Player player = new Player("Player 1");
         for (Card card : cards) {
