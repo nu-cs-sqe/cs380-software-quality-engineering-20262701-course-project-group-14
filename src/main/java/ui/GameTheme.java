@@ -53,6 +53,7 @@ final class GameTheme {
     static final int ROLE_FAVOR = 0xFFE59BFF;
     static final int ROLE_NOPE = 0xFFB7B1A6;
     static final int ROLE_CAT = 0xFFD8C3A0;
+    static final int ROLE_SNIFF = 0xFF6FE0E0;
 
     // "not wired yet" card look
     static final int SOON_BORDER = 0xFF6B5344;

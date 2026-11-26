@@ -6,6 +6,7 @@
 |--------|-----------------------------------------------------------------------------|---------------------------------------------------------------------|--------------|
 | Deck01 | Create a new Deck and call size()                                           | Construction succeeds; size() returns 56                            | Yes          |
 | Deck02 | Create a new Deck and call countOf(type) for each of the 13 CardType values | DEFUSE: 6; SEE_THE_FUTURE and NOPE: 5 each; all other types: 4 each | Yes          |
+| Deck39 | Create a new Deck and call countOf(SNIFF_TEST) and size()                   | countOf returns 0 and size() returns 56; original cards are not part of the standard deck | Yes          |
 
 ### Method under test: removeCards(CardType type, int count)
 
