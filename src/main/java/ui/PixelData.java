@@ -279,6 +279,18 @@ final class PixelData {
         "....kkkkkkk....",
     };
 
+    /** Small gold crown for the winner. */
+    static final String[] CROWN = {
+        "k....k....k",
+        "yk..kyk..ky",
+        "yyk.kyk.kyy",
+        "yyykyyykyyy",
+        "yyyyyyyyyyy",
+        "yryyywyyyry",
+        "ddddddddddd",
+        "kkkkkkkkkkk",
+    };
+
     static final String[] HEART = {
         ".kk..kk.",
         "kppkkppk",

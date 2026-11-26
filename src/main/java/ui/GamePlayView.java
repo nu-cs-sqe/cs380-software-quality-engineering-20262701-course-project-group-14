@@ -206,6 +206,16 @@ public final class GamePlayView extends StackPane
     private final List<Animation> activeEffects = new ArrayList<>();
     private final Region dimOverlay = new Region();
     private StackPane handoffOverlay;
+    private StackPane victoryOverlay;
+    private VBox victoryPanel;
+    private final StackPane victoryNameHolder = new StackPane();
+    private final StackPane victoryStatsHolder = new StackPane();
+    private final VBox victoryChronicle = new VBox(4);
+    private final Pane confettiLayer = new Pane();
+    private boolean victoryShown;
+    private int cardsPlayed;
+    private int kittensDefused;
+    private int catsExploded;
     private StackPane handoffNameHolder;
     private Button handoffButton;
     private Timeline handoffBlink;
@@ -273,7 +283,6 @@ public final class GamePlayView extends StackPane
                 deckCountHolder,
                 fuseGauge,
                 drawButton,
-                returnToSetupButton,
                 drawHintHolder,
                 discardPileHolder,
                 discardCountBadge,
@@ -288,8 +297,9 @@ public final class GamePlayView extends StackPane
         dimOverlay.getStyleClass().add("dim-overlay");
         dimOverlay.setVisible(false);
         handoffOverlay = buildHandoffOverlay();
+        victoryOverlay = buildVictoryOverlay();
 
-        getChildren().addAll(background, stageLayer, fxLayer, handoffOverlay, dimOverlay);
+        getChildren().addAll(background, stageLayer, fxLayer, handoffOverlay, victoryOverlay, dimOverlay);
         stageLayer.setPickOnBounds(false);
         handFanPane.setPickOnBounds(false);
         sceneProperty().addListener((property, previousScene, scene) -> {
@@ -389,6 +399,11 @@ public final class GamePlayView extends StackPane
     @Override
     public void showMessage(String messageKey) {
         boolean warning = WARNING_MESSAGES.contains(messageKey);
+        if ("defuse.success".equals(messageKey)) {
+            kittensDefused++;
+        } else if ("draw.player-eliminated".equals(messageKey)) {
+            catsExploded++;
+        }
         if (CHRONICLE_TEXT.containsKey(messageKey)) {
             addChronicle(chronicleLine(messageKey, playerName));
             currentMessage = warning ? MESSAGES.getOrDefault(messageKey, messageKey) : null;
@@ -636,7 +651,10 @@ public final class GamePlayView extends StackPane
 
         returnToSetupButton.setId("return-to-setup");
         returnToSetupButton.getStyleClass().add("draw-button");
-        returnToSetupButton.setText(GAME_OVER_TEXT.getString("return-to-setup"));
+        returnToSetupButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        returnToSetupButton.setGraphic(PixelArt.textView(
+                CHRONICLE_TEXT.getString("victory.return").toUpperCase(Locale.ROOT), 3, GameTheme.PLATE));
+        returnToSetupButton.setAccessibleText(GAME_OVER_TEXT.getString("return-to-setup"));
         returnToSetupButton.setOnAction(event -> onReturnToSetup.run());
         returnToSetupButton.setVisible(false);
 
@@ -832,7 +850,6 @@ public final class GamePlayView extends StackPane
         double defuseBtnW = 310;
         double defuseBtnH = 50;
         choosePositionButton.resizeRelocate(Math.round(centerX - defuseBtnW * 0.5), deckY + deckBoxH + 28, defuseBtnW, defuseBtnH);
-        returnToSetupButton.resizeRelocate(Math.round(centerX - 110), deckY + deckBoxH + 28, 220, 48);
 
         double futureW = 248;
         futureOverlay.resizeRelocate(deckX - 104, deckY - 20,
@@ -918,7 +935,10 @@ public final class GamePlayView extends StackPane
         nameHolder.getChildren().setAll(nameNode(playerName, 4, available, GameTheme.CREAM));
 
         phaseChip.getChildren().clear();
-        if (danger) {
+        if (turnActionsDisabled) {
+            phaseChip.getChildren().add(PixelArt.textView(
+                    CHRONICLE_TEXT.getString("phase.over").toUpperCase(Locale.ROOT), 2, GameTheme.MUTED));
+        } else if (danger) {
             phaseChip.getChildren().addAll(
                     PixelArt.view(PixelArt.sprite(PixelData.WARN, 2, PixelArt.TAVERN_PALETTE)),
                     PixelArt.textView("PLACE KITTEN", 2, GameTheme.CREAM));
@@ -1065,6 +1085,7 @@ public final class GamePlayView extends StackPane
         WritableImage ghost = PixelArt.mono(PixelData.HEAD_OPEN, 1, 0xFF5A4636);
         for (PlayerSummary seat : seats) {
             boolean current = seat.getPlayerIndex() == currentSeat && !seat.isEliminated();
+            boolean winner = current && turnActionsDisabled;
             boolean out = seat.isEliminated();
             ImageView face = PixelArt.view(out ? ghost : head);
             int nameColor = out ? DIM_TEXT : current ? GameTheme.BRASS_BRIGHT : GameTheme.CREAM;
@@ -1085,7 +1106,7 @@ public final class GamePlayView extends StackPane
             plaque.setAccessibleText(seat.getName() + ", " + detail.toLowerCase(Locale.ROOT)
                     + (current ? ", current turn" : ""));
             if (current) {
-                StackPane marker = new StackPane(plaque, turnTag());
+                StackPane marker = new StackPane(plaque, turnTag(winner ? "seat.winner" : "seat.turn"));
                 StackPane.setAlignment(marker.getChildren().get(1), Pos.TOP_RIGHT);
                 StackPane.setMargin(marker.getChildren().get(1), new Insets(-7, 6, 0, 0));
                 seatRow.getChildren().add(marker);
@@ -1095,8 +1116,8 @@ public final class GamePlayView extends StackPane
         }
     }
 
-    private Node turnTag() {
-        StackPane tag = new StackPane(PixelArt.textView(chronicleLine("seat.turn"), 1, GameTheme.PLATE));
+    private Node turnTag(String key) {
+        StackPane tag = new StackPane(PixelArt.textView(chronicleLine(key), 1, GameTheme.PLATE));
         tag.getStyleClass().add("seat-turn-tag");
         tag.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         return tag;
@@ -1134,6 +1155,104 @@ public final class GamePlayView extends StackPane
         choosePositionButton.setDisable(turnActionsDisabled);
         choosePositionButton.setVisible(danger);
         returnToSetupButton.setVisible(winnerMessage != null);
+        if (winnerMessage != null) {
+            showVictory();
+        }
+    }
+
+    private StackPane buildVictoryOverlay() {
+        ImageView seal = PixelArt.textView(
+                CHRONICLE_TEXT.getString("victory.seal").toUpperCase(Locale.ROOT), 2, GameTheme.BRASS);
+        ImageView crown = PixelArt.view(PixelArt.sprite(PixelData.CROWN, 4, PixelArt.TAVERN_PALETTE));
+        ImageView cat = PixelArt.view(PixelArt.sprite(PixelData.HEAD_OPEN, 5, PixelArt.TAVERN_PALETTE));
+        VBox crowned = new VBox(-2, crown, cat);
+        crowned.setAlignment(Pos.CENTER);
+        ImageView title = PixelArt.textView(
+                CHRONICLE_TEXT.getString("victory.title").toUpperCase(Locale.ROOT), 3, GameTheme.SAND);
+        Region rule = new Region();
+        rule.getStyleClass().add("victory-rule");
+        fixSize(rule, 300, 4);
+        victoryChronicle.setAlignment(Pos.CENTER);
+        fixSize(returnToSetupButton, 330, 60);
+
+        victoryPanel = new VBox(12, seal, crowned, title, victoryNameHolder, rule,
+                victoryStatsHolder, victoryChronicle, returnToSetupButton);
+        victoryPanel.getStyleClass().add("victory-panel");
+        victoryPanel.setAlignment(Pos.CENTER);
+        victoryPanel.setPadding(new Insets(30, 44, 30, 44));
+        victoryPanel.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+
+        confettiLayer.setMouseTransparent(true);
+        StackPane overlay = new StackPane(confettiLayer, victoryPanel);
+        overlay.getStyleClass().add("victory-root");
+        overlay.setVisible(false);
+        return overlay;
+    }
+
+    private void showVictory() {
+        String winner = playerName;
+        victoryNameHolder.getChildren().setAll(nameNode(winner, 6, 520, GameTheme.AMBER));
+        HBox stats = new HBox(26,
+                victoryStat(cardsPlayed, "victory.played", GameTheme.CREAM),
+                victoryStat(kittensDefused, "victory.defused", GameTheme.ROLE_SAFETY),
+                victoryStat(catsExploded, "victory.exploded", GameTheme.DANGER));
+        stats.setAlignment(Pos.CENTER);
+        victoryStatsHolder.getChildren().setAll(stats);
+        victoryChronicle.getChildren().clear();
+        for (String line : chronicle) {
+            victoryChronicle.getChildren().add(bodyText(line, 1, GameTheme.MUTED, 520, "victory-line"));
+        }
+        showEmptyInfo();
+        victoryOverlay.setVisible(true);
+        if (victoryShown) {
+            return;
+        }
+        victoryShown = true;
+        victoryPanel.setOpacity(0);
+        victoryPanel.setScaleX(0.9);
+        victoryPanel.setScaleY(0.9);
+        FadeTransition fade = new FadeTransition(Duration.millis(420), victoryPanel);
+        fade.setToValue(1);
+        ScaleTransition grow = new ScaleTransition(Duration.millis(420), victoryPanel);
+        grow.setToX(1);
+        grow.setToY(1);
+        grow.setInterpolator(Interpolator.EASE_OUT);
+        new ParallelTransition(fade, grow).play();
+        launchConfetti();
+    }
+
+    private Node victoryStat(int value, String labelKey, int color) {
+        VBox stat = new VBox(6,
+                PixelArt.textView(String.valueOf(value), 4, color),
+                PixelArt.textView(CHRONICLE_TEXT.getString(labelKey).toUpperCase(Locale.ROOT), 1,
+                        GameTheme.MUTED));
+        stat.setAlignment(Pos.CENTER);
+        stat.setAccessibleText(value + " " + CHRONICLE_TEXT.getString(labelKey));
+        return stat;
+    }
+
+    private void launchConfetti() {
+        double w = getWidth() > 0 ? getWidth() : 900;
+        double h = getHeight() > 0 ? getHeight() : 760;
+        String[][] sprites = {PixelData.STAR_PLUS, PixelData.HEART, PixelData.STAR_PLUS, PixelData.PAW};
+        for (int i = 0; i < 18; i++) {
+            ImageView bit = PixelArt.view(PixelArt.sprite(sprites[i % sprites.length], 2, PixelArt.TAVERN_PALETTE));
+            double x = w * (0.08 + 0.84 * ((i * 37) % 18) / 17.0);
+            bit.setLayoutX(x);
+            bit.setLayoutY(h + 10);
+            confettiLayer.getChildren().add(bit);
+            TranslateTransition rise = new TranslateTransition(Duration.millis(1600 + (i % 5) * 220), bit);
+            rise.setDelay(Duration.millis((i % 6) * 120));
+            rise.setByY(-h * (0.55 + (i % 4) * 0.1));
+            rise.setInterpolator(Interpolator.EASE_OUT);
+            FadeTransition fade = new FadeTransition(rise.getDuration(), bit);
+            fade.setDelay(rise.getDelay());
+            fade.setFromValue(1);
+            fade.setToValue(0);
+            ParallelTransition burst = new ParallelTransition(rise, fade);
+            burst.setOnFinished(event -> confettiLayer.getChildren().remove(bit));
+            burst.play();
+        }
     }
 
     private void updateFuture() {
@@ -1334,6 +1453,7 @@ public final class GamePlayView extends StackPane
     }
 
     private void narratePlay(String actor, CardType type, CardCatalog.Info info, int mark) {
+        cardsPlayed++;
         String line;
         if (type.isCatCard()) {
             line = chronicleLine("played.pair", actor, info.name, lastTargetName);

@@ -318,6 +318,34 @@
     -fx-border-insets: 2 6 2 6;
 }
 
+/* ---------- victory overlay ---------- */
+
+.victory-root {
+    -fx-background-color: radial-gradient(center 50% 45%, radius 75%, rgba(58, 26, 18, 0.72), rgba(8, 3, 4, 0.94));
+}
+
+.victory-panel {
+    -fx-background-color: #12060A, #12060A, #FFE08C, #FFE08C, #E0AA58, #E0AA58, #2B1018, #381822;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 2 6 2 6, 6 2 6 2, 4 8 4 8, 8 4 8 4, 8 12 8 12, 12 8 12 8;
+    -fx-background-radius: 0;
+    -fx-effect: dropshadow(gaussian, rgba(255, 184, 77, 0.35), 40, 0.1, 0, 0);
+}
+
+.victory-rule {
+    -fx-background-color: #7A5022, #E0AA58, #7A5022;
+    -fx-background-insets: 0, 1 0 1 0, 3 0 0 0;
+}
+
+.victory-stats,
+.victory-line {
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 13px;
+}
+
+.victory-line {
+    -fx-text-fill: #BCA284;
+}
+
 /* ---------- Kitten position dialog ---------- */
 
 .dialog-root {
