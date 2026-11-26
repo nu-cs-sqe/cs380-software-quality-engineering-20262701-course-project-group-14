@@ -142,4 +142,12 @@ public class DiscardPileTests {
         );
         assertEquals(0, pile.size());
     }
+
+    @Test
+    public void Top_EmptyPile_ReturnsEmpty() {
+        DiscardPile pile = new DiscardPile();
+
+        assertTrue(pile.top().isEmpty());
+        assertEquals(0, pile.size());
+    }
 }
