@@ -77,7 +77,7 @@ public final class GamePlayController {
         }
         GameSnapshot before = actions.getSnapshot();
         PlayResult result = actions.playCard(handIndex);
-        if (isSniffTest(before, handIndex)) {
+        if (isSniffTest(before, handIndex) && !result.getRevealedCards().isEmpty()) {
             presentSniffResult(result);
             return;
         }

@@ -691,6 +691,20 @@ public class GamePlayControllerTests {
         assertEquals(1, view.renderCalls);
     }
 
+    @Test
+    public void HandlePlay_SniffTestRejected_ShowsOnlyFailureMessage() {
+        StubActions actions = new StubActions(handSnapshot(CardType.SNIFF_TEST));
+        actions.playResult = PlayResult.rejected(PlayFailure.PRECONDITION_NOT_MET);
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals("play.precondition-not-met", view.messageKey);
+        assertEquals(0, view.futureCardsCalls);
+        assertEquals(1, view.renderCalls);
+    }
+
     private static GameSnapshot handSnapshot(CardType card) {
         return GameSnapshot.create("Player 1", List.of(card), 3, 0, 2,
                 TurnPhase.ACTIONS_ALLOWED);
