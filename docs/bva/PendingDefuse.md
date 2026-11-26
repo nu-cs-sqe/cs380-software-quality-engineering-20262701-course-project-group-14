@@ -9,7 +9,7 @@ engine still validates positions, calls the resolver, and completes the turn.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| PD-01 | No pending action exists. | An `EXPLODING_KITTEN` card | Creates a pending Defuse that keeps the same Kitten instance. | :x: |
+| PD-01 | No pending action exists. | An `EXPLODING_KITTEN` card | Creates a pending Defuse that keeps the same Kitten instance. | :white_check_mark: |
 | PD-02 | No pending action exists. | `kitten = null` | Throws `NullPointerException` with `"Pending Kitten must not be null."`; no pending action is created. | :x: |
 | PD-03 | No pending action exists. | A `DEFUSE` card | Throws `IllegalArgumentException` with `"Pending Defuse requires an Exploding Kitten."`; no pending action is created. | :x: |
 
