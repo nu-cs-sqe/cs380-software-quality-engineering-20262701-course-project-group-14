@@ -661,6 +661,26 @@ public class GamePlayControllerTests {
         assertEquals("Return-to-setup action must not be null.", error.getMessage());
     }
 
+    @Test
+    public void HandlePlay_SniffTestMovesKitten_ShowsMovedMessageWithoutPreview() {
+        StubActions actions = new StubActions(handSnapshot(CardType.SNIFF_TEST));
+        actions.playResult = PlayResult.continueTurn(List.of(CardType.EXPLODING_KITTEN));
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals(0, actions.playedHandIndex);
+        assertEquals("sniff.kitten-moved", view.messageKey);
+        assertEquals(0, view.futureCardsCalls);
+        assertEquals(1, view.renderCalls);
+    }
+
+    private static GameSnapshot handSnapshot(CardType card) {
+        return GameSnapshot.create("Player 1", List.of(card), 3, 0, 2,
+                TurnPhase.ACTIONS_ALLOWED);
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
