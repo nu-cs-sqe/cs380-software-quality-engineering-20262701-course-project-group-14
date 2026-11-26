@@ -73,6 +73,37 @@ contains no original cards. The number of Sniff Test copies is decided together
 with the other original cards; they are then added during game setup, in the
 same way that extra Defuse and Exploding Kitten cards are added today.
 
+## Implementation status
+
+| Part | Where | Status |
+|---|---|---|
+| Effect (`SniffTestEffect`), BVA `SN-01`–`SN-11` | PR #49 → `main` | Done |
+| `Deck()` keeps the 56-card deck (`Deck39`) | PR #49 → `main` | Done |
+| Card face: paw icon, `ROLE_SNIFF` colour, effect text in `CardCatalog` | PR #49 → `main` | Done |
+| Registration in `TurnEngineFactory` (`TEF-07`, `TEF-08`) | `feature/sniff-test-wiring`, stacked on the turn-engine branches | Done; reaches `main` with the turn engine |
+| Result feedback in `GamePlayController` (`GPC-SN-01`–`GPC-SN-05`) and text in `SniffTestMessages.properties` | `feature/sniff-test-wiring` | Done |
+| Copies added to the game during setup | — | Waiting for the team decision below |
+
+After a sniffed Kitten moves to the bottom, the controller shows
+`sniff.kitten-moved` instead of the "top of the deck" preview, because that
+Kitten is no longer on top. For a safe card it shows the one-card preview and
+`sniff.safe`.
+
+## Needs team confirmation
+
+1. **Copies per game.** Proposal: 4 copies, added during setup together with the
+   other original cards. With 4 copies the remaining draw pile after setup
+   grows by 4 (2 players: 35 → 39; 3: 29 → 33; 4: 23 → 27; 5: 16 → 20), so the
+   Setup integration test expectations change once, when the original cards are
+   added.
+2. **Shared exclusion rule.** Every original card type is listed in
+   `Deck.ORIGINAL_CARDS` so that `Deck()` stays the 56-card Original Edition
+   deck. Other original cards can be added to the same set.
+3. **Nope.** The proposal lets Nope cancel Sniff Test like other action cards.
+   Confirm this when the Nope window is designed.
+4. **Same-screen privacy.** The sniffed card is shown on the shared screen in
+   the same way as See the Future. Confirm that this is acceptable.
+
 ## Implementation outline
 
 - `SniffTestEffect implements CardEffect` in `domain`, with BVA in
