@@ -37,7 +37,7 @@ final class CardCatalog {
         }
     }
 
-    static final Set<String> NOT_WIRED_YET = Set.of("FAVOR", "NOPE", "SNIFFTEST");
+    static final Set<String> NOT_WIRED_YET = Set.of("FAVOR", "NOPE");
 
     private static final String CAT_TEXT =
             "No effect on its own. Play a matching pair to steal a random card.";
