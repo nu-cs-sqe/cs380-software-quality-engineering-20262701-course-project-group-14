@@ -14,6 +14,8 @@ public final class SniffTestEffect implements CardEffect {
 
     @Override
     public EffectOutcome play(Player player, Deck deck) {
-        return new EffectOutcome(false, List.of());
+        Card topCard = deck.drawCard();
+        deck.insertAt(topCard, 0);
+        return new EffectOutcome(false, List.of(topCard.getType()));
     }
 }

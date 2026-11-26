@@ -66,6 +66,22 @@ public class SniffTestEffectTests {
         assertEquals(hand, player.getHand());
     }
 
+    @Test
+    public void Play_WithSafeTopCard_RevealsItAndKeepsDeckOrder() {
+        Card skip = new Card(CardType.SKIP);
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        Deck deck = Deck.fromTopToBottom(List.of(skip, kitten));
+        Player player = playerHolding(new Card(CardType.ATTACK));
+        List<Card> hand = List.copyOf(player.getHand());
+
+        EffectOutcome outcome = new SniffTestEffect().play(player, deck);
+
+        assertFalse(outcome.endsTurn());
+        assertEquals(List.of(CardType.SKIP), outcome.getRevealedCards());
+        assertEquals(hand, player.getHand());
+        assertEquals(List.of(skip, kitten), drain(deck));
+    }
+
     private static Player playerHolding(Card... cards) {
         Player player = new Player("Player 1");
         for (Card card : cards) {
