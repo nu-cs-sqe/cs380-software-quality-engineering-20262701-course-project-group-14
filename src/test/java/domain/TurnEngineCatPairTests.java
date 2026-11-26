@@ -255,6 +255,15 @@ class TurnEngineCatPairTests {
     }
 
     @Test
+    void PlayCard_WithTargetedNonCatCommand_RejectsWithoutChangingState() {
+        Player current = playerWith("Player 1", new Card(CardType.SKIP),
+                new Card(CardType.ATTACK));
+        assertRejectionPreservesGame(rejectionGame(current, eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.targeted(0, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
+    @Test
     void PlayCard_WithOneTargetCard_TransfersOnlyCard() {
         Player current = matchingCatHand();
         Card gift = new Card(CardType.FAVOR);
