@@ -37,7 +37,10 @@ final class CardCatalog {
         }
     }
 
-    static final Set<String> NOT_WIRED_YET = Set.of("FAVOR", "NOPE");
+    // Cards whose effects are not registered in TurnEngineFactory yet.
+    static final Set<String> NOT_WIRED_YET = Set.of("FAVOR", "NOPE", "SEETHEFUTURE", "SHUFFLE");
+    // Cards that are never played from the hand; the engine uses them automatically.
+    static final Set<String> AUTOMATIC = Set.of("DEFUSE", "EXPLODINGKITTEN");
 
     private static final String CAT_TEXT =
             "No effect on its own. Play a matching pair to steal a random card.";
@@ -93,6 +96,10 @@ final class CardCatalog {
 
     static boolean isWired(Info info) {
         return !NOT_WIRED_YET.contains(info.key);
+    }
+
+    static boolean isAutomatic(Info info) {
+        return AUTOMATIC.contains(info.key);
     }
 
     private static String titleCase(String enumName) {

@@ -203,17 +203,9 @@
 
 .card-badge {
     -fx-background-color: #160D09;
-    -fx-text-fill: #FFB84D;
-    -fx-font-size: 10px;
-    -fx-font-weight: bold;
-    -fx-padding: 0 5 0 5;
-    -fx-pref-height: 16;
-    -fx-min-height: 16;
-    -fx-max-height: 16;
-}
-
-.card-badge.locked {
-    -fx-text-fill: #FF4D63;
+    -fx-border-color: #4D3527;
+    -fx-border-width: 1;
+    -fx-padding: 3 4 3 4;
 }
 
 /* ---------- main buttons ---------- */

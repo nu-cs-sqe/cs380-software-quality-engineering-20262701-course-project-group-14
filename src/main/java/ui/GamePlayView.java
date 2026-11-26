@@ -131,7 +131,7 @@ public final class GamePlayView extends StackPane
     private static final int DISPLAYED_DISCARDS = TOSS_ANGLES.length;
     private static final double[] PEEK_ANGLES = {-22.0, -7.0, 8.0, 22.0};
 
-    private enum Status { READY, SOON, LOCKED }
+    private enum Status { READY, AUTO, SOON, LOCKED }
 
     private final String stylesheetUrl;
     private final TavernBackground background = new TavernBackground();
@@ -1361,7 +1361,8 @@ public final class GamePlayView extends StackPane
         CardCatalog.Info info = CardCatalog.lookup(type.name());
         boolean wired = CardCatalog.isWired(info);
         boolean locked = danger || turnActionsDisabled;
-        Status status = !wired ? Status.SOON : locked ? Status.LOCKED : Status.READY;
+        Status status = !wired ? Status.SOON : locked ? Status.LOCKED
+                : CardCatalog.isAutomatic(info) ? Status.AUTO : Status.READY;
         CardCatalog.Face rest = status == Status.SOON ? CardCatalog.Face.SOON
                 : status == Status.LOCKED ? CardCatalog.Face.LOCKED : CardCatalog.Face.READY;
         CardCatalog.Face raised = status == Status.READY ? CardCatalog.Face.HOVER : rest;
@@ -1375,7 +1376,7 @@ public final class GamePlayView extends StackPane
         if (compact) {
             name.getStyleClass().add("compact");
         }
-        if (status != Status.READY) {
+        if (status == Status.SOON || status == Status.LOCKED) {
             name.getStyleClass().add("dim");
         }
         name.setWrapText(true);
@@ -1391,11 +1392,11 @@ public final class GamePlayView extends StackPane
         fixSize(card, w, h);
 
         if (status != Status.READY) {
-            Label badge = new Label(status == Status.SOON ? "SOON" : "LOCKED");
+            int badgeColor = status == Status.LOCKED ? GameTheme.DANGER
+                    : status == Status.AUTO ? GameTheme.ROLE_SAFETY : GameTheme.AMBER;
+            StackPane badge = new StackPane(PixelArt.textView(status.name(), 1, badgeColor));
             badge.getStyleClass().add("card-badge");
-            if (status == Status.LOCKED) {
-                badge.getStyleClass().add("locked");
-            }
+            badge.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             StackPane.setAlignment(badge, Pos.TOP_RIGHT);
             StackPane.setMargin(badge, new Insets(5, 5, 0, 0));
             card.getChildren().add(badge);
@@ -1410,7 +1411,8 @@ public final class GamePlayView extends StackPane
         fixSize(button, w, h);
         button.setAccessibleText(info.name + ", " + info.tag.toLowerCase(Locale.ROOT) + " card"
                 + (status == Status.SOON ? ", not available yet"
-                : status == Status.LOCKED ? ", locked" : ""));
+                : status == Status.LOCKED ? ", locked"
+                : status == Status.AUTO ? ", used automatically" : ""));
         button.setAccessibleHelp(info.effect);
 
         button.setOnMouseEntered(event -> {
@@ -1523,6 +1525,9 @@ public final class GamePlayView extends StackPane
         } else if (shownStatus == Status.SOON) {
             statusRow.getChildren().add(
                     PixelArt.textView("NOT AVAILABLE YET", 2, 0xFF6E5641));
+        } else if (shownStatus == Status.AUTO) {
+            statusRow.getChildren().add(
+                    PixelArt.textView("USED AUTOMATICALLY WHEN A KITTEN IS DRAWN", 2, 0xFF2E7D5B));
         } else {
             statusRow.getChildren().add(
                     PixelArt.textView(danger ? "LOCKED: PLACE KITTEN FIRST" : "LOCKED", 2, INK_DANGER));
