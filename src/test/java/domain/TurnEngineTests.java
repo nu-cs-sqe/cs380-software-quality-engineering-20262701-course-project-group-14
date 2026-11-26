@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -699,6 +700,21 @@ public class TurnEngineTests {
             deck.removeCards(type, deck.countOf(type));
         }
         return deck;
+    }
+
+    @Test
+    public void GetSnapshot_AfterPlayingSkip_ReportsSkipAsTopDiscard() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        first.addCard(new Card(CardType.SKIP));
+        GameState state = new GameState(List.of(first, second), createEmptyDeck());
+        DiscardPile discardPile = new DiscardPile();
+        TurnEngine engine = new TurnEngine(state, discardPile,
+                new ExplodingKittenResolver(discardPile), Map.of(CardType.SKIP, new SkipEffect()));
+
+        engine.playCard(0);
+
+        assertEquals(Optional.of(CardType.SKIP), engine.getSnapshot().getTopDiscard());
     }
 
     private static final class StubEffect implements CardEffect {
