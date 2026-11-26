@@ -117,6 +117,23 @@ public class SniffTestEffectTests {
         assertSame(kitten, after.get(0));
     }
 
+    @Test
+    public void Play_WithTwoKittensOnTop_MovesOnlyTopKitten() {
+        Card topKitten = new Card(CardType.EXPLODING_KITTEN);
+        Card secondKitten = new Card(CardType.EXPLODING_KITTEN);
+        Card skip = new Card(CardType.SKIP);
+        Deck deck = Deck.fromTopToBottom(List.of(topKitten, secondKitten, skip));
+        Player player = playerHolding(new Card(CardType.ATTACK));
+
+        EffectOutcome outcome = new SniffTestEffect().play(player, deck);
+
+        assertEquals(List.of(CardType.EXPLODING_KITTEN), outcome.getRevealedCards());
+        List<Card> after = drain(deck);
+        assertSame(secondKitten, after.get(0));
+        assertSame(skip, after.get(1));
+        assertSame(topKitten, after.get(2));
+    }
+
     private static Player playerHolding(Card... cards) {
         Player player = new Player("Player 1");
         for (Card card : cards) {
