@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SniffTestEffectTests {
@@ -35,6 +36,20 @@ public class SniffTestEffectTests {
         assertFalse(canPlay);
         assertEquals(hand, player.getHand());
         assertEquals(0, deck.size());
+    }
+
+    @Test
+    public void CanPlay_WithNullPlayer_ThrowsWithoutChangingDeck() {
+        Card skip = new Card(CardType.SKIP);
+        Deck deck = Deck.fromTopToBottom(List.of(skip));
+
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new SniffTestEffect().canPlay(null, deck)
+        );
+
+        assertEquals("Player must not be null.", exception.getMessage());
+        assertEquals(List.of(skip), drain(deck));
     }
 
     private static Player playerHolding(Card... cards) {

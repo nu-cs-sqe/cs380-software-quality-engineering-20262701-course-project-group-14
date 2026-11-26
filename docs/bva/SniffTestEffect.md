@@ -12,7 +12,7 @@ effect; `TurnEngine` removes and discards the played Sniff Test card.
 |---|---|---|---|---|
 | SN-01 | Deck is `[SKIP]`; player holds one card. | Valid player and deck | Returns `true`; deck and hand are unchanged. | :white_check_mark: |
 | SN-02 | Deck is empty. | Valid player and deck | Returns `false`; deck stays empty and the hand is unchanged. | :white_check_mark: |
-| SN-03 | Deck is `[SKIP]`. | `player = null` | Throws `NullPointerException` with `"Player must not be null."`; deck is unchanged. | :x: |
+| SN-03 | Deck is `[SKIP]`. | `player = null` | Throws `NullPointerException` with `"Player must not be null."`; deck is unchanged. | :white_check_mark: |
 | SN-04 | A player exists. | `deck = null` | Throws `NullPointerException` with `"Deck must not be null."`; hand is unchanged. | :x: |
 
 ## Method under test: `play(Player, Deck)`

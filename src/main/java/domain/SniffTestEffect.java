@@ -1,11 +1,13 @@
 package domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class SniffTestEffect implements CardEffect {
 
     @Override
     public boolean canPlay(Player player, Deck deck) {
+        Objects.requireNonNull(player, "Player must not be null.");
         return deck.size() > 0;
     }
 
