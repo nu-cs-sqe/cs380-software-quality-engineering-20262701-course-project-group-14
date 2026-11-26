@@ -720,6 +720,21 @@ public class GamePlayControllerTests {
         assertEquals(1, view.renderCalls);
     }
 
+    @Test
+    public void HandlePlay_IndexAtHandSizeWithSniffTest_ShowsInvalidIndexOnly() {
+        StubActions actions = new StubActions(handSnapshot(CardType.SNIFF_TEST));
+        actions.playResult = PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(1);
+
+        assertEquals(1, actions.playedHandIndex);
+        assertEquals("play.invalid-hand-index", view.messageKey);
+        assertEquals(0, view.futureCardsCalls);
+        assertEquals(1, view.renderCalls);
+    }
+
     private static GameSnapshot handSnapshot(CardType card) {
         return GameSnapshot.create("Player 1", List.of(card), 3, 0, 2,
                 TurnPhase.ACTIONS_ALLOWED);
