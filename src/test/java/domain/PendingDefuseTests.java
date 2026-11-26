@@ -26,4 +26,19 @@ public class PendingDefuseTests {
 
         assertEquals("Pending Kitten must not be null.", exception.getMessage());
     }
+
+    @Test
+    public void Constructor_WithNonKittenCard_ThrowsIllegalArgumentException() {
+        Card defuse = new Card(CardType.DEFUSE);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new PendingDefuse(defuse)
+        );
+
+        assertEquals(
+                "Pending Defuse requires an Exploding Kitten.",
+                exception.getMessage()
+        );
+    }
 }
