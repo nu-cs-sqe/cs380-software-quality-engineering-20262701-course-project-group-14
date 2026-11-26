@@ -100,7 +100,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         }
         return pendingAction == null
                 ? TurnPhase.ACTIONS_ALLOWED
-                : TurnPhase.AWAITING_DEFUSE_POSITION;
+                : pendingAction.getPhase();
     }
 
     @Override
