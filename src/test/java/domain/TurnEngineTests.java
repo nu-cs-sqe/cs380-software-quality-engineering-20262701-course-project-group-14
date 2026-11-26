@@ -717,6 +717,41 @@ public class TurnEngineTests {
         assertEquals(Optional.of(CardType.SKIP), engine.getSnapshot().getTopDiscard());
     }
 
+    @Test
+    public void GetSnapshot_AfterDefuseFollowsSkip_ReportsDefuseAsTopDiscard() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        first.addCard(new Card(CardType.SKIP));
+        Card defuse = new Card(CardType.DEFUSE);
+        second.addCard(defuse);
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(new Card(CardType.EXPLODING_KITTEN), new Card(CardType.ATTACK)));
+        GameState state = new GameState(List.of(first, second), deck);
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card kitten) {
+                return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+            }
+
+            @Override
+            public DefuseResult defuse(Player player, Card kitten, Deck pile, int position) {
+                discardPile.discard(player.removeOne(CardType.DEFUSE).orElseThrow());
+                pile.insertAt(kitten, position);
+                return DefuseResult.DEFUSED;
+            }
+        };
+        TurnEngine engine = new TurnEngine(state, discardPile, resolver,
+                Map.of(CardType.SKIP, new SkipEffect()));
+        engine.playCard(0);
+        engine.draw();
+
+        engine.resolveDefuse(0);
+
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(Optional.of(CardType.DEFUSE), engine.getSnapshot().getTopDiscard());
+    }
+
     private static final class StubEffect implements CardEffect {
         private boolean canPlay = true;
         private int canPlayCalls;
