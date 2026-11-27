@@ -16,3 +16,20 @@
 | GSC-10 | No ready game exists. | `"abc"` | Validation fails with the message key `setup.error.player-count`, which the view translates (a whole-number player count from 2 through 5 is required); no ready `GameState` is produced. | :white_check_mark: |
 | GSC-11 | No ready game exists. | `"2.5"` | Validation fails with the message key `setup.error.player-count`, which the view translates (a whole-number player count from 2 through 5 is required); no ready `GameState` is produced. | :white_check_mark: |
 | GSC-12 | No ready game exists; setup dependencies contain sufficient cards. | `" 3 "` | Surrounding whitespace is ignored and the same ready state as input `"3"` is returned. | :white_check_mark: |
+## Method under test: `startNamedGame(List<String> playerNames)`
+
+Players enter their names on the setup screen. The view fills an empty field
+with the default name for that seat before calling the controller. Error
+results are message keys that the view translates.
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GSC-13 | No ready game exists. | `["Ada", "Bo"]` | Returns a ready state whose players are named `Ada` and `Bo` in seat order. | :x: |
+| GSC-14 | No ready game exists. | `["  Ada ", "Bo"]` | Surrounding whitespace is removed: the first player is named `Ada`. | :x: |
+| GSC-15 | No ready game exists. | Five names of exactly 12 characters | Returns a ready state with 5 players keeping all 12 characters of each name. | :x: |
+| GSC-16 | No ready game exists. | `["Ada", "ABCDEFGHIJKLM"]` (13 characters) | Validation fails with the message key `setup.error.name-length`. | :x: |
+| GSC-17 | No ready game exists. | `["Ada", "ada"]` | Validation fails with the message key `setup.error.name-duplicate`; names are compared ignoring case. | :x: |
+| GSC-18 | No ready game exists. | `["Ada", "   "]` | Validation fails with the message key `setup.error.name-blank`. | :x: |
+| GSC-19 | No ready game exists. | `["Ada"]` | Validation fails with the message key `setup.error.player-count`. | :x: |
+| GSC-20 | No ready game exists. | Six distinct names | Validation fails with the message key `setup.error.player-count`. | :x: |
+| GSC-21 | No ready game exists. | `null` | Throws `NullPointerException` with `"Player names must not be null."`. | :x: |
