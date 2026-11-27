@@ -66,4 +66,8 @@ public class Player {
     public boolean isEliminated() {
         return eliminated;
     }
+
+    Card removeCardAt(int handIndex) {
+        return hand.remove(handIndex);
+    }
 }

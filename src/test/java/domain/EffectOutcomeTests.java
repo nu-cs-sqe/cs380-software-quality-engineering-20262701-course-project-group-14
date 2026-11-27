@@ -103,4 +103,33 @@ public class EffectOutcomeTests {
         );
         assertEquals(expectedCards, outcome.getRevealedCards());
     }
+
+    @Test
+    public void Constructor_WithAttackDirective_ReturnsAttackOutcome() {
+        EffectOutcome outcome = new EffectOutcome(
+                TurnDirective.ATTACK_NEXT_PLAYER,
+                List.of()
+        );
+
+        assertTrue(outcome.endsTurn());
+        assertEquals(
+                TurnDirective.ATTACK_NEXT_PLAYER,
+                outcome.getTurnDirective()
+        );
+        assertEquals(List.of(), outcome.getRevealedCards());
+    }
+
+    @Test
+    public void Constructor_WithNullDirective_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new EffectOutcome(null, List.of())
+        );
+
+        assertEquals(
+                "Turn directive must not be null.",
+                exception.getMessage()
+        );
+    }
+
 }

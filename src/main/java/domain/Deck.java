@@ -104,6 +104,11 @@ public class Deck {
         cards.add(position, card);
     }
 
+    // Temporary until Deck.peekTop(int) is available.
+    Card peekTopCard() {
+        return cards.get(0);
+    }
+
     // Removes and returns the top card.
     public Card drawCard() {
         if (cards.isEmpty()) {
