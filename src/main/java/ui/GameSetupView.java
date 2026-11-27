@@ -182,8 +182,7 @@ public final class GameSetupView extends StackPane {
             avatarButtons.add(avatar);
             TextField field = new TextField();
             field.getStyleClass().add("name-field");
-            field.setTextFormatter(new TextFormatter<String>(change ->
-                    change.getControlNewText().length() <= NAME_LIMIT ? change : null));
+            field.setTextFormatter(new TextFormatter<String>(this::filterName));
             field.setOnAction(event -> beginButton.fire());
             HBox.setHgrow(field, Priority.ALWAYS);
             nameFields.add(field);
@@ -235,6 +234,43 @@ public final class GameSetupView extends StackPane {
         beginButton.setGraphic(PixelArt.view(PixelArt.textImage(
                 Texts.get("setup.names.begin"), labelScale, PixelArt.INK, PixelArt.INK, 7, 0)));
         beginButton.setAccessibleText(Texts.get("setup.names.begin"));
+    }
+
+    /**
+     * Keeps a name field to what the game can draw: characters missing from the pixel fonts
+     * (emoji, rare characters, control and invisible characters) are dropped with a hint, line
+     * breaks and tabs become spaces, and pasted text is cut to the name limit.
+     */
+    private TextFormatter.Change filterName(TextFormatter.Change change) {
+        if (!change.isContentChange()) {
+            return change;
+        }
+        String typed = change.getText().replaceAll("[\\r\\n\\t]", " ");
+        StringBuilder kept = new StringBuilder();
+        typed.codePoints()
+                .filter(GameSetupView::isDrawable)
+                .forEach(kept::appendCodePoint);
+        boolean dropped = kept.length() < typed.length();
+        int unchanged = change.getControlText().length() - (change.getRangeEnd() - change.getRangeStart());
+        int room = Math.max(0, NAME_LIMIT - unchanged);
+        if (kept.length() > room) {
+            kept.setLength(room);
+        }
+        change.setText(kept.toString());
+        int caret = change.getRangeStart() + kept.length();
+        change.setCaretPosition(caret);
+        change.setAnchor(caret);
+        if (dropped) {
+            showMessage(Texts.get("setup.error.name-characters"));
+        }
+        return change;
+    }
+
+    private static boolean isDrawable(int codePoint) {
+        return Character.isBmpCodePoint(codePoint)
+                && !Character.isISOControl(codePoint)
+                && Character.getType(codePoint) != Character.FORMAT
+                && FallbackFont.canDisplay(codePoint);
     }
 
     private static String defaultName(int seat) {
