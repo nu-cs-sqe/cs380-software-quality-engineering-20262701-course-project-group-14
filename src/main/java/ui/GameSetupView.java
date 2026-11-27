@@ -162,14 +162,16 @@ public final class GameSetupView extends StackPane {
     /** Shows every setup text in the chosen language. */
     private void applyTexts() {
         Texts.applyFont(this);
+        // Pixel CJK glyphs need one step more than the 7-pixel bitmap font to match its size here.
+        int labelScale = PixelArt.needsFallback(Texts.get("setup.players")) ? 3 : 2;
         title.setImage(PixelArt.textImage(
                 Texts.get("setup.title"), 5, PixelArt.CREAM, PixelArt.AMBER, 4, PixelArt.VIOLET_SHADOW));
         subtitleText.setImage(PixelArt.textImage(
-                Texts.get("setup.subtitle"), 2, PixelArt.LILAC, PixelArt.LILAC, 7, 0xFF0B0819));
+                Texts.get("setup.subtitle"), labelScale, PixelArt.LILAC, PixelArt.LILAC, 7, 0xFF0B0819));
         languageLabel.setImage(PixelArt.textImage(
-                Texts.get("setup.language"), 2, PixelArt.CREAM, PixelArt.CREAM, 7, 0));
+                Texts.get("setup.language"), labelScale, PixelArt.CREAM, PixelArt.CREAM, 7, 0));
         instruction.setImage(PixelArt.textImage(
-                Texts.get("setup.players"), 2, PixelArt.CREAM, PixelArt.CREAM, 7, 0));
+                Texts.get("setup.players"), labelScale, PixelArt.CREAM, PixelArt.CREAM, 7, 0));
         playerCountInput.setPromptText(Texts.get("setup.players.prompt"));
         startGameButton.setGraphic(PixelArt.view(PixelArt.textImage(
                 Texts.get("setup.start"), 3, PixelArt.INK, PixelArt.INK, 7, 0)));
