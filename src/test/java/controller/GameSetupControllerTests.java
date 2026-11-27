@@ -302,6 +302,16 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithEmoji_ThrowsNameCharactersKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada\uD83D\uDE00", "Bo")));
+
+        assertEquals("setup.error.name-characters", exception.getMessage());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 

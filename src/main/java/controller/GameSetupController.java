@@ -22,6 +22,7 @@ public class GameSetupController {
     private static final String NAME_LENGTH_ERROR_MESSAGE = "setup.error.name-length";
     private static final String NAME_DUPLICATE_ERROR_MESSAGE = "setup.error.name-duplicate";
     private static final String NAME_BLANK_ERROR_MESSAGE = "setup.error.name-blank";
+    private static final String NAME_CHARACTERS_ERROR_MESSAGE = "setup.error.name-characters";
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
@@ -35,7 +36,11 @@ public class GameSetupController {
         List<Player> players = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (String name : playerNames) {
-            String trimmed = Normalizer.normalize(name, Normalizer.Form.NFC).replaceAll("\\s+", " ").trim();
+            String collapsed = Normalizer.normalize(name, Normalizer.Form.NFC).replaceAll("\\s+", " ");
+            if (!collapsed.codePoints().allMatch(GameSetupController::isDisplayable)) {
+                throw new IllegalArgumentException(NAME_CHARACTERS_ERROR_MESSAGE);
+            }
+            String trimmed = collapsed.trim();
             if (trimmed.isEmpty()) {
                 throw new IllegalArgumentException(NAME_BLANK_ERROR_MESSAGE);
             }
@@ -48,6 +53,10 @@ public class GameSetupController {
             players.add(new Player(trimmed));
         }
         return setUp(players);
+    }
+
+    private static boolean isDisplayable(int codePoint) {
+        return !Character.isSupplementaryCodePoint(codePoint);
     }
 
     private GameState setUp(List<Player> players) {
