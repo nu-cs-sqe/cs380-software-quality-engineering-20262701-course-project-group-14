@@ -11,7 +11,8 @@
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| NAV-CAT-01 | A valid fixed game has a matching Cat Card pair and one eligible target. | Open gameplay. Cancel the inline selection and target prompt in separate attempts, then click two matching hand cards and confirm the target. | The first click highlights the matching hand cards. Cancellation preserves both hands. A confirmed pair transfers the selected card, updates the rendered hand, and keeps the current player. | :white_check_mark: |
+| NAV-CAT-01 | A valid fixed game has a matching Cat Card pair and exactly one eligible target. | Open gameplay and click one of the two matching hand cards once. | The pair is played at once with the only eligible target: the target's card moves to the current hand, both Tacocats show on the discard pile, and the current player keeps the turn. No chooser opens. | :white_check_mark: |
+| NAV-CAT-02 | A valid fixed game has a matching Cat Card pair and two eligible targets. | Click a matching card and press Escape; click one again and press the draw pile; click one again and press the second target's seat. | While choosing, both target seats are marked targetable and both pair cards are lifted. Escape and a click away cancel without changing any hand or drawing. Pressing a seat steals from that player only, and the current player keeps the turn. | :white_check_mark: |
 
 ## Method under test: startGameplay(GameState, GamePlayViewPort)
 
