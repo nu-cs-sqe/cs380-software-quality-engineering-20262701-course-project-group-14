@@ -56,7 +56,8 @@ public class GameSetupController {
     }
 
     private static boolean isDisplayable(int codePoint) {
-        return !Character.isSupplementaryCodePoint(codePoint);
+        return !Character.isSupplementaryCodePoint(codePoint)
+                && !Character.isISOControl(codePoint);
     }
 
     private GameState setUp(List<Player> players) {

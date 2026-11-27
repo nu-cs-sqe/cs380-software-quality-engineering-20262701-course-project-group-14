@@ -48,7 +48,7 @@ blocks characters missing from the bundled pixel font while typing.
 | GSC-22 | No ready game exists. | `["Ada \t  Lovelace", "Bo"]` | The first player is named `Ada Lovelace`. | :white_check_mark: |
 | GSC-23 | No ready game exists. | `["é", "é"]` (é composed and decomposed) | Validation fails with the message key `setup.error.name-duplicate`. | :white_check_mark: |
 | GSC-24 | No ready game exists. | `["Ada😀", "Bo"]` (Ada + emoji) | Validation fails with the message key `setup.error.name-characters`. | :white_check_mark: |
-| GSC-25 | No ready game exists. | `["A\u0007da", "Bo"]` (control character) | Validation fails with the message key `setup.error.name-characters`. | :x: |
+| GSC-25 | No ready game exists. | `["A\u0007da", "Bo"]` (control character) | Validation fails with the message key `setup.error.name-characters`. | :white_check_mark: |
 | GSC-26 | No ready game exists. | `["Ada", "​"]` (zero-width space only) | Validation fails with the message key `setup.error.name-characters`. | :x: |
 | GSC-27 | No ready game exists. | `["一二三四五六七八九十甲乙", "Bo"]` (12 characters) | Returns a ready state keeping all 12 characters. | :x: |
 | GSC-28 | No ready game exists. | `["éééééééééééé", "Bo"]` (12 decomposed é, 24 code units) | Returns a ready state; the name has 12 characters after normalization. | :x: |
