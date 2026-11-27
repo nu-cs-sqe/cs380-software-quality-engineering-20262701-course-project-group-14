@@ -25,6 +25,16 @@ class TurnEngineGameOverTests {
     }
 
     @Test
+    void GetSnapshot_LastOpponentEliminated_ReportsLastSurvivor() {
+        FinalTurn game = new FinalTurn();
+
+        game.engine.draw();
+
+        assertEquals(java.util.Optional.of(WinReason.LAST_SURVIVOR),
+                game.engine.getSnapshot().getWinReason());
+    }
+
+    @Test
     void PlayCard_CatPairAfterGameOver_RejectsAndPreservesWinner() {
         FinalTurn game = new FinalTurn();
         game.engine.draw();

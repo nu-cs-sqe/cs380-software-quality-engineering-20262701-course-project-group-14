@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -8,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class TurnEngine implements TurnActions, CommandPlayActions {
+    static final int DEFUSES_TO_WIN = 2;
+
     private final GameState state;
     private final DiscardPile discardPile;
     private final ExplodingKittenResolver resolver;
@@ -17,6 +20,8 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     private int remainingTurns = 1;
     private boolean attackTurnsActive;
     private boolean gameOver;
+    private WinReason winReason;
+    private final Map<Player, Integer> defuseCounts = new HashMap<>();
 
     public TurnEngine(
             GameState state,
@@ -86,7 +91,8 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         return GameSnapshot.create(currentPlayer.getName(), hand, state.getDeck().size(),
                 discardPile.size(), Math.toIntExact(alivePlayers), getPhase())
                 .withTurnDetails(summaries, players.indexOf(currentPlayer), remainingTurns)
-                .withTopDiscard(discardPile.top().map(Card::getType).orElse(null));
+                .withTopDiscard(discardPile.top().map(Card::getType).orElse(null))
+                .withWinReason(winReason);
     }
 
     private static PlayerSummary playerSummary(int seat, Player player) {
@@ -114,7 +120,13 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
                 state.getCurrentPlayer(), kitten, state.getDeck(), position);
         if (result == DefuseResult.DEFUSED) {
             pendingAction = null;
-            finishOneTurn();
+            if (defuseCounts.merge(state.getCurrentPlayer(), 1, Integer::sum) >= DEFUSES_TO_WIN) {
+                gameOver = true;
+                winReason = WinReason.DEFUSE_MASTER;
+                remainingTurns = 0;
+            } else {
+                finishOneTurn();
+            }
         }
         return result;
     }
@@ -285,6 +297,9 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     private void advanceAfterElimination() {
         attackTurnsActive = false;
         gameOver = state.advanceCurrentPlayer() == AdvanceResult.ONE_PLAYER_REMAINS;
+        if (gameOver) {
+            winReason = WinReason.LAST_SURVIVOR;
+        }
         remainingTurns = gameOver ? 0 : 1;
     }
 }

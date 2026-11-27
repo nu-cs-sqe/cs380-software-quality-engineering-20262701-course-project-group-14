@@ -16,6 +16,7 @@ public final class GameSnapshot {
     private final int currentPlayerIndex;
     private final int remainingTurns;
     private final CardType topDiscard;
+    private final WinReason winReason;
 
     private GameSnapshot(
             String currentPlayerName,
@@ -35,6 +36,7 @@ public final class GameSnapshot {
         this.currentPlayerIndex = 0;
         this.remainingTurns = phase == TurnPhase.GAME_OVER ? 0 : 1;
         this.topDiscard = null;
+        this.winReason = null;
     }
 
     private GameSnapshot(GameSnapshot base, List<PlayerSummary> players,
@@ -44,6 +46,12 @@ public final class GameSnapshot {
 
     private GameSnapshot(GameSnapshot base, List<PlayerSummary> players,
                          int currentPlayerIndex, int remainingTurns, CardType topDiscard) {
+        this(base, players, currentPlayerIndex, remainingTurns, topDiscard, base.winReason);
+    }
+
+    private GameSnapshot(GameSnapshot base, List<PlayerSummary> players,
+                         int currentPlayerIndex, int remainingTurns, CardType topDiscard,
+                         WinReason winReason) {
         this.currentPlayerName = base.currentPlayerName;
         this.currentPlayerHand = base.currentPlayerHand;
         this.deckSize = base.deckSize;
@@ -54,6 +62,7 @@ public final class GameSnapshot {
         this.currentPlayerIndex = currentPlayerIndex;
         this.remainingTurns = remainingTurns;
         this.topDiscard = topDiscard;
+        this.winReason = winReason;
     }
 
     GameSnapshot withTurnDetails(List<PlayerSummary> players, int currentPlayerIndex,
@@ -63,6 +72,10 @@ public final class GameSnapshot {
 
     GameSnapshot withTopDiscard(CardType newestDiscard) {
         return new GameSnapshot(this, players, currentPlayerIndex, remainingTurns, newestDiscard);
+    }
+
+    GameSnapshot withWinReason(WinReason reason) {
+        return new GameSnapshot(this, players, currentPlayerIndex, remainingTurns, topDiscard, reason);
     }
 
     public static GameSnapshot create(
@@ -160,6 +173,10 @@ public final class GameSnapshot {
 
     public Optional<CardType> getTopDiscard() {
         return Optional.ofNullable(topDiscard);
+    }
+
+    public Optional<WinReason> getWinReason() {
+        return Optional.ofNullable(winReason);
     }
 
     public int getRemainingTurns() {

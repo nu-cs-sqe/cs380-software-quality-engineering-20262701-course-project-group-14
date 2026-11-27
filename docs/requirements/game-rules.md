@@ -56,3 +56,16 @@ These counts follow from the composition and setup procedure above.
 | 3       | 2                               | 48                                    | 2                                 | 29              |
 | 4       | 2                               | 48                                    | 3                                 | 23              |
 | 5       | 1                               | 47                                    | 4                                 | 16              |
+### Additional Win Condition: Defuse Master
+
+Invented by the team, in addition to the Original Edition rule that the last
+surviving player wins.
+
+- Each successful Defuse counts for the player who resolved the Exploding Kitten.
+- The first player to complete **two** successful Defuses wins immediately; the
+  game ends before the turn passes to the next player.
+- Defuses are counted per player for the whole game, across Attack turns.
+- The last-surviving-player rule still applies; whichever condition is met first
+  ends the game.
+- The engine reports which rule ended the game (`GameSnapshot.getWinReason()`), and
+  the victory screen shows "Defuse master" instead of "Last cat standing".

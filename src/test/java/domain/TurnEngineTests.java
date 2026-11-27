@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -777,6 +778,114 @@ public class TurnEngineTests {
 
         assertEquals(2, engine.getSnapshot().getDiscardPileSize());
         assertEquals(Optional.of(CardType.DEFUSE), engine.getSnapshot().getTopDiscard());
+    }
+
+    @Test
+    public void ResolveDefuse_FirstDefuse_KeepsGameGoing() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        GameState state = new GameState(List.of(first, second),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.SKIP));
+        TurnEngine engine = defuseMasterEngine(state);
+
+        engine.draw();
+        DefuseResult result = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, result);
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(second, state.getCurrentPlayer());
+    }
+
+    @Test
+    public void ResolveDefuse_SecondDefuseBySamePlayer_DeclaresWinner() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        GameState state = new GameState(List.of(first, second), deckOf(
+                CardType.EXPLODING_KITTEN, CardType.TACOCAT, CardType.EXPLODING_KITTEN));
+        TurnEngine engine = defuseMasterEngine(state);
+        engine.draw();
+        engine.resolveDefuse(0);
+        engine.draw();
+
+        engine.draw();
+        DefuseResult result = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, result);
+        assertEquals(TurnPhase.GAME_OVER, engine.getPhase());
+        assertSame(first, state.getCurrentPlayer());
+        assertEquals(OptionalInt.of(0), engine.getSnapshot().getWinnerIndex());
+        assertEquals(0, engine.getSnapshot().getRemainingTurns());
+    }
+
+    @Test
+    public void ResolveDefuse_FirstDefuseOfEachPlayer_KeepsGameGoing() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        GameState state = new GameState(List.of(first, second),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.EXPLODING_KITTEN));
+        TurnEngine engine = defuseMasterEngine(state);
+        engine.draw();
+        engine.resolveDefuse(0);
+
+        engine.draw();
+        DefuseResult result = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, result);
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(first, state.getCurrentPlayer());
+    }
+
+    @Test
+    public void GetSnapshot_SecondDefuse_ReportsDefuseMaster() {
+        GameState state = new GameState(List.of(new Player("Player 1"), new Player("Player 2")),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.TACOCAT, CardType.EXPLODING_KITTEN));
+        TurnEngine engine = defuseMasterEngine(state);
+        engine.draw();
+        engine.resolveDefuse(0);
+        engine.draw();
+        engine.draw();
+
+        engine.resolveDefuse(0);
+
+        assertEquals(Optional.of(WinReason.DEFUSE_MASTER), engine.getSnapshot().getWinReason());
+    }
+
+    @Test
+    public void GetSnapshot_FirstDefuse_ReportsNoWinReason() {
+        GameState state = new GameState(List.of(new Player("Player 1"), new Player("Player 2")),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.TACOCAT));
+        TurnEngine engine = defuseMasterEngine(state);
+        engine.draw();
+
+        engine.resolveDefuse(0);
+
+        assertEquals(Optional.empty(), engine.getSnapshot().getWinReason());
+    }
+
+    private static Deck deckOf(CardType... types) {
+        Deck deck = createEmptyDeck();
+        for (CardType type : types) {
+            deck.addCards(List.of(new Card(type)));
+        }
+        return deck;
+    }
+
+    /** Resolver stub: every Kitten asks for a Defuse, and a Defuse moves it to the bottom. */
+    private static TurnEngine defuseMasterEngine(GameState state) {
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card kitten) {
+                return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+            }
+
+            @Override
+            public DefuseResult defuse(Player player, Card kitten, Deck deck, int position) {
+                deck.insertAt(kitten, deck.size());
+                return DefuseResult.DEFUSED;
+            }
+        };
+        return new TurnEngine(state, discardPile, resolver, Map.of());
     }
 
     private static final class StubEffect implements CardEffect {
