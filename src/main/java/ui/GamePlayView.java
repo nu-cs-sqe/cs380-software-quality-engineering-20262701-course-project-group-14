@@ -201,12 +201,10 @@ public final class GamePlayView extends StackPane
     private final HBox handChip = new HBox();
     private final HBox keyHintPill = new HBox();
 
-    // ---- atmosphere: candle glow, drifting dust and a vignette that turns red in danger ----
+    // ---- atmosphere behind the cards: candle glow and drifting dust ----
     private final Region candleGlow = new Region();
     private final Pane dustLayer = new Pane();
-    private final Region vignette = new Region();
     private final List<Animation> ambience = new ArrayList<>();
-    private Timeline dangerPulse;
 
     // ---- root layers ----
     private final Pane stageLayer = new Pane();
@@ -309,7 +307,7 @@ public final class GamePlayView extends StackPane
 
         buildAtmosphere();
 
-        getChildren().addAll(background, candleGlow, dustLayer, stageLayer, vignette, fxLayer,
+        getChildren().addAll(background, candleGlow, dustLayer, stageLayer, fxLayer,
                 handoffOverlay, victoryOverlay, dimOverlay);
         stageLayer.setPickOnBounds(false);
         handFanPane.setPickOnBounds(false);
@@ -402,13 +400,6 @@ public final class GamePlayView extends StackPane
         }
 
         background.setTension(danger, deckSize <= LOW_DECK_THRESHOLD);
-        vignette.pseudoClassStateChanged(DANGER, danger);
-        if (danger && !wasDanger && getScene() != null) {
-            dangerPulse.playFromStart();
-        } else if (!danger && wasDanger) {
-            dangerPulse.stop();
-            vignette.setOpacity(1.0);
-        }
         refreshCatSprite();
         refreshAll();
         if (danger && !wasDanger) {
@@ -744,15 +735,6 @@ public final class GamePlayView extends StackPane
             ambience.add(driftMote(mote, i));
         }
 
-        vignette.getStyleClass().add("vignette");
-        vignette.setMouseTransparent(true);
-        dangerPulse = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(vignette.opacityProperty(), 1.0)),
-                new KeyFrame(Duration.millis(650), new KeyValue(vignette.opacityProperty(), 0.55)),
-                new KeyFrame(Duration.millis(1300), new KeyValue(vignette.opacityProperty(), 1.0))
-        );
-        dangerPulse.setCycleCount(Animation.INDEFINITE);
-
         sceneProperty().addListener((obs, oldScene, scene) -> {
             for (Animation animation : ambience) {
                 if (scene != null) {
@@ -760,9 +742,6 @@ public final class GamePlayView extends StackPane
                 } else {
                     animation.stop();
                 }
-            }
-            if (scene == null) {
-                dangerPulse.stop();
             }
         });
     }
