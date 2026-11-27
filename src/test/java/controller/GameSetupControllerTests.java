@@ -3,6 +3,7 @@ package controller;
 import domain.CardType;
 import domain.GameState;
 import domain.Player;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -347,6 +348,16 @@ public class GameSetupControllerTests {
         GameState gameState = controller.startNamedGame(List.of("e\u0301".repeat(12), "Bo"));
 
         assertEquals("\u00e9".repeat(12), gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
+    public void StartNamedGame_WithNullName_ThrowsNullPointerException() {
+        GameSetupController controller = new GameSetupController();
+
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> controller.startNamedGame(Arrays.asList("Ada", null)));
+
+        assertEquals("Player name must not be null.", exception.getMessage());
     }
 
     @Test

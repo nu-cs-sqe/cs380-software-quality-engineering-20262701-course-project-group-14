@@ -40,6 +40,7 @@ public class GameSetupController {
         List<Player> players = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (String name : playerNames) {
+            Objects.requireNonNull(name, "Player name must not be null.");
             String collapsed = Normalizer.normalize(name, Normalizer.Form.NFC).replaceAll("\\s+", " ");
             if (!collapsed.codePoints().allMatch(GameSetupController::isDisplayable)) {
                 throw new IllegalArgumentException(NAME_CHARACTERS_ERROR_MESSAGE);

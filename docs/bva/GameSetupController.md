@@ -52,4 +52,4 @@ blocks characters missing from the bundled pixel font while typing.
 | GSC-26 | No ready game exists. | `["Ada", "​"]` (zero-width space only) | Validation fails with the message key `setup.error.name-characters`. | :white_check_mark: |
 | GSC-27 | No ready game exists. | `["一二三四五六七八九十甲乙", "Bo"]` (12 characters) | Returns a ready state keeping all 12 characters. | :white_check_mark: |
 | GSC-28 | No ready game exists. | `["éééééééééééé", "Bo"]` (12 decomposed é, 24 code units) | Returns a ready state; the name has 12 characters after normalization. | :white_check_mark: |
-| GSC-29 | No ready game exists. | `["Ada", null]` | Throws `NullPointerException` with `"Player name must not be null."`. | :x: |
+| GSC-29 | No ready game exists. | `["Ada", null]` | Throws `NullPointerException` with `"Player name must not be null."`. | :white_check_mark: |
