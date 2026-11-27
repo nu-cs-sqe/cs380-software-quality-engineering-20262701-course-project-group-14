@@ -20,6 +20,10 @@ public final class Messages {
         return new Messages(language, ResourceBundle.getBundle(bundleName, language.getLocale()));
     }
 
+    public Language getLanguage() {
+        return language;
+    }
+
     public String text(String key, Object... arguments) {
         return bundle.getString(key);
     }

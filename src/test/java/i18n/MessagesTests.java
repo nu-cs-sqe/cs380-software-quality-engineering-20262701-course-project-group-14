@@ -14,6 +14,14 @@ public class MessagesTests {
         assertEquals("Hello", english().text("greeting"));
     }
 
+    @Test
+    public void Text_ChineseKeyInChineseBundle_ReturnsChineseText() {
+        Messages messages = Messages.forLanguage(TEST_BUNDLE, CHINESE);
+
+        assertEquals("你好", messages.text("greeting"));
+        assertEquals(CHINESE, messages.getLanguage());
+    }
+
     private static Messages english() {
         return Messages.forLanguage(TEST_BUNDLE, ENGLISH);
     }
