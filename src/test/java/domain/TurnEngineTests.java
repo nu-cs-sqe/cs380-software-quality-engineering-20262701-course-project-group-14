@@ -3,9 +3,9 @@ package domain;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
