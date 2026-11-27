@@ -341,6 +341,15 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithTwelveDecomposedAccents_CountsTwelveCharacters() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("e\u0301".repeat(12), "Bo"));
+
+        assertEquals("\u00e9".repeat(12), gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 
