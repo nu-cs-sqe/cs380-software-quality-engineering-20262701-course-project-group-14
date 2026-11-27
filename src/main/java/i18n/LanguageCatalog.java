@@ -21,7 +21,11 @@ public final class LanguageCatalog {
         List<Language> languages = new ArrayList<>();
         for (String entry : list.split(",")) {
             String code = entry.trim();
-            languages.add(new Language(code, properties.getProperty("name." + code)));
+            String name = properties.getProperty("name." + code);
+            if (name == null) {
+                throw new IllegalArgumentException("Missing display name for language: " + code);
+            }
+            languages.add(new Language(code, name));
         }
         String defaultCode = properties.getProperty("default");
         Language defaultLanguage = null;

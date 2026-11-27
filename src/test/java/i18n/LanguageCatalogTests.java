@@ -53,6 +53,14 @@ public class LanguageCatalogTests {
         assertEquals("Language list must not be empty.", exception.getMessage());
     }
 
+    @Test
+    public void FromProperties_WithoutDisplayName_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> LanguageCatalog.fromProperties(config("en,fr", "en", "en", "English")));
+
+        assertEquals("Missing display name for language: fr", exception.getMessage());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
