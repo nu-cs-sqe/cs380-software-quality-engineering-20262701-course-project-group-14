@@ -162,6 +162,10 @@ public final class GameSnapshot {
         return Optional.ofNullable(topDiscard);
     }
 
+    public Optional<WinReason> getWinReason() {
+        return Optional.empty();
+    }
+
     public int getRemainingTurns() {
         return remainingTurns;
     }

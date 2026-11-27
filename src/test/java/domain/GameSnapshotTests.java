@@ -3,6 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,6 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GameSnapshotTests {
+
+    @Test
+    public void GetWinReason_CreatedSnapshot_ReturnsEmpty() {
+        GameSnapshot snapshot = GameSnapshot.create("Player 1", List.of(), 10, 0, 2,
+                TurnPhase.ACTIONS_ALLOWED);
+
+        assertEquals(Optional.empty(), snapshot.getWinReason());
+    }
 
     @Test
     public void Create_WithValidValues_ReturnsMatchingSnapshot() {
