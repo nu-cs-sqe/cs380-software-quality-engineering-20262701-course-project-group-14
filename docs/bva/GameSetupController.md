@@ -45,7 +45,7 @@ blocks characters missing from the bundled pixel font while typing.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSC-22 | No ready game exists. | `["Ada \t  Lovelace", "Bo"]` | The first player is named `Ada Lovelace`. | :x: |
+| GSC-22 | No ready game exists. | `["Ada \t  Lovelace", "Bo"]` | The first player is named `Ada Lovelace`. | :white_check_mark: |
 | GSC-23 | No ready game exists. | `["é", "é"]` (é composed and decomposed) | Validation fails with the message key `setup.error.name-duplicate`. | :x: |
 | GSC-24 | No ready game exists. | `["Ada😀", "Bo"]` (Ada + emoji) | Validation fails with the message key `setup.error.name-characters`. | :x: |
 | GSC-25 | No ready game exists. | `["A\u0007da", "Bo"]` (control character) | Validation fails with the message key `setup.error.name-characters`. | :x: |

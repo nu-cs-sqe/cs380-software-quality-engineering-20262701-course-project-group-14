@@ -283,6 +283,15 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithWhitespaceRunInside_CollapsesToOneSpace() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("Ada \t  Lovelace", "Bo"));
+
+        assertEquals("Ada Lovelace", gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 

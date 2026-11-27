@@ -34,7 +34,7 @@ public class GameSetupController {
         List<Player> players = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (String name : playerNames) {
-            String trimmed = name.trim();
+            String trimmed = name.replaceAll("\\s+", " ").trim();
             if (trimmed.isEmpty()) {
                 throw new IllegalArgumentException(NAME_BLANK_ERROR_MESSAGE);
             }
