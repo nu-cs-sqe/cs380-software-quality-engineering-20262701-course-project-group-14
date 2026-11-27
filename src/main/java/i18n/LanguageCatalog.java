@@ -15,7 +15,8 @@ public final class LanguageCatalog {
 
     public static LanguageCatalog fromProperties(Properties properties) {
         List<Language> languages = new ArrayList<>();
-        for (String code : properties.getProperty("languages").split(",")) {
+        for (String entry : properties.getProperty("languages").split(",")) {
+            String code = entry.trim();
             languages.add(new Language(code, properties.getProperty("name." + code)));
         }
         String defaultCode = properties.getProperty("default");

@@ -28,6 +28,14 @@ public class LanguageCatalogTests {
         assertEquals("zh-CN", catalog.getDefaultLanguage().getCode());
     }
 
+    @Test
+    public void FromProperties_WithSpacesAroundCodes_TrimsCodes() {
+        LanguageCatalog catalog = LanguageCatalog.fromProperties(
+                config(" en , zh-CN ", "en", "en", "English", "zh-CN", "简体中文"));
+
+        assertEquals(List.of("en", "zh-CN"), codes(catalog));
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
