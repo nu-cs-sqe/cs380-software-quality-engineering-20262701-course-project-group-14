@@ -233,6 +233,16 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithNamesDifferingOnlyInCase_ThrowsDuplicateKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada", "ada")));
+
+        assertEquals("setup.error.name-duplicate", exception.getMessage());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 

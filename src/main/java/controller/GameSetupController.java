@@ -3,7 +3,10 @@ package controller;
 import domain.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class GameSetupController {
     private static final int MINIMUM_PLAYER_COUNT = 2;
@@ -15,6 +18,7 @@ public class GameSetupController {
     private static final String PLAYER_COUNT_ERROR_MESSAGE = "setup.error.player-count";
     private static final int MAXIMUM_NAME_LENGTH = 12;
     private static final String NAME_LENGTH_ERROR_MESSAGE = "setup.error.name-length";
+    private static final String NAME_DUPLICATE_ERROR_MESSAGE = "setup.error.name-duplicate";
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
@@ -24,10 +28,14 @@ public class GameSetupController {
 
     public GameState startNamedGame(List<String> playerNames) {
         List<Player> players = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
         for (String name : playerNames) {
             String trimmed = name.trim();
             if (trimmed.length() > MAXIMUM_NAME_LENGTH) {
                 throw new IllegalArgumentException(NAME_LENGTH_ERROR_MESSAGE);
+            }
+            if (!seen.add(trimmed.toLowerCase(Locale.ROOT))) {
+                throw new IllegalArgumentException(NAME_DUPLICATE_ERROR_MESSAGE);
             }
             players.add(new Player(trimmed));
         }
