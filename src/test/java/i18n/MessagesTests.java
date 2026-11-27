@@ -38,6 +38,11 @@ public class MessagesTests {
         assertEquals("3 cards", english().text("cards", 3));
     }
 
+    @Test
+    public void Text_WithoutArguments_KeepsApostrophe() {
+        assertEquals("Don't stop", english().text("apostrophe"));
+    }
+
     private static Messages english() {
         return Messages.forLanguage(TEST_BUNDLE, ENGLISH);
     }
