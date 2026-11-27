@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FallbackFontGlyphTests {
     @Test
+    void CanDisplay_Emoji_ReturnsFalse() {
+        assertFalse(FallbackFont.canDisplay(0x1F600));
+    }
+    @Test
     void CanDisplay_CommonChineseCharacter_ReturnsTrue() {
         assertTrue(FallbackFont.canDisplay('橘'));
     }

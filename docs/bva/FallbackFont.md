@@ -9,6 +9,6 @@ drawn with the bitmap font or the bundled Ark Pixel font.
 |---|---|---|---|---|
 | FF-01 | The bundled font is available. | `'A'` | `true` | :white_check_mark: |
 | FF-02 | The bundled font is available. | `'橘'` (common Chinese character) | `true` | :white_check_mark: |
-| FF-03 | The bundled font is available. | `U+1F600` (emoji) | `false` | :x: |
+| FF-03 | The bundled font is available. | `U+1F600` (emoji) | `false` | :white_check_mark: |
 | FF-04 | The bundled font is available. | `'暹'` (Chinese character missing from the font) | `false` | :x: |
 | FF-05 | The bundled font is available. | `' '` (space) | `true` | :x: |
