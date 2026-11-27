@@ -30,6 +30,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EndGameScenarioTests {
     // TESTS
     @Test
+    void ThreePlayers_AttackThenTwoExplosions_ThirdPlayerIsLastSurvivor() {
+        Player first = player("Ada", CardType.ATTACK);
+        Player second = player("Bo");
+        Player third = player("Cy");
+        TurnEngine engine = engine(new GameState(List.of(first, second, third), deckOf(
+                CardType.TACOCAT, CardType.EXPLODING_KITTEN,
+                CardType.CATTERMELON, CardType.EXPLODING_KITTEN)), new DiscardPile());
+
+        engine.playCard(0);
+        engine.draw();
+        assertFalse(second.isEliminated());
+        engine.draw();
+        assertTrue(second.isEliminated());
+        engine.draw();
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        engine.draw();
+
+        assertTrue(first.isEliminated());
+        assertFalse(third.isEliminated());
+        assertWinner(engine, 2, WinReason.LAST_SURVIVOR);
+    }
+
+    @Test
     void TwoPlayers_FirstPlayerExplodes_SecondPlayerIsLastSurvivor() {
         Player first = player("Ada", CardType.SKIP, CardType.TACOCAT);
         Player second = player("Bo", CardType.DEFUSE);
