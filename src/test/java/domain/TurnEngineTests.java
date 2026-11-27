@@ -779,6 +779,48 @@ public class TurnEngineTests {
         assertEquals(Optional.of(CardType.DEFUSE), engine.getSnapshot().getTopDiscard());
     }
 
+    @Test
+    public void ResolveDefuse_FirstDefuse_KeepsGameGoing() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        GameState state = new GameState(List.of(first, second),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.SKIP));
+        TurnEngine engine = defuseMasterEngine(state);
+
+        engine.draw();
+        DefuseResult result = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, result);
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(second, state.getCurrentPlayer());
+    }
+
+    private static Deck deckOf(CardType... types) {
+        Deck deck = createEmptyDeck();
+        for (CardType type : types) {
+            deck.addCards(List.of(new Card(type)));
+        }
+        return deck;
+    }
+
+    /** Resolver stub: every Kitten asks for a Defuse, and a Defuse moves it to the bottom. */
+    private static TurnEngine defuseMasterEngine(GameState state) {
+        DiscardPile discardPile = new DiscardPile();
+        ExplodingKittenResolver resolver = new ExplodingKittenResolver(discardPile) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card kitten) {
+                return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+            }
+
+            @Override
+            public DefuseResult defuse(Player player, Card kitten, Deck deck, int position) {
+                deck.insertAt(kitten, deck.size());
+                return DefuseResult.DEFUSED;
+            }
+        };
+        return new TurnEngine(state, discardPile, resolver, Map.of());
+    }
+
     private static final class StubEffect implements CardEffect {
         private boolean canPlay = true;
         private int canPlayCalls;
