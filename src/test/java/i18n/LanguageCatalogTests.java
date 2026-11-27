@@ -78,6 +78,15 @@ public class LanguageCatalogTests {
                 exception.getMessage());
     }
 
+    @Test
+    public void FromProperties_WithoutDefault_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> LanguageCatalog.fromProperties(config("en", null, "en", "English")));
+
+        assertEquals("Default language must be one of the supported languages: null",
+                exception.getMessage());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
