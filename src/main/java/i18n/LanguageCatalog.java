@@ -21,6 +21,9 @@ public final class LanguageCatalog {
         List<Language> languages = new ArrayList<>();
         for (String entry : list.split(",")) {
             String code = entry.trim();
+            if (languages.stream().anyMatch(language -> language.getCode().equals(code))) {
+                throw new IllegalArgumentException("Duplicate language: " + code);
+            }
             String name = properties.getProperty("name." + code);
             if (name == null) {
                 throw new IllegalArgumentException("Missing display name for language: " + code);

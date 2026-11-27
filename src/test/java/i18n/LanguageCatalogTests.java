@@ -61,6 +61,14 @@ public class LanguageCatalogTests {
         assertEquals("Missing display name for language: fr", exception.getMessage());
     }
 
+    @Test
+    public void FromProperties_WithDuplicateCode_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> LanguageCatalog.fromProperties(config("en,en", "en", "en", "English")));
+
+        assertEquals("Duplicate language: en", exception.getMessage());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
