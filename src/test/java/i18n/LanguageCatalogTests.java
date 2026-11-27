@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LanguageCatalogTests {
 
@@ -34,6 +35,14 @@ public class LanguageCatalogTests {
                 config(" en , zh-CN ", "en", "en", "English", "zh-CN", "简体中文"));
 
         assertEquals(List.of("en", "zh-CN"), codes(catalog));
+    }
+
+    @Test
+    public void FromProperties_WithoutLanguageList_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> LanguageCatalog.fromProperties(config(null, "en", "en", "English")));
+
+        assertEquals("Language list must not be empty.", exception.getMessage());
     }
 
     private static Properties config(String languages, String defaultCode, String... names) {

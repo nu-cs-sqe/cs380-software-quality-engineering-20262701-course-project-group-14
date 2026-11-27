@@ -14,8 +14,12 @@ public final class LanguageCatalog {
     }
 
     public static LanguageCatalog fromProperties(Properties properties) {
+        String list = properties.getProperty("languages");
+        if (list == null) {
+            throw new IllegalArgumentException("Language list must not be empty.");
+        }
         List<Language> languages = new ArrayList<>();
-        for (String entry : properties.getProperty("languages").split(",")) {
+        for (String entry : list.split(",")) {
             String code = entry.trim();
             languages.add(new Language(code, properties.getProperty("name." + code)));
         }
