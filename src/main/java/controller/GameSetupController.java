@@ -23,7 +23,7 @@ public class GameSetupController {
     public GameState startNamedGame(List<String> playerNames) {
         List<Player> players = new ArrayList<>();
         for (String name : playerNames) {
-            players.add(new Player(name));
+            players.add(new Player(name.trim()));
         }
         return setUp(players);
     }

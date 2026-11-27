@@ -199,6 +199,15 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithSurroundingWhitespace_TrimsName() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("  Ada ", "Bo"));
+
+        assertEquals("Ada", gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 
