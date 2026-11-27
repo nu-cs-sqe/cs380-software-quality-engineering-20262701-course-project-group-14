@@ -47,7 +47,7 @@
     -fx-background-color: #7B68E0, #7B68E0, #120E26, #120E26;
     -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
     -fx-background-radius: 0;
-    -fx-padding: 6px 10px 6px 10px;
+    -fx-padding: 4px 10px 4px 10px;
     -fx-cursor: hand;
 }
 
@@ -117,4 +117,29 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-min-height: 20px;
+}
+
+/* ---------- player names ---------- */
+
+.game-setup-root .name-field {
+    -fx-font-size: 16px;
+    -fx-padding: 7px 14px 7px 14px;
+}
+
+.game-setup-root .avatar-button {
+    -fx-background-color: #7B68E0, #7B68E0, #120E26, #120E26;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-padding: 4px 10px 4px 10px;
+}
+
+.game-setup-root .avatar-button:hover {
+    -fx-background-color: #FFB84D, #FFB84D, #120E26, #120E26;
+}
+
+.game-setup-root .avatar-button:pressed {
+    -fx-translate-y: 0;
+}
+
+.game-setup-root .back-button {
+    -fx-background-color: #141026, #141026, #4F3FAE, #4F3FAE, #8F7BE0, #8F7BE0;
 }

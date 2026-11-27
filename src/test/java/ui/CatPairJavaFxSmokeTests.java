@@ -109,7 +109,19 @@ class CatPairJavaFxSmokeTests {
                     .findFirst().orElseThrow();
             start.fire();
 
+            assertTrue(scene.getRoot() instanceof GameSetupView);
+            List<TextField> names = scene.getRoot().lookupAll(".name-field").stream()
+                    .map(TextField.class::cast).collect(Collectors.toList());
+            assertEquals(2, names.size());
+            names.get(0).setText("Ada");
+            scene.getRoot().lookupAll(".button").stream()
+                    .filter(node -> "Begin".equals(node.getAccessibleText()))
+                    .map(Button.class::cast)
+                    .findFirst().orElseThrow().fire();
+
             assertTrue(scene.getRoot() instanceof GamePlayView);
+            assertTrue(scene.lookup("#seat-0").getAccessibleText().contains("Ada"));
+            assertTrue(scene.lookup("#seat-1").getAccessibleText().contains("Player 2"));
             assertNotSame(finishedGame, scene.getRoot());
             assertEquals(8, scene.getRoot().lookupAll(".card-button").size());
             assertFalse(scene.lookup("#draw-card").isDisabled());

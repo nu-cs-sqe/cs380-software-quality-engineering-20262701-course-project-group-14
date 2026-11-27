@@ -28,9 +28,14 @@ public final class MainApp extends Application {
     }
 
     private static void configureSetup(Scene scene, GameSetupView view) {
-        view.setOnStart(() -> startGame(
+        view.setOnStart(() -> checkPlayerCount(
                 view.getPlayerCountInput(),
-                state -> showGameplay(scene, state),
+                view::showNameEntry,
+                view::showMessage
+        ));
+        view.setOnBegin(() -> startNamedGame(
+                view.getPlayerNames(),
+                state -> showGameplay(scene, state, view.getAvatars()),
                 view::showMessage
         ));
 
@@ -43,7 +48,12 @@ public final class MainApp extends Application {
     }
 
     static void showGameplay(Scene scene, GameState state) {
+        showGameplay(scene, state, List.of());
+    }
+
+    static void showGameplay(Scene scene, GameState state, List<Integer> avatars) {
         GamePlayView gameplay = new GamePlayView();
+        gameplay.setAvatars(avatars);
         bindGameplayNavigation(scene, createController(state, gameplay));
         scene.setRoot(gameplay);
     }
