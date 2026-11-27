@@ -80,6 +80,28 @@ public class DeckTests {
     }
 
     @Test
+    public void RemoveCards_ZeroFromEmptyDeck_ReturnsEmptyList() {
+        Deck deck = createEmptyDeck();
+
+        List<Card> removed = deck.removeCards(CardType.DEFUSE, 0);
+
+        assertTrue(removed.isEmpty());
+        assertEquals(0, deck.size());
+    }
+
+    @Test
+    public void RemoveCards_DefuseBehindKittens_SkipsOtherCards() {
+        Deck deck = new Deck();
+
+        List<Card> removed = deck.removeCards(CardType.DEFUSE, 1);
+
+        assertEquals(1, removed.size());
+        assertEquals(CardType.DEFUSE, removed.get(0).getType());
+        assertEquals(55, deck.size());
+        assertEquals(4, deck.countOf(CardType.EXPLODING_KITTEN));
+    }
+
+    @Test
     public void RemoveCards_WithOne_ReturnsOneMatchingCard() {
         Deck deck = new Deck();
         Deck deck2 = new Deck();

@@ -14,9 +14,24 @@
 
 ## Exceptions
 ### Code Coverage
-N/A
+- `ui` package: JavaFX views are not unit tested. They are exercised by
+  the opt-in smoke tests (`CS380_RUN_JAVAFX_SMOKE=1 ./gradlew test`) and
+  checked by hand; controller logic is tested through view ports.
+- `GamePlayController`: the `default` branches of the three message-key
+  switches are unreachable, because every enum value has its own case.
+  They throw `IllegalStateException` as a guard for new enum values.
+- `NopeDecision` and `ExplosionOutcome`: contracts for Nope and the
+  Exploding Kitten resolver, which are not on `main` yet. They are covered
+  once those features merge.
 ### Mutation Testing
-N/A
+- PIT targets `domain` and `controller`; enums without behavior are excluded
+  (see `build.gradle.kts`).
+- `GameSetupController.startGame`: the two "removed call to
+  `Deck::shuffle`" mutants survive. The controller creates its own `Deck`,
+  so a test cannot control the random order; the tests check card counts,
+  hands and Defuse placement instead, which shuffling does not change.
+- `GameState.advanceCurrentPlayer`: one mutant times out (the negated loop
+  condition never finds the next player). PIT counts a timeout as detected.
 ### Others
 - `GameSetupController` does not have isolated unit tests and is
   covered by integration tests only. See the Week 6 Instructor
