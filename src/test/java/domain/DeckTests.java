@@ -60,6 +60,14 @@ public class DeckTests {
     }
 
     @Test
+    public void Create_NewDeck_ExcludesOriginalCards() {
+        Deck deck = new Deck();
+
+        assertEquals(0, deck.countOf(CardType.SNIFF_TEST));
+        assertEquals(56, deck.size());
+    }
+
+    @Test
     public void RemoveCards_WithZero_ReturnsEmptyListAndKeepsDeckUnchanged() {
         Deck deck = new Deck();
 

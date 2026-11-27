@@ -284,4 +284,18 @@ public class GameSnapshotTests {
                 snapshot.getPhase()
         );
     }
+
+    @Test
+    public void Create_WithNonzeroDiscardPile_ReturnsDiscardPileSize() {
+        GameSnapshot snapshot = GameSnapshot.create(
+                "Player 1",
+                List.of(CardType.ATTACK),
+                10,
+                3,
+                2,
+                TurnPhase.ACTIONS_ALLOWED
+        );
+
+        assertEquals(3, snapshot.getDiscardPileSize());
+    }
 }
