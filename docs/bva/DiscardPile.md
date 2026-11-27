@@ -46,3 +46,11 @@
 | DP-12: Size of an empty pile           | `[]`                      | `0`             | implemented in DP-01 |
 | DP-13: Size of a pile with one card    | `[SKIP]`                  | `1`             | implemented in DP-02 |
 | DP-14: Size of a pile with many cards  | 8 cards                   | `8`             | implemented in DP-08 |
+
+### Method under test: `top()`
+
+| Test Case                                   | State of the System: pile         | Expected output                                   | Implemented? |
+|---------------------------------------------|-----------------------------------|---------------------------------------------------|--------------|
+| DP-15: Top of an empty pile                 | `[]`                              | `Optional.empty()`; `size() = 0`                  | :white_check_mark:          |
+| DP-16: Top after two single discards        | `discard(SKIP)`, `discard(ATTACK)` | The same `ATTACK` card object; `size() = 2`      | :white_check_mark:          |
+| DP-17: Top after discarding a list          | `discardAll([SKIP, NOPE])`        | The same `NOPE` card object (last in the list)    | :white_check_mark:          |

@@ -3,6 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class DiscardPile {
 
@@ -22,6 +23,12 @@ public class DiscardPile {
             Objects.requireNonNull(card, "Card must not be null");
         }
         cards.addAll(newCards);
+    }
+
+    public Optional<Card> top() {
+        return cards.isEmpty()
+                ? Optional.empty()
+                : Optional.of(cards.get(cards.size() - 1));
     }
 
     public int size() {

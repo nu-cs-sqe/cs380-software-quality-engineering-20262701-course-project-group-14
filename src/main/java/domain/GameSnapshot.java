@@ -2,6 +2,7 @@ package domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 public final class GameSnapshot {
@@ -14,6 +15,7 @@ public final class GameSnapshot {
     private final List<PlayerSummary> players;
     private final int currentPlayerIndex;
     private final int remainingTurns;
+    private final CardType topDiscard;
 
     private GameSnapshot(
             String currentPlayerName,
@@ -32,10 +34,16 @@ public final class GameSnapshot {
         this.players = List.of();
         this.currentPlayerIndex = 0;
         this.remainingTurns = phase == TurnPhase.GAME_OVER ? 0 : 1;
+        this.topDiscard = null;
     }
 
     private GameSnapshot(GameSnapshot base, List<PlayerSummary> players,
                          int currentPlayerIndex, int remainingTurns) {
+        this(base, players, currentPlayerIndex, remainingTurns, base.topDiscard);
+    }
+
+    private GameSnapshot(GameSnapshot base, List<PlayerSummary> players,
+                         int currentPlayerIndex, int remainingTurns, CardType topDiscard) {
         this.currentPlayerName = base.currentPlayerName;
         this.currentPlayerHand = base.currentPlayerHand;
         this.deckSize = base.deckSize;
@@ -45,11 +53,16 @@ public final class GameSnapshot {
         this.players = List.copyOf(players);
         this.currentPlayerIndex = currentPlayerIndex;
         this.remainingTurns = remainingTurns;
+        this.topDiscard = topDiscard;
     }
 
     GameSnapshot withTurnDetails(List<PlayerSummary> players, int currentPlayerIndex,
                                  int remainingTurns) {
         return new GameSnapshot(this, players, currentPlayerIndex, remainingTurns);
+    }
+
+    GameSnapshot withTopDiscard(CardType newestDiscard) {
+        return new GameSnapshot(this, players, currentPlayerIndex, remainingTurns, newestDiscard);
     }
 
     public static GameSnapshot create(
@@ -143,6 +156,10 @@ public final class GameSnapshot {
     public OptionalInt getWinnerIndex() {
         return phase == TurnPhase.GAME_OVER && !players.isEmpty()
                 ? OptionalInt.of(currentPlayerIndex) : OptionalInt.empty();
+    }
+
+    public Optional<CardType> getTopDiscard() {
+        return Optional.ofNullable(topDiscard);
     }
 
     public int getRemainingTurns() {

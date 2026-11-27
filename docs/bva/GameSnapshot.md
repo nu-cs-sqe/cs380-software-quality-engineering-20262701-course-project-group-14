@@ -71,3 +71,11 @@ These cases use the local draft-engine baseline for controller integration.
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | GSP-25 | The last opponent was eliminated and seat `1` is the winner. | Read a terminal snapshot from `TurnEngine`. | Winner seat is `1` and no turns remain. | :white_check_mark: |
+
+## Method under test: `getTopDiscard()`
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GSP-26 | A snapshot was created with `create(...)` only. | None | Returns `Optional.empty()`. | :white_check_mark: |
+| GSP-27 | Player 1 played Skip through `TurnEngine`; the discard pile was empty before. | Read the gameplay snapshot. | Returns `SKIP`. | :white_check_mark: |
+| GSP-28 | A Defuse resolved a Kitten after Player 1 played Skip, so Defuse is the newest discard. | Read the gameplay snapshot. | Returns `DEFUSE`, the newest discard, not the earlier Skip. | :white_check_mark: |

@@ -142,4 +142,34 @@ public class DiscardPileTests {
         );
         assertEquals(0, pile.size());
     }
+
+    @Test
+    public void Top_EmptyPile_ReturnsEmpty() {
+        DiscardPile pile = new DiscardPile();
+
+        assertTrue(pile.top().isEmpty());
+        assertEquals(0, pile.size());
+    }
+
+    @Test
+    public void Top_AfterTwoDiscards_ReturnsNewestCard() {
+        DiscardPile pile = new DiscardPile();
+        Card skip = new Card(CardType.SKIP);
+        Card attack = new Card(CardType.ATTACK);
+        pile.discard(skip);
+        pile.discard(attack);
+
+        assertSame(attack, pile.top().orElseThrow());
+        assertEquals(2, pile.size());
+    }
+
+    @Test
+    public void Top_AfterDiscardingList_ReturnsLastCardOfList() {
+        DiscardPile pile = new DiscardPile();
+        Card skip = new Card(CardType.SKIP);
+        Card nope = new Card(CardType.NOPE);
+        pile.discardAll(List.of(skip, nope));
+
+        assertSame(nope, pile.top().orElseThrow());
+    }
 }

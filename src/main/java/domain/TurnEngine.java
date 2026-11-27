@@ -85,7 +85,8 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
 
         return GameSnapshot.create(currentPlayer.getName(), hand, state.getDeck().size(),
                 discardPile.size(), Math.toIntExact(alivePlayers), getPhase())
-                .withTurnDetails(summaries, players.indexOf(currentPlayer), remainingTurns);
+                .withTurnDetails(summaries, players.indexOf(currentPlayer), remainingTurns)
+                .withTopDiscard(discardPile.top().map(Card::getType).orElse(null));
     }
 
     private static PlayerSummary playerSummary(int seat, Player player) {

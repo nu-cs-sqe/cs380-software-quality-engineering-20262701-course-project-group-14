@@ -18,6 +18,7 @@ import java.util.OptionalInt;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.IntConsumer;
+import java.util.stream.Collectors;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -28,9 +29,12 @@ import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.css.PseudoClass;
+import javafx.event.EventTarget;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
@@ -39,6 +43,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -64,6 +69,9 @@ public final class GamePlayView extends StackPane
             ResourceBundle.getBundle("ui.GameOverMessages");
     private static final ResourceBundle SNIFF_TEST_TEXT =
             ResourceBundle.getBundle("ui.SniffTestMessages");
+    private static final ResourceBundle CHRONICLE_TEXT =
+            ResourceBundle.getBundle("ui.ChronicleMessages");
+    private static final int CHRONICLE_LINES = 2;
     private static final Map<String, String> MESSAGES = Map.ofEntries(
             Map.entry("game.over", GAME_OVER_TEXT.getString("closed")),
             Map.entry("draw.normal-card", "Card drawn. Next player's turn."),
@@ -115,12 +123,14 @@ public final class GamePlayView extends StackPane
             "Bounty Notice: Keep a Defuse close when the deck grows thin."
     };
 
-    private static final String DEFAULT_MESSAGE =
-            "Your turn. Draw a card or play one from your hand.";
     private static final PseudoClass DANGER = PseudoClass.getPseudoClass("danger");
+    private static final PseudoClass CURRENT = PseudoClass.getPseudoClass("current");
+    private static final PseudoClass OUT = PseudoClass.getPseudoClass("out");
     private static final PseudoClass PAIR_FIRST = PseudoClass.getPseudoClass("pair-first");
-    private static final PseudoClass PAIR_MATCH = PseudoClass.getPseudoClass("pair-match");
-    private static final PseudoClass PAIR_UNAVAILABLE = PseudoClass.getPseudoClass("pair-unavailable");
+    private static final PseudoClass TARGETABLE = PseudoClass.getPseudoClass("targetable");
+    private static final PseudoClass UNTARGETABLE = PseudoClass.getPseudoClass("untargetable");
+    private static final String SEAT_KEY = "seat";
+    private static final Object NO_TARGET = new Object();
     private static final double COMPACT_BELOW = 860;
     private static final int LOW_DECK_THRESHOLD = 3;
     private static final int DIM_TEXT = 0xFF8F7A68;
@@ -128,11 +138,12 @@ public final class GamePlayView extends StackPane
     private static final int INK_DARK = 0xFF24150E;
     private static final int INK_ACCENT = 0xFF8C4A1C;
     private static final int INK_DANGER = 0xFFB81D35;
+    private static final int INK_FADED = 0xFF7A5B43;
     private static final double[] TOSS_ANGLES = {-11.0, 8.0, -5.0, 3.0};
     private static final int DISPLAYED_DISCARDS = TOSS_ANGLES.length;
     private static final double[] PEEK_ANGLES = {-22.0, -7.0, 8.0, 22.0};
 
-    private enum Status { READY, SOON, LOCKED }
+    private enum Status { READY, AUTO, SOON, LOCKED }
 
     private final String stylesheetUrl;
     private final TavernBackground background = new TavernBackground();
@@ -142,14 +153,12 @@ public final class GamePlayView extends StackPane
     private final StackPane nameHolder = new StackPane();
     private final HBox phaseChip = new HBox(8);
 
-    // ---- tabletop crier ribbon & alive candle-rack ----
+    // ---- tavern chronicle parchment (latest events + current prompt) & seat plaques ----
     private final HBox messageRibbon = new HBox(10);
     private final ImageView messageIcon = PixelArt.view(
             PixelArt.sprite(PixelData.WARN, 3, PixelArt.TAVERN_PALETTE));
     private final StackPane messageHolder = new StackPane();
-    private final HBox aliveTray = new HBox(8);
-    private final HBox aliveIcons = new HBox(4);
-    private final StackPane aliveCountHolder = new StackPane();
+    private final HBox seatRow = new HBox(8);
 
     // ---- interactive tavern tabletop props (pettable cat, stein, scroll, poster) ----
     private final Button catMascotButton = new Button();
@@ -199,12 +208,27 @@ public final class GamePlayView extends StackPane
     private final HBox handChip = new HBox();
     private final HBox keyHintPill = new HBox();
 
+    // ---- atmosphere behind the cards: candle glow and drifting dust ----
+    private final Region candleGlow = new Region();
+    private final Pane dustLayer = new Pane();
+    private final List<Animation> ambience = new ArrayList<>();
+
     // ---- root layers ----
     private final Pane stageLayer = new Pane();
     private final Pane fxLayer = new Pane();
     private final List<Animation> activeEffects = new ArrayList<>();
     private final Region dimOverlay = new Region();
     private StackPane handoffOverlay;
+    private StackPane victoryOverlay;
+    private VBox victoryPanel;
+    private final StackPane victoryNameHolder = new StackPane();
+    private final StackPane victoryStatsHolder = new StackPane();
+    private final VBox victoryChronicle = new VBox(4);
+    private final Pane confettiLayer = new Pane();
+    private boolean victoryShown;
+    private int cardsPlayed;
+    private int kittensDefused;
+    private int catsExploded;
     private StackPane handoffNameHolder;
     private Button handoffButton;
     private Timeline handoffBlink;
@@ -224,12 +248,21 @@ public final class GamePlayView extends StackPane
     private final List<CardType> recentDiscards = new ArrayList<>();
     private boolean danger;
     private boolean turnActionsDisabled;
-    private String currentMessage = DEFAULT_MESSAGE;
+    private String currentMessage;
+    private final List<String> chronicle = new ArrayList<>();
+    private List<PlayerSummary> seats = List.of();
+    private int currentSeat = -1;
+    private int remainingTurns = 1;
+    private String lastTargetName = "";
     private boolean currentWarning;
     private CardCatalog.Info shownInfo;
     private Status shownStatus = Status.READY;
     private int activeCardIndex = -1;
-    private HandPairSelection handPairSelection;
+    // Cards of a Cat Card pair waiting for a target, and the seat choice in progress.
+    private Set<Integer> pendingPair = Set.of();
+    private Set<Integer> targetSeats = Set.of();
+    private Object targetChoice;
+    private boolean swallowGesture;
 
     private Runnable onDraw = () -> { };
     private Runnable onReturnToSetup = () -> { };
@@ -258,7 +291,7 @@ public final class GamePlayView extends StackPane
         stageLayer.getChildren().addAll(
                 banner,
                 messageRibbon,
-                aliveTray,
+                seatRow,
                 posterHotspot,
                 steinHotspot,
                 scrollHotspot,
@@ -267,7 +300,6 @@ public final class GamePlayView extends StackPane
                 deckCountHolder,
                 fuseGauge,
                 drawButton,
-                returnToSetupButton,
                 drawHintHolder,
                 discardPileHolder,
                 discardCountBadge,
@@ -282,28 +314,50 @@ public final class GamePlayView extends StackPane
         dimOverlay.getStyleClass().add("dim-overlay");
         dimOverlay.setVisible(false);
         handoffOverlay = buildHandoffOverlay();
+        victoryOverlay = buildVictoryOverlay();
 
-        getChildren().addAll(background, stageLayer, fxLayer, handoffOverlay, dimOverlay);
+        buildAtmosphere();
+
+        getChildren().addAll(background, candleGlow, dustLayer, stageLayer, fxLayer,
+                handoffOverlay, victoryOverlay, dimOverlay);
         stageLayer.setPickOnBounds(false);
         handFanPane.setPickOnBounds(false);
         sceneProperty().addListener((property, previousScene, scene) -> {
             if (scene == null) {
-                handPairSelection = null;
+                finishTargetChoice(NO_TARGET);
                 clearEffects();
                 hideHandoff();
             }
         });
 
-        // Subtle 2.5D tabletop spotlight parallax when moving cursor over the table
-        addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
-            double w = Math.max(1, getWidth());
-            double h = Math.max(1, getHeight());
-            background.setLightParallax((e.getX() / w) * 2.0 - 1.0, (e.getY() / h) * 2.0 - 1.0);
-        });
-        setOnMouseExited(event -> background.setLightParallax(0, 0));
         addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.ESCAPE && handPairSelection != null) {
-                clearHandPairSelection();
+            if (targetChoice != null) {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    finishTargetChoice(NO_TARGET);
+                }
+                event.consume();
+            }
+        });
+        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (targetChoice == null) {
+                swallowGesture = false;
+                return;
+            }
+            event.consume();
+            swallowGesture = true;
+            Integer seat = seatAt(event.getTarget());
+            boolean chosen = event.getButton() == MouseButton.PRIMARY
+                    && seat != null && targetSeats.contains(seat);
+            finishTargetChoice(chosen ? seat : NO_TARGET);
+        });
+        addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+            if (swallowGesture) {
+                event.consume();
+            }
+        });
+        addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (swallowGesture) {
+                swallowGesture = false;
                 event.consume();
             }
         });
@@ -346,8 +400,8 @@ public final class GamePlayView extends StackPane
 
     @Override
     public void render(GameSnapshot snapshot) {
-        handPairSelection = null;
         String newName = snapshot.getCurrentPlayerName();
+        boolean turnChanged = !playerName.isEmpty() && !Objects.equals(newName, playerName);
         if (!Objects.equals(newName, playerName)) {
             futureCards = List.of();
             updateFuture();
@@ -358,16 +412,24 @@ public final class GamePlayView extends StackPane
         int newDiscardSize = snapshot.getDiscardPileSize();
         if (newDiscardSize != discardSize) {
             recentDiscards.clear();
+            snapshot.getTopDiscard().ifPresent(recentDiscards::add);
         }
         discardSize = newDiscardSize;
         aliveCount = snapshot.getAlivePlayerCount();
+        seats = snapshot.getPlayers();
+        currentSeat = snapshot.getCurrentPlayerIndex();
+        remainingTurns = snapshot.getRemainingTurns();
         hand = List.copyOf(snapshot.getCurrentPlayerHand());
         boolean wasDanger = danger;
         danger = snapshot.getPhase() == TurnPhase.AWAITING_DEFUSE_POSITION;
         turnActionsDisabled = snapshot.getPhase() == TurnPhase.GAME_OVER;
+        boolean newlyFinished = turnActionsDisabled && winnerMessage == null;
         winnerMessage = turnActionsDisabled
                 ? MessageFormat.format(GAME_OVER_TEXT.getString("winner"), playerName)
                 : null;
+        if (newlyFinished) {
+            addChronicle(chronicleLine("game.winner", playerName));
+        }
         if (turnActionsDisabled) {
             currentWarning = false;
         }
@@ -378,13 +440,38 @@ public final class GamePlayView extends StackPane
         if (danger && !wasDanger) {
             shakeTable();
         }
+        if (turnChanged) {
+            announceTurn();
+        }
     }
 
     @Override
     public void showMessage(String messageKey) {
-        currentMessage = MESSAGES.getOrDefault(messageKey, messageKey);
-        currentWarning = WARNING_MESSAGES.contains(messageKey);
+        boolean warning = WARNING_MESSAGES.contains(messageKey);
+        if ("defuse.success".equals(messageKey)) {
+            kittensDefused++;
+        } else if ("draw.player-eliminated".equals(messageKey)) {
+            catsExploded++;
+        }
+        if (CHRONICLE_TEXT.containsKey(messageKey)) {
+            addChronicle(chronicleLine(messageKey, playerName));
+            currentMessage = warning ? MESSAGES.getOrDefault(messageKey, messageKey) : null;
+        } else {
+            currentMessage = MESSAGES.getOrDefault(messageKey, messageKey);
+        }
+        currentWarning = warning;
         layoutStage();
+    }
+
+    private static String chronicleLine(String key, Object... arguments) {
+        return MessageFormat.format(CHRONICLE_TEXT.getString(key), arguments);
+    }
+
+    private void addChronicle(String line) {
+        chronicle.add(line);
+        if (chronicle.size() > CHRONICLE_LINES) {
+            chronicle.remove(0);
+        }
     }
 
     @Override
@@ -408,32 +495,81 @@ public final class GamePlayView extends StackPane
     @Override
     public void requestSecondCard(int firstHandIndex, List<Integer> matchingHandIndices,
                                   IntConsumer onMatchSelected) {
-        handPairSelection = new HandPairSelection(firstHandIndex, matchingHandIndices, onMatchSelected);
-        layoutStage();
+        if (matchingHandIndices.isEmpty()) {
+            return;
+        }
+        // Cat Cards of one type are identical, so the nearest match completes the pair at once.
+        int second = matchingHandIndices.stream()
+                .min((a, b) -> Integer.compare(Math.abs(a - firstHandIndex), Math.abs(b - firstHandIndex)))
+                .orElseThrow();
+        pendingPair = Set.of(firstHandIndex, second);
+        applyFanElevation();
+        try {
+            onMatchSelected.accept(second);
+        } finally {
+            pendingPair = Set.of();
+            applyFanElevation();
+        }
     }
 
     @Override
     public OptionalInt requestTargetPlayer(List<PlayerSummary> candidates) {
-        Map<Integer, String> options = new LinkedHashMap<>();
-        for (PlayerSummary player : candidates) {
-            options.put(player.getPlayerIndex(), CatPairChoiceDialog.text("target.option",
-                    player.getName(), player.getHandSize()));
+        lastTargetName = "";
+        if (candidates.isEmpty()) {
+            return OptionalInt.empty();
         }
-        return requestCatPairChoice("target.title", options);
+        OptionalInt choice = candidates.size() == 1
+                ? OptionalInt.of(candidates.get(0).getPlayerIndex())
+                : chooseTargetSeat(candidates);
+        choice.ifPresent(seat -> candidates.stream()
+                .filter(player -> player.getPlayerIndex() == seat)
+                .findFirst()
+                .ifPresent(player -> lastTargetName = player.getName()));
+        return choice;
     }
 
-    private OptionalInt requestCatPairChoice(String titleKey, Map<Integer, String> options) {
-        Window owner = getScene() == null ? null : getScene().getWindow();
-        dimOverlay.setVisible(true);
+    /** Lets the player click one of the glowing seat plaques; Esc or a click elsewhere cancels. */
+    private OptionalInt chooseTargetSeat(List<PlayerSummary> candidates) {
+        targetSeats = candidates.stream().map(PlayerSummary::getPlayerIndex)
+                .collect(Collectors.toUnmodifiableSet());
+        Object key = new Object();
+        targetChoice = key;
+        showEmptyInfo();
+        updateSeats();
+        layoutStage();
+        Object result;
         try {
-            return CatPairChoiceDialog.show(owner, stylesheetUrl, titleKey, options);
+            result = Platform.enterNestedEventLoop(key);
         } finally {
-            dimOverlay.setVisible(false);
+            targetChoice = null;
+            targetSeats = Set.of();
+            updateSeats();
+            layoutStage();
         }
+        return result instanceof Integer ? OptionalInt.of((Integer) result) : OptionalInt.empty();
+    }
+
+    private void finishTargetChoice(Object result) {
+        Object key = targetChoice;
+        if (key != null) {
+            targetChoice = null;
+            Platform.exitNestedEventLoop(key, result);
+        }
+    }
+
+    private static Integer seatAt(EventTarget target) {
+        Node node = target instanceof Node ? (Node) target : null;
+        while (node != null) {
+            Object seat = node.getProperties().get(SEAT_KEY);
+            if (seat instanceof Integer) {
+                return (Integer) seat;
+            }
+            node = node.getParent();
+        }
+        return null;
     }
 
     public void showHandoff(String nextPlayerName, Runnable onReady) {
-        clearHandPairSelection();
         futureCards = List.of();
         updateFuture();
         showEmptyInfo();
@@ -480,20 +616,18 @@ public final class GamePlayView extends StackPane
     }
 
     private void buildTopTableStrip() {
-        messageRibbon.getStyleClass().add("message-ribbon");
+        messageRibbon.getStyleClass().add("chronicle");
         messageRibbon.setAlignment(Pos.CENTER_LEFT);
-        messageRibbon.setPadding(new Insets(10, 14, 10, 14));
+        messageRibbon.setPadding(new Insets(12, 20, 12, 20));
+        messageRibbon.setMouseTransparent(true);
         messageIcon.setVisible(false);
         messageIcon.setManaged(false);
         messageHolder.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(messageHolder, Priority.ALWAYS);
         messageRibbon.getChildren().addAll(messageIcon, messageHolder);
 
-        aliveTray.getStyleClass().add("alive-coaster");
-        aliveTray.setAlignment(Pos.CENTER);
-        aliveTray.setPadding(new Insets(8, 12, 8, 12));
-        aliveIcons.setAlignment(Pos.CENTER);
-        aliveTray.getChildren().addAll(aliveIcons, aliveCountHolder);
+        seatRow.setAlignment(Pos.CENTER);
+        seatRow.setPickOnBounds(false);
     }
 
     /** Interactive pixel-art props: pettable tavern calico cat, oak stein, dagger scroll & wanted flyer. */
@@ -609,7 +743,10 @@ public final class GamePlayView extends StackPane
 
         returnToSetupButton.setId("return-to-setup");
         returnToSetupButton.getStyleClass().add("draw-button");
-        returnToSetupButton.setText(GAME_OVER_TEXT.getString("return-to-setup"));
+        returnToSetupButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        returnToSetupButton.setGraphic(PixelArt.textView(
+                CHRONICLE_TEXT.getString("victory.return").toUpperCase(Locale.ROOT), 3, GameTheme.PLATE));
+        returnToSetupButton.setAccessibleText(GAME_OVER_TEXT.getString("return-to-setup"));
         returnToSetupButton.setOnAction(event -> onReturnToSetup.run());
         returnToSetupButton.setVisible(false);
 
@@ -648,6 +785,69 @@ public final class GamePlayView extends StackPane
         futureChips.setAlignment(Pos.CENTER);
         futureOverlay.getChildren().addAll(futureTitleHolder, futureChips);
         futureOverlay.setVisible(false);
+    }
+
+    private void buildAtmosphere() {
+        candleGlow.getStyleClass().add("candle-glow");
+        candleGlow.setMouseTransparent(true);
+        candleGlow.setCache(true);
+        candleGlow.setCacheHint(CacheHint.SPEED);
+        Timeline flicker = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(candleGlow.opacityProperty(), 0.82)),
+                new KeyFrame(Duration.millis(380), new KeyValue(candleGlow.opacityProperty(), 1.0)),
+                new KeyFrame(Duration.millis(520), new KeyValue(candleGlow.opacityProperty(), 0.9)),
+                new KeyFrame(Duration.millis(910), new KeyValue(candleGlow.opacityProperty(), 0.97)),
+                new KeyFrame(Duration.millis(1300), new KeyValue(candleGlow.opacityProperty(), 0.82))
+        );
+        flicker.setCycleCount(Animation.INDEFINITE);
+        ambience.add(flicker);
+
+        dustLayer.setMouseTransparent(true);
+        for (int i = 0; i < 12; i++) {
+            Region mote = new Region();
+            mote.getStyleClass().add("dust-mote");
+            double size = i % 3 == 0 ? 3 : 2;
+            fixSize(mote, size, size);
+            mote.setCache(true);
+            dustLayer.getChildren().add(mote);
+            ambience.add(driftMote(mote, i));
+        }
+
+        sceneProperty().addListener((obs, oldScene, scene) -> {
+            for (Animation animation : ambience) {
+                if (scene != null) {
+                    animation.play();
+                } else {
+                    animation.stop();
+                }
+            }
+        });
+    }
+
+    /** One dust mote drifting up through the candle light, on its own slow, offset cycle. */
+    private Animation driftMote(Region mote, int seed) {
+        double startX = 0.06 + 0.88 * ((seed * 53) % 12) / 11.0;
+        double startY = 0.35 + 0.5 * ((seed * 29) % 7) / 6.0;
+        double travel = 0.18 + 0.05 * (seed % 4);
+        double sway = (seed % 2 == 0 ? 1 : -1) * (10 + seed % 5 * 4);
+        Duration period = Duration.seconds(9 + (seed % 5) * 1.7);
+        mote.layoutXProperty().bind(widthProperty().multiply(startX));
+        mote.layoutYProperty().bind(heightProperty().multiply(startY));
+        Timeline drift = new Timeline(
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(mote.translateYProperty(), 0),
+                        new KeyValue(mote.translateXProperty(), 0),
+                        new KeyValue(mote.opacityProperty(), 0)),
+                new KeyFrame(period.multiply(0.2), new KeyValue(mote.opacityProperty(), 0.7)),
+                new KeyFrame(period.multiply(0.8), new KeyValue(mote.opacityProperty(), 0.5)),
+                new KeyFrame(period,
+                        new KeyValue(mote.translateYProperty(), -travel * 760, Interpolator.EASE_BOTH),
+                        new KeyValue(mote.translateXProperty(), sway, Interpolator.EASE_BOTH),
+                        new KeyValue(mote.opacityProperty(), 0))
+        );
+        drift.setCycleCount(Animation.INDEFINITE);
+        drift.setDelay(Duration.seconds((seed * 0.83) % 6));
+        return drift;
     }
 
     private void buildParchmentScroll() {
@@ -742,14 +942,7 @@ public final class GamePlayView extends StackPane
         double leftEdge = TavernBackground.feltLeft(w, feltW);
         double rightEdge = leftEdge + feltW;
 
-        double aliveW = aliveTray.prefWidth(-1);
-        double aliveH = 38;
-        aliveTray.resizeRelocate(Math.round(rightEdge - aliveW), 116, aliveW, aliveH);
-
-        double ribbonW = Math.max(240, rightEdge - aliveW - leftEdge - 12);
-        renderMessage(ribbonW);
-        double ribbonH = Math.max(42, messageRibbon.prefHeight(ribbonW));
-        messageRibbon.resizeRelocate(leftEdge, 114, ribbonW, ribbonH);
+        seatRow.resizeRelocate(leftEdge, 112, feltW, 46);
 
         // 2b. Interactive tavern props positioned cleanly on the oak wings
         double topInset = compact ? 22 : 34;
@@ -812,7 +1005,6 @@ public final class GamePlayView extends StackPane
         double defuseBtnW = 310;
         double defuseBtnH = 50;
         choosePositionButton.resizeRelocate(Math.round(centerX - defuseBtnW * 0.5), deckY + deckBoxH + 28, defuseBtnW, defuseBtnH);
-        returnToSetupButton.resizeRelocate(Math.round(centerX - 110), deckY + deckBoxH + 28, 220, 48);
 
         double futureW = 248;
         futureOverlay.resizeRelocate(deckX - 104, deckY - 20,
@@ -823,6 +1015,11 @@ public final class GamePlayView extends StackPane
         double scrollH = compact ? 92 : 98;
         double scrollY = h - (compact ? 304 : 322);
         parchmentScroll.resizeRelocate(Math.round(centerX - scrollW * 0.5), scrollY, scrollW, scrollH);
+        renderMessage(scrollW);
+        double chronicleH = Math.max(scrollH, messageRibbon.prefHeight(scrollW));
+        messageRibbon.resizeRelocate(Math.round(centerX - scrollW * 0.5),
+                scrollY + scrollH - chronicleH, scrollW, chronicleH);
+        messageRibbon.setVisible(!parchmentScroll.isVisible());
 
         // 6. Foreground Fanned Poker Hand + bottom corner plaques
         double handAreaY = h - (compact ? 204 : 220);
@@ -844,7 +1041,7 @@ public final class GamePlayView extends StackPane
         updateBanner();
         updateDeck();
         updateDiscard();
-        updateAlive();
+        updateSeats();
         updateActions();
         updateHand();
         layoutStage();
@@ -857,8 +1054,20 @@ public final class GamePlayView extends StackPane
         double maxTextW = ribbonWidth - insets.getLeft() - insets.getRight() - warningWidth;
         String text = messageText();
         messageRibbon.setAccessibleText(text);
-        messageHolder.getChildren().setAll(
-                bodyText(text, 2, GameTheme.CREAM, maxTextW, "msg-text"));
+        VBox lines = new VBox(4);
+        lines.setAlignment(Pos.CENTER_LEFT);
+        lines.getChildren().add(PixelArt.textView(
+                CHRONICLE_TEXT.getString("title").toUpperCase(Locale.ROOT), 1, INK_ACCENT));
+        List<String> history = chronicle.isEmpty()
+                ? List.of(CHRONICLE_TEXT.getString("empty")) : chronicle;
+        for (String line : history) {
+            if (!line.equals(text)) {
+                lines.getChildren().add(bodyText(line, 1, INK_FADED, maxTextW, "chronicle-past"));
+            }
+        }
+        lines.getChildren().add(bodyText(text, 2, currentWarning ? INK_DANGER : INK_DARK,
+                maxTextW, "chronicle-now"));
+        messageHolder.getChildren().setAll(lines);
         messageRibbon.pseudoClassStateChanged(DANGER, currentWarning);
         messageIcon.setVisible(currentWarning);
         messageIcon.setManaged(currentWarning);
@@ -868,11 +1077,10 @@ public final class GamePlayView extends StackPane
         if (winnerMessage != null) {
             return winnerMessage;
         }
-        if (handPairSelection != null) {
-            return CatPairChoiceDialog.text("hand.select-match");
+        if (targetChoice != null) {
+            return chronicleLine("target.prompt");
         }
-        return turnActionsDisabled && DEFAULT_MESSAGE.equals(currentMessage)
-                ? "Your starting hand is ready." : currentMessage;
+        return currentMessage != null ? currentMessage : chronicleLine("prompt", playerName);
     }
 
     private void updateBanner() {
@@ -882,10 +1090,18 @@ public final class GamePlayView extends StackPane
         nameHolder.getChildren().setAll(nameNode(playerName, 4, available, GameTheme.CREAM));
 
         phaseChip.getChildren().clear();
-        if (danger) {
+        if (turnActionsDisabled) {
+            phaseChip.getChildren().add(PixelArt.textView(
+                    CHRONICLE_TEXT.getString("phase.over").toUpperCase(Locale.ROOT), 2, GameTheme.MUTED));
+        } else if (danger) {
             phaseChip.getChildren().addAll(
                     PixelArt.view(PixelArt.sprite(PixelData.WARN, 2, PixelArt.TAVERN_PALETTE)),
                     PixelArt.textView("PLACE KITTEN", 2, GameTheme.CREAM));
+        } else if (remainingTurns > 1) {
+            phaseChip.getChildren().addAll(
+                    PixelArt.view(CardCatalog.icon(CardCatalog.lookup("ATTACK"), true)),
+                    PixelArt.textView(chronicleLine("turns.left", remainingTurns), 2,
+                            GameTheme.ROLE_ATTACK));
         } else {
             phaseChip.getChildren().add(PixelArt.textView("DRAW OR PLAY", 2, GameTheme.AMBER));
         }
@@ -1013,14 +1229,74 @@ public final class GamePlayView extends StackPane
         }
     }
 
-    private void updateAlive() {
-        aliveIcons.getChildren().clear();
-        WritableImage head = PixelArt.sprite(PixelData.HEAD_OPEN, 2, PixelArt.TAVERN_PALETTE);
-        for (int i = 0; i < Math.min(aliveCount, 6); i++) {
-            aliveIcons.getChildren().add(PixelArt.view(head));
+    private void updateSeats() {
+        seatRow.getChildren().clear();
+        if (seats.isEmpty()) {
+            return;
         }
-        aliveCountHolder.getChildren().setAll(
-                PixelArt.textView(aliveCount + " ALIVE", 2, GameTheme.CREAM));
+        double feltW = TavernBackground.feltWidth(getWidth() > 0 ? getWidth() : 900, compact);
+        double plaqueW = Math.min(170, (feltW - seatRow.getSpacing() * (seats.size() - 1)) / seats.size());
+        WritableImage head = PixelArt.sprite(PixelData.HEAD_OPEN, 1, PixelArt.TAVERN_PALETTE);
+        WritableImage ghost = PixelArt.mono(PixelData.HEAD_OPEN, 1, 0xFF5A4636);
+        for (PlayerSummary seat : seats) {
+            boolean current = seat.getPlayerIndex() == currentSeat && !seat.isEliminated();
+            boolean winner = current && turnActionsDisabled;
+            boolean out = seat.isEliminated();
+            ImageView face = PixelArt.view(out ? ghost : head);
+            int nameColor = out ? DIM_TEXT : current ? GameTheme.BRASS_BRIGHT : GameTheme.CREAM;
+            double textW = plaqueW - 22 - 30;
+            Node name = seatName(seat.getName(), textW, nameColor);
+            String detail = out ? chronicleLine("seat.out")
+                    : chronicleLine("seat.cards", seat.getHandSize());
+            int detailColor = out ? GameTheme.DANGER : current ? GameTheme.AMBER : GameTheme.MUTED;
+            VBox text = new VBox(3, name, PixelArt.textView(detail, 1, detailColor));
+            text.setAlignment(Pos.CENTER_LEFT);
+            HBox plaque = new HBox(8, face, text);
+            plaque.getStyleClass().add("seat-plaque");
+            plaque.pseudoClassStateChanged(CURRENT, current);
+            plaque.pseudoClassStateChanged(OUT, out);
+            boolean choosing = targetChoice != null;
+            boolean targetable = choosing && targetSeats.contains(seat.getPlayerIndex());
+            plaque.pseudoClassStateChanged(TARGETABLE, targetable);
+            plaque.pseudoClassStateChanged(UNTARGETABLE, choosing && !targetable);
+            plaque.getProperties().put(SEAT_KEY, seat.getPlayerIndex());
+            plaque.setId("seat-" + seat.getPlayerIndex());
+            plaque.setAlignment(Pos.CENTER_LEFT);
+            plaque.setPadding(new Insets(6, 10, 6, 10));
+            fixSize(plaque, plaqueW, 42);
+            plaque.setAccessibleText(seat.getName() + ", " + detail.toLowerCase(Locale.ROOT)
+                    + (current ? ", current turn" : ""));
+            if (current) {
+                StackPane marker = new StackPane(plaque, turnTag(winner ? "seat.winner" : "seat.turn"));
+                StackPane.setAlignment(marker.getChildren().get(1), Pos.TOP_RIGHT);
+                StackPane.setMargin(marker.getChildren().get(1), new Insets(-7, 6, 0, 0));
+                seatRow.getChildren().add(marker);
+            } else {
+                seatRow.getChildren().add(plaque);
+            }
+        }
+    }
+
+    private Node turnTag(String key) {
+        StackPane tag = new StackPane(PixelArt.textView(chronicleLine(key), 1, GameTheme.PLATE));
+        tag.getStyleClass().add("seat-turn-tag");
+        tag.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        return tag;
+    }
+
+    private Node seatName(String rawName, double available, int color) {
+        String text = rawName == null ? "" : rawName.trim().toUpperCase(Locale.ROOT);
+        if (PixelArt.canRender(text)) {
+            for (int scale = 2; scale >= 1; scale--) {
+                if (PixelArt.textWidth(text, scale) <= available) {
+                    return PixelArt.textView(text, scale, color);
+                }
+            }
+        }
+        Label fallback = new Label(rawName == null ? "" : rawName);
+        fallback.getStyleClass().add("seat-name");
+        fallback.setMaxWidth(available);
+        return fallback;
     }
 
     private void updateActions() {
@@ -1031,15 +1307,110 @@ public final class GamePlayView extends StackPane
         deckStackHolder.setTranslateY(0);
         drawButton.setGraphic(PixelArt.textView("DRAW", 3, blocked ? DIM_TEXT : GameTheme.PLATE));
 
+        // The phase chip, the Kitten button and the chronicle already explain the danger state.
         drawHintHolder.getChildren().clear();
-        if (danger) {
-            drawHintHolder.getChildren().add(
-                    PixelArt.textView("PLACE KITTEN FIRST", 2, GameTheme.DANGER));
-        }
-        drawHintHolder.setVisible(danger);
+        drawHintHolder.setVisible(false);
         choosePositionButton.setDisable(turnActionsDisabled);
         choosePositionButton.setVisible(danger);
         returnToSetupButton.setVisible(winnerMessage != null);
+        if (winnerMessage != null) {
+            showVictory();
+        }
+    }
+
+    private StackPane buildVictoryOverlay() {
+        ImageView seal = PixelArt.textView(
+                CHRONICLE_TEXT.getString("victory.seal").toUpperCase(Locale.ROOT), 2, GameTheme.BRASS);
+        ImageView crown = PixelArt.view(PixelArt.sprite(PixelData.CROWN, 4, PixelArt.TAVERN_PALETTE));
+        ImageView cat = PixelArt.view(PixelArt.sprite(PixelData.HEAD_OPEN, 5, PixelArt.TAVERN_PALETTE));
+        VBox crowned = new VBox(-2, crown, cat);
+        crowned.setAlignment(Pos.CENTER);
+        ImageView title = PixelArt.textView(
+                CHRONICLE_TEXT.getString("victory.title").toUpperCase(Locale.ROOT), 3, GameTheme.SAND);
+        Region rule = new Region();
+        rule.getStyleClass().add("victory-rule");
+        fixSize(rule, 300, 4);
+        victoryChronicle.setAlignment(Pos.CENTER);
+        fixSize(returnToSetupButton, 330, 60);
+
+        victoryPanel = new VBox(12, seal, crowned, title, victoryNameHolder, rule,
+                victoryStatsHolder, victoryChronicle, returnToSetupButton);
+        victoryPanel.getStyleClass().add("victory-panel");
+        victoryPanel.setAlignment(Pos.CENTER);
+        victoryPanel.setPadding(new Insets(30, 44, 30, 44));
+        victoryPanel.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+
+        confettiLayer.setMouseTransparent(true);
+        StackPane overlay = new StackPane(confettiLayer, victoryPanel);
+        overlay.getStyleClass().add("victory-root");
+        overlay.setVisible(false);
+        return overlay;
+    }
+
+    private void showVictory() {
+        String winner = playerName;
+        victoryNameHolder.getChildren().setAll(nameNode(winner, 6, 520, GameTheme.AMBER));
+        HBox stats = new HBox(26,
+                victoryStat(cardsPlayed, "victory.played", GameTheme.CREAM),
+                victoryStat(kittensDefused, "victory.defused", GameTheme.ROLE_SAFETY),
+                victoryStat(catsExploded, "victory.exploded", GameTheme.DANGER));
+        stats.setAlignment(Pos.CENTER);
+        victoryStatsHolder.getChildren().setAll(stats);
+        victoryChronicle.getChildren().clear();
+        for (String line : chronicle) {
+            victoryChronicle.getChildren().add(bodyText(line, 1, GameTheme.MUTED, 520, "victory-line"));
+        }
+        showEmptyInfo();
+        victoryOverlay.setVisible(true);
+        if (victoryShown) {
+            return;
+        }
+        victoryShown = true;
+        victoryPanel.setOpacity(0);
+        victoryPanel.setScaleX(0.9);
+        victoryPanel.setScaleY(0.9);
+        FadeTransition fade = new FadeTransition(Duration.millis(420), victoryPanel);
+        fade.setToValue(1);
+        ScaleTransition grow = new ScaleTransition(Duration.millis(420), victoryPanel);
+        grow.setToX(1);
+        grow.setToY(1);
+        grow.setInterpolator(Interpolator.EASE_OUT);
+        new ParallelTransition(fade, grow).play();
+        launchConfetti();
+    }
+
+    private Node victoryStat(int value, String labelKey, int color) {
+        VBox stat = new VBox(6,
+                PixelArt.textView(String.valueOf(value), 4, color),
+                PixelArt.textView(CHRONICLE_TEXT.getString(labelKey).toUpperCase(Locale.ROOT), 1,
+                        GameTheme.MUTED));
+        stat.setAlignment(Pos.CENTER);
+        stat.setAccessibleText(value + " " + CHRONICLE_TEXT.getString(labelKey));
+        return stat;
+    }
+
+    private void launchConfetti() {
+        double w = getWidth() > 0 ? getWidth() : 900;
+        double h = getHeight() > 0 ? getHeight() : 760;
+        String[][] sprites = {PixelData.STAR_PLUS, PixelData.HEART, PixelData.STAR_PLUS, PixelData.PAW};
+        for (int i = 0; i < 18; i++) {
+            ImageView bit = PixelArt.view(PixelArt.sprite(sprites[i % sprites.length], 2, PixelArt.TAVERN_PALETTE));
+            double x = w * (0.08 + 0.84 * ((i * 37) % 18) / 17.0);
+            bit.setLayoutX(x);
+            bit.setLayoutY(h + 10);
+            confettiLayer.getChildren().add(bit);
+            TranslateTransition rise = new TranslateTransition(Duration.millis(1600 + (i % 5) * 220), bit);
+            rise.setDelay(Duration.millis((i % 6) * 120));
+            rise.setByY(-h * (0.55 + (i % 4) * 0.1));
+            rise.setInterpolator(Interpolator.EASE_OUT);
+            FadeTransition fade = new FadeTransition(rise.getDuration(), bit);
+            fade.setDelay(rise.getDelay());
+            fade.setFromValue(1);
+            fade.setToValue(0);
+            ParallelTransition burst = new ParallelTransition(rise, fade);
+            burst.setOnFinished(event -> confettiLayer.getChildren().remove(bit));
+            burst.play();
+        }
     }
 
     private void updateFuture() {
@@ -1085,7 +1456,6 @@ public final class GamePlayView extends StackPane
         if (danger || turnActionsDisabled) {
             return;
         }
-        clearHandPairSelection();
         int previousDeckSize = deckSize;
         int previousDiscardSize = discardSize;
         onDraw.run();
@@ -1201,54 +1571,48 @@ public final class GamePlayView extends StackPane
     }
 
     private void playCard(int handIndex, CardType type, CardCatalog.Info info, Button source) {
-        HandPairSelection selection = handPairSelection;
-        if (selection == null) {
-            playWithDiscardFeedback(type, info, source, () -> onPlayCard.accept(handIndex));
-        } else if (handIndex == selection.firstIndex) {
-            clearHandPairSelection();
-        } else if (selection.matches.contains(handIndex)) {
-            playWithDiscardFeedback(type, info, source, () -> {
-                clearHandPairSelection();
-                selection.onMatchSelected.accept(handIndex);
-            });
-        }
-    }
-
-    private void clearHandPairSelection() {
-        if (handPairSelection != null) {
-            handPairSelection = null;
-            layoutStage();
-        }
+        playWithDiscardFeedback(type, info, source, () -> onPlayCard.accept(handIndex));
     }
 
     private void playWithDiscardFeedback(CardType type, CardCatalog.Info info, Button source,
                                          Runnable submit) {
         int previousDiscardSize = discardSize;
         List<CardType> previousDiscards = List.copyOf(recentDiscards);
+        String actor = playerName;
+        int chronicleMark = chronicle.size();
         double startX = handFanPane.getLayoutX() + source.getLayoutX() + source.getTranslateX();
         double startY = handFanPane.getLayoutY() + source.getLayoutY() + source.getTranslateY();
         double angle = source.getRotate();
         submit.run();
         int discarded = discardSize - previousDiscardSize;
         if (discarded == 1 || (discarded == 2 && type.isCatCard())) {
+            narratePlay(actor, type, info, chronicleMark);
             showPlayedCards(previousDiscards, type, discarded);
             launchPlayCardFlight(info, startX, startY, angle);
         }
     }
 
-    private static final class HandPairSelection {
-        private final int firstIndex;
-        private final Set<Integer> matches;
-        private final IntConsumer onMatchSelected;
-
-        private HandPairSelection(int firstIndex, List<Integer> matches, IntConsumer onMatchSelected) {
-            this.firstIndex = firstIndex;
-            this.matches = Set.copyOf(matches);
-            this.onMatchSelected = onMatchSelected;
+    private void narratePlay(String actor, CardType type, CardCatalog.Info info, int mark) {
+        cardsPlayed++;
+        String line;
+        if (type.isCatCard()) {
+            line = chronicleLine("played.pair", actor, info.name, lastTargetName);
+        } else if (CHRONICLE_TEXT.containsKey("played." + type.name())) {
+            line = chronicleLine("played." + type.name(), actor);
+        } else if (type == CardType.SNIFF_TEST) {
+            return;
+        } else {
+            line = chronicleLine("played.card", actor, info.name);
         }
+        chronicle.add(Math.max(0, Math.min(mark, chronicle.size())), line);
+        while (chronicle.size() > CHRONICLE_LINES) {
+            chronicle.remove(0);
+        }
+        layoutStage();
     }
 
     private void showPlayedCards(List<CardType> previousDiscards, CardType type, int count) {
+        recentDiscards.clear();
         recentDiscards.addAll(previousDiscards);
         recentDiscards.addAll(Collections.nCopies(count, type));
         int excess = recentDiscards.size() - DISPLAYED_DISCARDS;
@@ -1327,17 +1691,14 @@ public final class GamePlayView extends StackPane
         if (n == 0 || baseAngles.size() != n) {
             return;
         }
+        boolean pairPending = !pendingPair.isEmpty();
         for (int i = 0; i < n; i++) {
             Button btn = cardButtons.get(i);
-            boolean selecting = handPairSelection != null;
-            boolean first = selecting && i == handPairSelection.firstIndex;
-            boolean match = selecting && handPairSelection.matches.contains(i);
-            boolean active = selecting ? first : i == activeCardIndex;
-            boolean twin = selecting ? match : isCatPairTwin(i);
-            btn.pseudoClassStateChanged(PAIR_FIRST, first);
-            btn.pseudoClassStateChanged(PAIR_MATCH, match);
-            btn.pseudoClassStateChanged(PAIR_UNAVAILABLE, selecting && !first && !match);
-            btn.setViewOrder(active ? -n : match ? -n + 0.5 : -i);
+            boolean paired = pendingPair.contains(i);
+            boolean active = pairPending ? paired : i == activeCardIndex;
+            boolean twin = !pairPending && isCatPairTwin(i);
+            btn.pseudoClassStateChanged(PAIR_FIRST, paired);
+            btn.setViewOrder(active ? -n : twin ? -n + 0.5 : -i);
             if (active) {
                 btn.setRotate(0);
                 btn.setTranslateY(-28);
@@ -1356,7 +1717,7 @@ public final class GamePlayView extends StackPane
                 btn.setTranslateY(0);
                 btn.setScaleX(1.0);
                 btn.setScaleY(1.0);
-                if (activeCardIndex >= 0 && Math.abs(i - activeCardIndex) == 1) {
+                if (!pairPending && activeCardIndex >= 0 && Math.abs(i - activeCardIndex) == 1) {
                     btn.setTranslateX(i < activeCardIndex ? -12 : 12);
                 } else {
                     btn.setTranslateX(0);
@@ -1369,7 +1730,8 @@ public final class GamePlayView extends StackPane
         CardCatalog.Info info = CardCatalog.lookup(type.name());
         boolean wired = CardCatalog.isWired(info);
         boolean locked = danger || turnActionsDisabled;
-        Status status = !wired ? Status.SOON : locked ? Status.LOCKED : Status.READY;
+        Status status = !wired ? Status.SOON : locked ? Status.LOCKED
+                : CardCatalog.isAutomatic(info) ? Status.AUTO : Status.READY;
         CardCatalog.Face rest = status == Status.SOON ? CardCatalog.Face.SOON
                 : status == Status.LOCKED ? CardCatalog.Face.LOCKED : CardCatalog.Face.READY;
         CardCatalog.Face raised = status == Status.READY ? CardCatalog.Face.HOVER : rest;
@@ -1383,7 +1745,7 @@ public final class GamePlayView extends StackPane
         if (compact) {
             name.getStyleClass().add("compact");
         }
-        if (status != Status.READY) {
+        if (status == Status.SOON || status == Status.LOCKED) {
             name.getStyleClass().add("dim");
         }
         name.setWrapText(true);
@@ -1399,11 +1761,11 @@ public final class GamePlayView extends StackPane
         fixSize(card, w, h);
 
         if (status != Status.READY) {
-            Label badge = new Label(status == Status.SOON ? "SOON" : "LOCKED");
+            int badgeColor = status == Status.LOCKED ? GameTheme.DANGER
+                    : status == Status.AUTO ? GameTheme.ROLE_SAFETY : GameTheme.AMBER;
+            StackPane badge = new StackPane(PixelArt.textView(status.name(), 1, badgeColor));
             badge.getStyleClass().add("card-badge");
-            if (status == Status.LOCKED) {
-                badge.getStyleClass().add("locked");
-            }
+            badge.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             StackPane.setAlignment(badge, Pos.TOP_RIGHT);
             StackPane.setMargin(badge, new Insets(5, 5, 0, 0));
             card.getChildren().add(badge);
@@ -1418,7 +1780,8 @@ public final class GamePlayView extends StackPane
         fixSize(button, w, h);
         button.setAccessibleText(info.name + ", " + info.tag.toLowerCase(Locale.ROOT) + " card"
                 + (status == Status.SOON ? ", not available yet"
-                : status == Status.LOCKED ? ", locked" : ""));
+                : status == Status.LOCKED ? ", locked"
+                : status == Status.AUTO ? ", used automatically" : ""));
         button.setAccessibleHelp(info.effect);
 
         button.setOnMouseEntered(event -> {
@@ -1524,13 +1887,24 @@ public final class GamePlayView extends StackPane
 
         HBox statusRow = new HBox(8);
         statusRow.setAlignment(Pos.CENTER_LEFT);
-        if (shownStatus == Status.READY) {
+        boolean catCard = "CAT".equals(info.tag);
+        long sameCats = hand.stream()
+                .filter(card -> CardCatalog.lookup(card.name()).key.equals(info.key)).count();
+        if (shownStatus == Status.READY && catCard && sameCats < 2) {
+            statusRow.getChildren().add(PixelArt.textView(
+                    chronicleLine("hint.lone-cat").toUpperCase(Locale.ROOT), 2, 0xFF6E5641));
+        } else if (shownStatus == Status.READY) {
+            String hint = catCard ? chronicleLine("hint.pair").toUpperCase(Locale.ROOT)
+                    : "CLICK OR ENTER TO PLAY";
             statusRow.getChildren().addAll(
                     PixelArt.view(PixelArt.mono(PixelData.ARROW, 2, INK_ACCENT)),
-                    PixelArt.textView("CLICK OR ENTER TO PLAY", 2, INK_ACCENT));
+                    PixelArt.textView(hint, 2, INK_ACCENT));
         } else if (shownStatus == Status.SOON) {
             statusRow.getChildren().add(
                     PixelArt.textView("NOT AVAILABLE YET", 2, 0xFF6E5641));
+        } else if (shownStatus == Status.AUTO) {
+            statusRow.getChildren().add(
+                    PixelArt.textView("USED AUTOMATICALLY WHEN A KITTEN IS DRAWN", 2, 0xFF2E7D5B));
         } else {
             statusRow.getChildren().add(
                     PixelArt.textView(danger ? "LOCKED: PLACE KITTEN FIRST" : "LOCKED", 2, INK_DANGER));
@@ -1558,6 +1932,17 @@ public final class GamePlayView extends StackPane
         fallback.setMinHeight(Region.USE_PREF_SIZE);
         fallback.setMaxWidth(maxWidth);
         return fallback;
+    }
+
+    private void announceTurn() {
+        nameHolder.setOpacity(0);
+        nameHolder.setTranslateX(-10);
+        FadeTransition fade = new FadeTransition(Duration.millis(260), nameHolder);
+        fade.setToValue(1);
+        TranslateTransition slide = new TranslateTransition(Duration.millis(260), nameHolder);
+        slide.setToX(0);
+        slide.setInterpolator(Interpolator.EASE_OUT);
+        new ParallelTransition(fade, slide).play();
     }
 
     private void shakeTable() {
