@@ -21,9 +21,13 @@ public final class LanguageCatalog {
     }
 
     public static LanguageCatalog load() {
-        try (InputStream input = LanguageCatalog.class.getResourceAsStream(RESOURCE)) {
+        return load(RESOURCE);
+    }
+
+    static LanguageCatalog load(String resource) {
+        try (InputStream input = LanguageCatalog.class.getResourceAsStream(resource)) {
             if (input == null) {
-                throw new IllegalStateException("Missing language configuration: " + RESOURCE);
+                throw new IllegalStateException("Missing language configuration: " + resource);
             }
             Properties properties = new Properties();
             properties.load(new InputStreamReader(input, StandardCharsets.UTF_8));

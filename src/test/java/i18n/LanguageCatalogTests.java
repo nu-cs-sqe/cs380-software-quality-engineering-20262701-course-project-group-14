@@ -114,6 +114,14 @@ public class LanguageCatalogTests {
         assertEquals("en", catalog.getDefaultLanguage().getCode());
     }
 
+    @Test
+    public void Load_MissingConfiguration_ThrowsIllegalStateException() {
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> LanguageCatalog.load("/i18n/missing.properties"));
+
+        assertEquals("Missing language configuration: /i18n/missing.properties", exception.getMessage());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
