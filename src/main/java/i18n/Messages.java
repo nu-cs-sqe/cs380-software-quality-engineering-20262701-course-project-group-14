@@ -1,5 +1,6 @@
 package i18n;
 
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 public final class Messages {
@@ -28,6 +29,9 @@ public final class Messages {
         if (!bundle.containsKey(key)) {
             return key;
         }
-        return bundle.getString(key);
+        String pattern = bundle.getString(key);
+        return arguments.length == 0
+                ? pattern
+                : new MessageFormat(pattern, language.getLocale()).format(arguments);
     }
 }

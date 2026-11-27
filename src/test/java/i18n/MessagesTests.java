@@ -32,6 +32,12 @@ public class MessagesTests {
         assertEquals("missing", english().text("missing"));
     }
 
+    @Test
+    public void Text_WithChoiceArgument_FormatsSingularAndPlural() {
+        assertEquals("1 card", english().text("cards", 1));
+        assertEquals("3 cards", english().text("cards", 3));
+    }
+
     private static Messages english() {
         return Messages.forLanguage(TEST_BUNDLE, ENGLISH);
     }
