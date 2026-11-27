@@ -19,6 +19,7 @@ public final class Messages {
     }
 
     static Messages forLanguage(String bundleName, Language language) {
+        Objects.requireNonNull(language, "Language must not be null.");
         ResourceBundle bundle = ResourceBundle.getBundle(bundleName, language.getLocale(),
                 ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES));
         return new Messages(language, bundle);

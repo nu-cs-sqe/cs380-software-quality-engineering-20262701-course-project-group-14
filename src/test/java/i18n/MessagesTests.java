@@ -64,6 +64,14 @@ public class MessagesTests {
         }
     }
 
+    @Test
+    public void ForLanguage_WithNullLanguage_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> Messages.forLanguage(TEST_BUNDLE, null));
+
+        assertEquals("Language must not be null.", exception.getMessage());
+    }
+
     private static Messages english() {
         return Messages.forLanguage(TEST_BUNDLE, ENGLISH);
     }

@@ -24,7 +24,7 @@ Test bundles live in `src/test/resources/i18n/test-messages*.properties`.
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | MS-08 | The JVM default locale is `zh_CN`. | English | Uses the English base bundle, never the system language. | :white_check_mark: |
-| MS-09 | No messages exist. | `language = null` | Throws `NullPointerException` with `"Language must not be null."`. | :x: |
+| MS-09 | No messages exist. | `language = null` | Throws `NullPointerException` with `"Language must not be null."`. | :white_check_mark: |
 
 ## Getter coverage
 
