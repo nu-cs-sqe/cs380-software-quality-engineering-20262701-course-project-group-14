@@ -35,6 +35,11 @@ public final class LanguageCatalog {
 
     public static LanguageCatalog fromProperties(Properties properties) {
         Objects.requireNonNull(properties, "Language configuration must not be null.");
+        List<Language> languages = readLanguages(properties);
+        return new LanguageCatalog(languages, findDefault(languages, properties.getProperty("default")));
+    }
+
+    private static List<Language> readLanguages(Properties properties) {
         String list = properties.getProperty("languages");
         if (list == null || list.isBlank()) {
             throw new IllegalArgumentException("Language list must not be empty.");
@@ -51,18 +56,15 @@ public final class LanguageCatalog {
             }
             languages.add(new Language(code, name));
         }
-        String defaultCode = properties.getProperty("default");
-        Language defaultLanguage = null;
-        for (Language language : languages) {
-            if (language.getCode().equals(defaultCode)) {
-                defaultLanguage = language;
-            }
-        }
-        if (defaultLanguage == null) {
-            throw new IllegalArgumentException(
-                    "Default language must be one of the supported languages: " + defaultCode);
-        }
-        return new LanguageCatalog(languages, defaultLanguage);
+        return languages;
+    }
+
+    private static Language findDefault(List<Language> languages, String defaultCode) {
+        return languages.stream()
+                .filter(language -> language.getCode().equals(defaultCode))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Default language must be one of the supported languages: " + defaultCode));
     }
 
     public List<Language> getLanguages() {
