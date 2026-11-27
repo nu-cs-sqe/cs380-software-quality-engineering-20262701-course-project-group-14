@@ -494,25 +494,22 @@ public class TurnEngineTests {
     }
 
     private static final class AdvancingState extends GameState {
-        private Player currentPlayer;
-        private final Player secondPlayer;
+        private int currentSeat;
         private int advanceCount;
 
         private AdvancingState(Player firstPlayer, Player secondPlayer, Deck deck) {
             super(List.of(firstPlayer, secondPlayer), deck);
-            currentPlayer = firstPlayer;
-            this.secondPlayer = secondPlayer;
         }
 
         @Override
         public Player getCurrentPlayer() {
-            return currentPlayer;
+            return getPlayers().get(currentSeat);
         }
 
         @Override
         public AdvanceResult advanceCurrentPlayer() {
             advanceCount++;
-            currentPlayer = secondPlayer;
+            currentSeat = 1;
             return AdvanceResult.ADVANCED;
         }
     }
@@ -915,17 +912,17 @@ public class TurnEngineTests {
         deck.addCards(List.of(topCard));
 
         GameState state = new GameState(List.of(firstPlayer, secondPlayer), deck) {
-            private Player currentPlayer = firstPlayer;
+            private int currentSeat;
 
             @Override
             public Player getCurrentPlayer() {
-                return currentPlayer;
+                return getPlayers().get(currentSeat);
             }
 
             @Override
             public AdvanceResult advanceCurrentPlayer() {
-                assertEquals(firstPlayer, currentPlayer);
-                currentPlayer = secondPlayer;
+                assertEquals(0, currentSeat);
+                currentSeat = 1;
                 return AdvanceResult.ADVANCED;
             }
         };
