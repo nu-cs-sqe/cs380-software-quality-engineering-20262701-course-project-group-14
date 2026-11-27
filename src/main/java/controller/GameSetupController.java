@@ -11,8 +11,8 @@ public class GameSetupController {
     private static final int TOTAL_EXPLODING_KITTENS = 4;
     private static final int TOTAL_DEFUSES = 6;
     private static final int EXTRA_DEFUSES_FOR_SMALL_GAME = 2;
-    private static final String PLAYER_COUNT_ERROR_MESSAGE =
-            "Player count must be a whole number between 2 and 5.";
+    /** Message key; the view shows the text in the player's language. */
+    private static final String PLAYER_COUNT_ERROR_MESSAGE = "setup.error.player-count";
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);

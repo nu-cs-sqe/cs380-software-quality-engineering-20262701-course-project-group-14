@@ -72,7 +72,7 @@ public final class MainApp extends Application {
         try {
             state = new GameSetupController().startGame(playerCountText);
         } catch (IllegalArgumentException exception) {
-            showError.accept(exception.getMessage());
+            showError.accept(Texts.get(exception.getMessage()));
             return;
         }
         openGameplay.accept(state);

@@ -173,10 +173,7 @@ public class GameSetupControllerTests {
                 () -> controller.startGame("abc")
         );
 
-        assertEquals(
-                "Player count must be a whole number between 2 and 5.",
-                exception.getMessage()
-        );
+        assertEquals("setup.error.player-count", exception.getMessage());
     }
     @Test
     public void StartGame_WithDecimalPlayerCount_ThrowsClearIllegalArgumentException() {
@@ -187,10 +184,7 @@ public class GameSetupControllerTests {
                 () -> controller.startGame("2.5")
         );
 
-        assertEquals(
-                "Player count must be a whole number between 2 and 5.",
-                exception.getMessage()
-        );
+        assertEquals("setup.error.player-count", exception.getMessage());
     }
     @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
