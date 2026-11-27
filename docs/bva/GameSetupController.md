@@ -31,5 +31,5 @@ results are message keys that the view translates.
 | GSC-17 | No ready game exists. | `["Ada", "ada"]` | Validation fails with the message key `setup.error.name-duplicate`; names are compared ignoring case. | :white_check_mark: |
 | GSC-18 | No ready game exists. | `["Ada", "   "]` | Validation fails with the message key `setup.error.name-blank`. | :white_check_mark: |
 | GSC-19 | No ready game exists. | `["Ada"]` | Validation fails with the message key `setup.error.player-count`. | :white_check_mark: |
-| GSC-20 | No ready game exists. | Six distinct names | Validation fails with the message key `setup.error.player-count`. | :x: |
+| GSC-20 | No ready game exists. | Six distinct names | Validation fails with the message key `setup.error.player-count`. | :white_check_mark: |
 | GSC-21 | No ready game exists. | `null` | Throws `NullPointerException` with `"Player names must not be null."`. | :x: |
