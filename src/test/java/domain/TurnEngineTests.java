@@ -3,6 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -793,6 +794,27 @@ public class TurnEngineTests {
         assertEquals(DefuseResult.DEFUSED, result);
         assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
         assertSame(second, state.getCurrentPlayer());
+    }
+
+    @Test
+    public void ResolveDefuse_SecondDefuseBySamePlayer_DeclaresWinner() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        GameState state = new GameState(List.of(first, second), deckOf(
+                CardType.EXPLODING_KITTEN, CardType.TACOCAT, CardType.EXPLODING_KITTEN));
+        TurnEngine engine = defuseMasterEngine(state);
+        engine.draw();
+        engine.resolveDefuse(0);
+        engine.draw();
+
+        engine.draw();
+        DefuseResult result = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, result);
+        assertEquals(TurnPhase.GAME_OVER, engine.getPhase());
+        assertSame(first, state.getCurrentPlayer());
+        assertEquals(OptionalInt.of(0), engine.getSnapshot().getWinnerIndex());
+        assertEquals(0, engine.getSnapshot().getRemainingTurns());
     }
 
     private static Deck deckOf(CardType... types) {

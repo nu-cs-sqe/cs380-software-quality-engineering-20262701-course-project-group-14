@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -8,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class TurnEngine implements TurnActions, CommandPlayActions {
+    static final int DEFUSES_TO_WIN = 2;
+
     private final GameState state;
     private final DiscardPile discardPile;
     private final ExplodingKittenResolver resolver;
@@ -17,6 +20,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     private int remainingTurns = 1;
     private boolean attackTurnsActive;
     private boolean gameOver;
+    private final Map<Player, Integer> defuseCounts = new HashMap<>();
 
     public TurnEngine(
             GameState state,
@@ -114,7 +118,12 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
                 state.getCurrentPlayer(), kitten, state.getDeck(), position);
         if (result == DefuseResult.DEFUSED) {
             pendingAction = null;
-            finishOneTurn();
+            if (defuseCounts.merge(state.getCurrentPlayer(), 1, Integer::sum) >= DEFUSES_TO_WIN) {
+                gameOver = true;
+                remainingTurns = 0;
+            } else {
+                finishOneTurn();
+            }
         }
         return result;
     }
