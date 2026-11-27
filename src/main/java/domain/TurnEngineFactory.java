@@ -27,7 +27,8 @@ public final class TurnEngineFactory {
                 resolver,
                 Map.of(
                         CardType.ATTACK, new AttackEffect(),
-                        CardType.SKIP, new SkipEffect()
+                        CardType.SKIP, new SkipEffect(),
+                        CardType.SNIFF_TEST, new SniffTestEffect()
                 ),
                 random
         );

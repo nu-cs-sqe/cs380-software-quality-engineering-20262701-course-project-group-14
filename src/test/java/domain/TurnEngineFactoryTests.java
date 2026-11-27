@@ -76,6 +76,52 @@ public class TurnEngineFactoryTests {
     }
 
     @Test
+    public void Create_WithSniffTest_MovesKittenToBottomAndKeepsTurn() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        first.addCard(new Card(CardType.SNIFF_TEST));
+        Card kitten = new Card(CardType.EXPLODING_KITTEN);
+        Card skip = new Card(CardType.SKIP);
+        Deck deck = Deck.fromTopToBottom(List.of(kitten, skip));
+        GameState state = new GameState(List.of(first, second), deck);
+        TurnActions actions = TurnEngineFactory.create(state);
+
+        PlayResult playResult = actions.playCard(0);
+
+        assertEquals(PlayStatus.CONTINUE_TURN, playResult.getStatus());
+        assertEquals(List.of(CardType.EXPLODING_KITTEN), playResult.getRevealedCards());
+        assertEquals(0, first.getHand().size());
+        assertEquals(1, actions.getSnapshot().getDiscardPileSize());
+        assertSame(first, state.getCurrentPlayer());
+
+        DrawResult draw = actions.draw();
+
+        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, draw.getStatus());
+        assertEquals(List.of(skip), first.getHand());
+        assertSame(second, state.getCurrentPlayer());
+        assertEquals(1, deck.size());
+        assertSame(kitten, deck.drawCard());
+    }
+
+    @Test
+    public void Create_WithSniffTestAndEmptyDeck_RejectsWithoutPlaying() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        Card sniffTest = new Card(CardType.SNIFF_TEST);
+        first.addCard(sniffTest);
+        GameState state = new GameState(List.of(first, second), emptyDeck());
+        TurnActions actions = TurnEngineFactory.create(state);
+
+        PlayResult result = actions.playCard(0);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.PRECONDITION_NOT_MET, result.getFailure());
+        assertEquals(List.of(sniffTest), first.getHand());
+        assertEquals(0, actions.getSnapshot().getDiscardPileSize());
+        assertSame(first, state.getCurrentPlayer());
+    }
+
+    @Test
     public void Create_WithRandomAndNullState_RejectsState() {
         NullPointerException exception = assertThrows(NullPointerException.class,
                 () -> TurnEngineFactory.create(null, bound -> 0));

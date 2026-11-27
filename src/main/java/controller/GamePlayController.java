@@ -75,7 +75,29 @@ public final class GamePlayController {
         if (requestCatPair(handIndex)) {
             return;
         }
-        presentPlayResult(actions.playCard(handIndex));
+        GameSnapshot before = actions.getSnapshot();
+        PlayResult result = actions.playCard(handIndex);
+        if (isSniffTest(before, handIndex) && !result.getRevealedCards().isEmpty()) {
+            presentSniffResult(result);
+            return;
+        }
+        presentPlayResult(result);
+    }
+
+    private void presentSniffResult(PlayResult result) {
+        if (result.getRevealedCards().contains(CardType.EXPLODING_KITTEN)) {
+            view.showMessage("sniff.kitten-moved");
+        } else {
+            showRevealedCards(result);
+            view.showMessage("sniff.safe");
+        }
+        view.render(actions.getSnapshot());
+    }
+
+    private static boolean isSniffTest(GameSnapshot snapshot, int handIndex) {
+        List<CardType> hand = snapshot.getCurrentPlayerHand();
+        return handIndex >= 0 && handIndex < hand.size()
+                && hand.get(handIndex) == CardType.SNIFF_TEST;
     }
 
     private void presentPlayResult(PlayResult result) {

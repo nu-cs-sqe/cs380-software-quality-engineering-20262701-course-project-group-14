@@ -62,6 +62,8 @@ public final class GamePlayView extends StackPane
         implements CatPairViewPort, GameOverViewPort {
     private static final ResourceBundle GAME_OVER_TEXT =
             ResourceBundle.getBundle("ui.GameOverMessages");
+    private static final ResourceBundle SNIFF_TEST_TEXT =
+            ResourceBundle.getBundle("ui.SniffTestMessages");
     private static final Map<String, String> MESSAGES = Map.ofEntries(
             Map.entry("game.over", GAME_OVER_TEXT.getString("closed")),
             Map.entry("draw.normal-card", "Card drawn. Next player's turn."),
@@ -88,7 +90,9 @@ public final class GamePlayView extends StackPane
             Map.entry("defuse.success", "The Kitten was returned to the deck."),
             Map.entry("defuse.invalid-position", "Choose a position in the shown range."),
             Map.entry("defuse.not-awaiting", "There is no Kitten waiting to be returned."),
-            Map.entry("defuse.not-found", "The current player has no Defuse card.")
+            Map.entry("defuse.not-found", "The current player has no Defuse card."),
+            Map.entry("sniff.kitten-moved", SNIFF_TEST_TEXT.getString("kitten-moved")),
+            Map.entry("sniff.safe", SNIFF_TEST_TEXT.getString("safe"))
     );
 
     private static final Set<String> WARNING_MESSAGES = Set.of(

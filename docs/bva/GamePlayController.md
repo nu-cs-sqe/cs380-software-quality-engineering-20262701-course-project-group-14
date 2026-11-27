@@ -94,6 +94,20 @@ the public controller entry. Each cancellation case starts with a fresh fixture.
 Use the same interaction for all five Cat Card types. Cover the production
 assembly and all five types in [W9-IT05](../testing/cat-pair-integration.md).
 
+## Method under test: `handlePlayCard(int handIndex)` for Sniff Test
+
+The controller reads the clicked card type from the snapshot taken before the
+play. Sniff Test reveals one card, but a Kitten that was sniffed has already
+moved to the bottom, so the "top of the deck" preview must not show it.
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GPC-SN-01 | The current hand is `[SNIFF_TEST]`; `playCard` returns `CONTINUE_TURN` revealing `[EXPLODING_KITTEN]`. | Click hand index `0`. | Shows `sniff.kitten-moved`, does not show the top-card preview, and renders the latest snapshot. | :white_check_mark: |
+| GPC-SN-02 | The current hand is `[SNIFF_TEST]`; `playCard` returns `CONTINUE_TURN` revealing `[SKIP]`. | Click hand index `0`. | Shows the top-card preview `[SKIP]` and `sniff.safe`, and renders the latest snapshot. | :white_check_mark: |
+| GPC-SN-03 | The current hand is `[SNIFF_TEST]`; `playCard` rejects with `PRECONDITION_NOT_MET`. | Click hand index `0`. | Shows only `play.precondition-not-met`, no preview, and renders. | :white_check_mark: |
+| GPC-SN-04 | The current hand is `[SEE_THE_FUTURE]`; one card is left and `playCard` returns `CONTINUE_TURN` revealing `[EXPLODING_KITTEN]`. | Click hand index `0`. | Shows the preview `[EXPLODING_KITTEN]` as before and no Sniff Test message. | :white_check_mark: |
+| GPC-SN-05 | The current hand is `[SNIFF_TEST]` (size `1`); `playCard` rejects with `INVALID_HAND_INDEX`. | Click hand index `1`, equal to the hand size. | Does not read past the hand; shows only `play.invalid-hand-index` and renders. | :white_check_mark: |
+
 ## Gameplay events after a winner is declared
 
 | ID | Method under test | State and input | Expected output | Implemented? |
