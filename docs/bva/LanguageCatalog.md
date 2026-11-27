@@ -38,6 +38,7 @@ Adding a language means adding its code and name here and a
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | LC-12 | The bundled configuration is on the classpath. | None | Lists English (`en`, default) and Simplified Chinese (`zh-CN`, named `简体中文`, read as UTF-8). | :white_check_mark: |
+| LC-13 | No configuration exists at the requested path. | `load("/i18n/missing.properties")` (package-private overload used by `load()`) | Throws `IllegalStateException` with `"Missing language configuration: /i18n/missing.properties"`. | :x: |
 
 ## Getter coverage
 
