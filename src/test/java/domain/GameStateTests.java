@@ -1,7 +1,9 @@
 package domain;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,5 +65,159 @@ public class GameStateTests {
         List<Player> players = List.of(new Player("Player 1"), new Player("Player 2"));
 
         assertThrows(NullPointerException.class, () -> new GameState(players, null));
+    }
+
+    // GS-11
+    @Test
+    public void Create_ThenChangeOriginalList_GameStatePlayersUnchanged() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        List<Player> originalPlayers = new ArrayList<>(List.of(player1, player2));
+        GameState gameState = new GameState(originalPlayers, new Deck());
+
+        originalPlayers.add(new Player("Player 3"));
+
+        assertEquals(List.of(player1, player2), gameState.getPlayers());
+    }
+
+    // GS-12
+    @Test
+    public void GetPlayers_ModifyReturnedList_ThrowsAndPlayersUnchanged() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> gameState.getPlayers().add(new Player("Player 3"))
+        );
+        assertEquals(List.of(player1, player2), gameState.getPlayers());
+    }
+
+    // GS-13
+    @Test
+    public void AdvanceCurrentPlayer_TwoPlayers_MovesToNextPlayer() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ADVANCED, result);
+        assertSame(player2, gameState.getCurrentPlayer());
+    }
+
+    // GS-14
+    @Test
+    public void AdvanceCurrentPlayer_FromLastOfFivePlayers_WrapsToFirstPlayer() {
+        Player player1 = new Player("Player 1");
+        List<Player> players = List.of(
+                player1,
+                new Player("Player 2"),
+                new Player("Player 3"),
+                new Player("Player 4"),
+                new Player("Player 5")
+        );
+        GameState gameState = new GameState(players, new Deck());
+        for (int turn = 0; turn < 4; turn++) {
+            gameState.advanceCurrentPlayer();
+        }
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ADVANCED, result);
+        assertSame(player1, gameState.getCurrentPlayer());
+    }
+
+    // GS-15
+    @Test
+    public void AdvanceCurrentPlayer_NextPlayerEliminated_SkipsToFollowingPlayer() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        Player player3 = new Player("Player 3");
+        GameState gameState = new GameState(
+                List.of(player1, player2, player3), new Deck());
+        player2.eliminate();
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ADVANCED, result);
+        assertSame(player3, gameState.getCurrentPlayer());
+    }
+
+    // GS-16
+    @Test
+    public void AdvanceCurrentPlayer_WrapAroundToEliminatedPlayer_SkipsIt() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        Player player3 = new Player("Player 3");
+        GameState gameState = new GameState(
+                List.of(player1, player2, player3), new Deck());
+        gameState.advanceCurrentPlayer();
+        gameState.advanceCurrentPlayer();
+        player1.eliminate();
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ADVANCED, result);
+        assertSame(player2, gameState.getCurrentPlayer());
+    }
+
+    // GS-17
+    @Test
+    public void AdvanceCurrentPlayer_CurrentPlayerEliminated_MovesToNextAlivePlayer() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        Player player3 = new Player("Player 3");
+        GameState gameState = new GameState(
+                List.of(player1, player2, player3), new Deck());
+        player1.eliminate();
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ADVANCED, result);
+        assertSame(player2, gameState.getCurrentPlayer());
+    }
+
+    // GS-18
+    @Test
+    public void AdvanceCurrentPlayer_OnlyCurrentPlayerAlive_ReturnsOnePlayerRemains() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+        player2.eliminate();
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ONE_PLAYER_REMAINS, result);
+        assertSame(player1, gameState.getCurrentPlayer());
+    }
+
+    // GS-19
+    @Test
+    public void AdvanceCurrentPlayer_CurrentEliminatedOneOtherAlive_MovesToThatPlayer() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+        player1.eliminate();
+
+        AdvanceResult result = gameState.advanceCurrentPlayer();
+
+        assertEquals(AdvanceResult.ONE_PLAYER_REMAINS, result);
+        assertSame(player2, gameState.getCurrentPlayer());
+    }
+
+    // GS-20
+    @Test
+    @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+    public void AdvanceCurrentPlayer_NoPlayerAlive_ThrowsAndCurrentPlayerUnchanged() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        GameState gameState = new GameState(List.of(player1, player2), new Deck());
+        player1.eliminate();
+        player2.eliminate();
+
+        assertThrows(IllegalStateException.class, gameState::advanceCurrentPlayer);
+        assertSame(player1, gameState.getCurrentPlayer());
     }
 }
