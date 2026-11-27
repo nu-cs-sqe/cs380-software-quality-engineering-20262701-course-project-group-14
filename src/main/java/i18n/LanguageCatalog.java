@@ -10,7 +10,7 @@ public final class LanguageCatalog {
     private final Language defaultLanguage;
 
     private LanguageCatalog(List<Language> languages, Language defaultLanguage) {
-        this.languages = languages;
+        this.languages = List.copyOf(languages);
         this.defaultLanguage = defaultLanguage;
     }
 

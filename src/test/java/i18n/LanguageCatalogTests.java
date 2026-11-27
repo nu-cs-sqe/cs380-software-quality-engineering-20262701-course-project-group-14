@@ -95,6 +95,16 @@ public class LanguageCatalogTests {
         assertEquals("Language configuration must not be null.", exception.getMessage());
     }
 
+    @Test
+    public void GetLanguages_AddingToReturnedList_ThrowsAndKeepsCatalog() {
+        LanguageCatalog catalog = LanguageCatalog.fromProperties(
+                config("en,zh-CN", "en", "en", "English", "zh-CN", "简体中文"));
+
+        assertThrows(UnsupportedOperationException.class,
+                () -> catalog.getLanguages().add(new Language("fr", "Français")));
+        assertEquals(List.of("en", "zh-CN"), codes(catalog));
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {

@@ -31,7 +31,7 @@ Adding a language means adding its code and name here and a
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| LC-11 | A catalog with two languages exists. | Add a language to the returned list | Throws `UnsupportedOperationException`; the catalog is unchanged. | :x: |
+| LC-11 | A catalog with two languages exists. | Add a language to the returned list | Throws `UnsupportedOperationException`; the catalog is unchanged. | :white_check_mark: |
 
 ## Method under test: `load()`
 
