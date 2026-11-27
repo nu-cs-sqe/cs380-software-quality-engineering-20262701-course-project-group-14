@@ -25,6 +25,13 @@ Test bundles live in `src/test/resources/i18n/test-messages*.properties`.
 |---|---|---|---|---|
 | MS-08 | The JVM default locale is `zh_CN`. | English | Uses the English base bundle, never the system language. | :white_check_mark: |
 | MS-09 | No messages exist. | `language = null` | Throws `NullPointerException` with `"Language must not be null."`. | :white_check_mark: |
+| MS-10 | The bundled Simplified Chinese messages are on the classpath. | `forLanguage(zh-CN)`, then `text("setup.title")` and `text("ui.font")` | Returns `爆炸猫` and `fallback`, so Chinese screens use the bundled pixel font. | :x: |
+
+## Bundle consistency
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| MB-01 | Every non-default language listed in `languages.properties`. | Compare the keys of its `messages_<locale>.properties` with the base bundle | The key sets are equal: no missing and no extra keys. | :x: |
 
 ## Getter coverage
 
