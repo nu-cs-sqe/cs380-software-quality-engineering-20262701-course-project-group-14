@@ -6,6 +6,7 @@ import domain.CardType;
 import domain.GameSnapshot;
 import domain.PlayerSummary;
 import domain.TurnPhase;
+import domain.WinReason;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -176,6 +177,7 @@ public final class GamePlayView extends StackPane
     private StackPane victoryOverlay;
     private VBox victoryPanel;
     private final StackPane victoryNameHolder = new StackPane();
+    private final StackPane victoryTitleHolder = new StackPane();
     private final StackPane victoryStatsHolder = new StackPane();
     private final VBox victoryChronicle = new VBox(4);
     private final Pane confettiLayer = new Pane();
@@ -192,6 +194,7 @@ public final class GamePlayView extends StackPane
     // ---- state ----
     private boolean compact;
     private String playerName = "";
+    private WinReason winReason;
     private String winnerMessage;
     private int deckSize;
     private int initialDeckMax = 20;
@@ -362,6 +365,7 @@ public final class GamePlayView extends StackPane
             updateFuture();
         }
         playerName = newName;
+        winReason = snapshot.getWinReason().orElse(null);
         deckSize = snapshot.getDeckSize();
         initialDeckMax = Math.max(initialDeckMax, deckSize);
         int newDiscardSize = snapshot.getDiscardPileSize();
@@ -1273,15 +1277,13 @@ public final class GamePlayView extends StackPane
         ImageView cat = PixelArt.view(PixelArt.sprite(PixelData.HEAD_OPEN, 5, PixelArt.TAVERN_PALETTE));
         VBox crowned = new VBox(-2, crown, cat);
         crowned.setAlignment(Pos.CENTER);
-        ImageView title = PixelArt.textView(
-                Texts.get("victory.title"), 3, GameTheme.SAND);
         Region rule = new Region();
         rule.getStyleClass().add("victory-rule");
         fixSize(rule, 300, 4);
         victoryChronicle.setAlignment(Pos.CENTER);
         fixSize(returnToSetupButton, 330, 60);
 
-        victoryPanel = new VBox(12, seal, crowned, title, victoryNameHolder, rule,
+        victoryPanel = new VBox(12, seal, crowned, victoryTitleHolder, victoryNameHolder, rule,
                 victoryStatsHolder, victoryChronicle, returnToSetupButton);
         victoryPanel.getStyleClass().add("victory-panel");
         victoryPanel.setAlignment(Pos.CENTER);
@@ -1297,6 +1299,10 @@ public final class GamePlayView extends StackPane
 
     private void showVictory() {
         String winner = playerName;
+        String titleKey = winReason == WinReason.DEFUSE_MASTER
+                ? "victory.title.defuse-master" : "victory.title";
+        victoryTitleHolder.getChildren().setAll(
+                PixelArt.textView(Texts.get(titleKey), 3, GameTheme.SAND));
         victoryNameHolder.getChildren().setAll(nameNode(winner, 6, 520, GameTheme.AMBER));
         HBox stats = new HBox(26,
                 victoryStat(cardsPlayed, "victory.played", GameTheme.CREAM),

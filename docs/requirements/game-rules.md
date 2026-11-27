@@ -67,3 +67,5 @@ surviving player wins.
 - Defuses are counted per player for the whole game, across Attack turns.
 - The last-surviving-player rule still applies; whichever condition is met first
   ends the game.
+- The engine reports which rule ended the game (`GameSnapshot.getWinReason()`), and
+  the victory screen shows "Defuse master" instead of "Last cat standing".
