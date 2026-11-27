@@ -107,6 +107,112 @@ final class PixelData {
         "...kkkkkkkkkkkkkkkk...",
     };
 
+    /** Curled-up calico tavern cat matching HEAD_OPEN's exact face craft (frame A). */
+    static final String[] TABLE_CAT_SLEEP_A = {
+        "..kk..............kk....",
+        ".kook............kppk...",
+        "kodook..........kppppk..",
+        "koooookkkkkkkkkkpppppk..",
+        "koooooooocccccccccccck..",
+        "koooooooooccccccccccck..",
+        "kooooooooccccccccccccck.",
+        "kooooooccccccccccccccck.",
+        "kookkkcccccccccckkkccck.",
+        "kppcccccccqqcccccccppck.",
+        "kppcccccckcckccccccppck.",
+        "kccccccccckkccccccssssk.",
+        "kdooooooccccccccssssssk.",
+        ".kddddoocccccccsssssck..",
+        "..kkkkccccccccsssssskk..",
+        ".....kkkkkkkkkkkkkkkk...",
+    };
+
+    /** Curled-up calico tavern cat (gentle 1px breathing frame B). */
+    static final String[] TABLE_CAT_SLEEP_B = {
+        "........................",
+        "..kk..............kk....",
+        ".kook............kppk...",
+        "kodook..........kppppk..",
+        "koooookkkkkkkkkkpppppk..",
+        "koooooooocccccccccccck..",
+        "koooooooooccccccccccck..",
+        "kooooooccccccccccccccck.",
+        "kookkkcccccccccckkkccck.",
+        "kppcccccccqqcccccccppck.",
+        "kppcccccckcckccccccppck.",
+        "kccccccccckkccccccssssk.",
+        "kdooooooccccccccssssssk.",
+        ".kddddoocccccccsssssck..",
+        "..kkkkccccccccsssssskk..",
+        ".....kkkkkkkkkkkkkkkk...",
+    };
+
+    /** Wide-eyed alert tavern cat when an Exploding Kitten or low-deck tension hits. */
+    static final String[] TABLE_CAT_ALERT = {
+        "..kk..............kk....",
+        ".kook............kppk...",
+        "kodook..........kppppk..",
+        "koooookkkkkkkkkkpppppk..",
+        "koooooooocccccccccccck..",
+        "koooooooooccccccccccck..",
+        "koooooooccccccccccccck..",
+        "kooowkoccccccccckwcccck.",
+        "koookkcccccccccckkcccck.",
+        "kccckkcccccccccckkcccck.",
+        "kppcccccccqqcccccccppck.",
+        "kppcccccckcckccccccppck.",
+        "kdoooooocckkccccccssssk.",
+        ".kddddoocccccccccssssk..",
+        "..kkkkccccccccsssssskk..",
+        ".....kkkkkkkkkkkkkkkk...",
+    };
+
+    /** Brass-banded oak tavern milk-punch stein with frothy foam & specular highlight. */
+    static final String[] TAVERN_STEIN = {
+        "....kkkkkkkk......",
+        "...kcccccccck.....",
+        "..kcwcccccccck....",
+        "..kccccccsscck....",
+        "..kccssssssssk....",
+        "...kkkkkkkkkkk....",
+        "...kyyyyyyyyyk....",
+        "...ktooooooodkkkk.",
+        "...ktooooooodk..kk",
+        "...ktooooooodk..kk",
+        "...ktooooooodk..kk",
+        "...kyyyyyyyyyk..kk",
+        "...ktooooooodk..kk",
+        "...ktooooooodk..kk",
+        "...ktooooooodkkkk.",
+        "...kyyyyyyyyyk....",
+        "..ktttttttttttk...",
+        ".kyyyyyyyyyyyyyk..",
+        ".ktttttttttttttk..",
+        "..kkkkkkkkkkkkk...",
+    };
+
+    /** Rolled parchment scroll pinned by a steel-and-brass stiletto dagger & wax seal. */
+    static final String[] TAVERN_SCROLL = {
+        "..............kk....",
+        ".............kyyk...",
+        "............kywwyk..",
+        "...........kyyyyyyk.",
+        "..kkkkkkkkk..kyyk...",
+        ".kccccccccck.kggk...",
+        "kcwccccccccckkggk...",
+        "kccsssssssssckggk...",
+        "kccsssssssssckrk....",
+        "kcccccccccccrrqrrk..",
+        "kccsssssssccrwqrrk..",
+        "kcccccccccccrrqrrk..",
+        "kccssssssscckrrrkk..",
+        "kcccccccccccckkk....",
+        "kccsssssssscck......",
+        ".kccccccccckk.......",
+        ".ktttttttttk........",
+        "..kkkkkkkkk.........",
+    };
+
     static final String[] SPARK_A = {
         "....y....",
         "....y....",
@@ -289,6 +395,153 @@ final class PixelData {
         "..y..",
     };
 
+    static final String[] LANTERN_A = {
+        "....t....",
+        "....t....",
+        "..kkkkk..",
+        ".ktttttk.",
+        ".kyyoyyk.",
+        ".kyoooyk.",
+        ".kyowoyk.",
+        ".kyoooyk.",
+        ".kyyoyyk.",
+        ".ktttttk.",
+        "..kkkkk..",
+    };
+
+    static final String[] LANTERN_B = {
+        "....t....",
+        "....t....",
+        "..kkkkk..",
+        ".ktttttk.",
+        ".kyyyyyk.",
+        ".kyyoyyk.",
+        ".kyyoyyk.",
+        ".kyyoyyk.",
+        ".kyyyyyk.",
+        ".ktttttk.",
+        "..kkkkk..",
+    };
+
+    static final String[] WARN = {
+        "....r....",
+        "...rrr...",
+        "..rrkrr..",
+        "..rrkrr..",
+        ".rrrkrrr.",
+        ".rrrrrrr.",
+        "rrrrkrrrr",
+        "rrrrrrrrr",
+    };
+
+    static final String[] ARROW = {
+        "c....",
+        "cc...",
+        "ccc..",
+        "cccc.",
+        "ccc..",
+        "cc...",
+        "c....",
+    };
+
+    static final String[] ICON_SCISSORS = {
+        "c.........c",
+        ".c.......c.",
+        "..c.....c..",
+        "...c...c...",
+        "....c.c....",
+        ".....c.....",
+        "....c.c....",
+        "...c...c...",
+        ".cc.....cc.",
+        "c..c...c..c",
+        ".cc.....cc.",
+    };
+
+    static final String[] ICON_CLAW = {
+        "......cc..c",
+        ".....cc..cc",
+        "....cc..cc.",
+        "...cc..cc..",
+        "..cc..cc..c",
+        ".cc..cc..cc",
+        "cc..cc..cc.",
+        "c..cc..cc..",
+        "..cc..cc...",
+        ".cc..cc....",
+        "cc..cc.....",
+    };
+
+    static final String[] ICON_SKIP = {
+        "...........",
+        "c....c....c",
+        "cc...cc...c",
+        "ccc..ccc..c",
+        "cccc.cccc.c",
+        "ccccccccc.c",
+        "cccc.cccc.c",
+        "ccc..ccc..c",
+        "cc...cc...c",
+        "c....c....c",
+        "...........",
+    };
+
+    static final String[] ICON_GIFT = {
+        "..ccc.ccc..",
+        ".c...c...c.",
+        ".c...c...c.",
+        "..ccc.ccc..",
+        "ccccc.ccccc",
+        "ccccc.ccccc",
+        ".cccc.cccc.",
+        ".cccc.cccc.",
+        ".cccc.cccc.",
+        ".cccc.cccc.",
+        ".ccccccccc.",
+    };
+
+    static final String[] ICON_SHUFFLE = {
+        "...........",
+        ".......c...",
+        ".......cc..",
+        "cccccccccc.",
+        ".......cc..",
+        ".......c...",
+        "...c.......",
+        "..cc.......",
+        ".cccccccccc",
+        "..cc.......",
+        "...c.......",
+    };
+
+    static final String[] ICON_EYE = {
+        "...........",
+        "...........",
+        "...ccccc...",
+        ".cc.....cc.",
+        "cc..ccc..cc",
+        "c...c.c...c",
+        "cc..ccc..cc",
+        ".cc.....cc.",
+        "...ccccc...",
+        "...........",
+        "...........",
+    };
+
+    static final String[] ICON_NOPE = {
+        "...ccccc...",
+        "..ccccccc..",
+        ".cc.....cc.",
+        "cc.c.....cc",
+        "cc..c....cc",
+        "cc...c...cc",
+        "cc....c..cc",
+        "cc.....c.cc",
+        ".cc.....cc.",
+        "..ccccccc..",
+        "...ccccc...",
+    };
+
     static final java.util.Map<Character, String[]> GLYPHS = new java.util.HashMap<>();
     static {
         GLYPHS.put('A', new String[] {"01110", "10001", "10001", "11111", "10001", "10001", "10001"});
@@ -321,5 +574,19 @@ final class PixelData {
         GLYPHS.put('!', new String[] {"00100", "00100", "00100", "00100", "00100", "00000", "00100"});
         GLYPHS.put('2', new String[] {"01110", "10001", "00001", "00010", "00100", "01000", "11111"});
         GLYPHS.put('5', new String[] {"11111", "10000", "11110", "00001", "00001", "10001", "01110"});
+        GLYPHS.put('0', new String[] {"01110", "10001", "10001", "10001", "10001", "10001", "01110"});
+        GLYPHS.put('1', new String[] {"00100", "01100", "00100", "00100", "00100", "00100", "01110"});
+        GLYPHS.put('3', new String[] {"11110", "00001", "00001", "01110", "00001", "00001", "11110"});
+        GLYPHS.put('4', new String[] {"00010", "00110", "01010", "10010", "11111", "00010", "00010"});
+        GLYPHS.put('6', new String[] {"00110", "01000", "10000", "11110", "10001", "10001", "01110"});
+        GLYPHS.put('7', new String[] {"11111", "00001", "00010", "00100", "01000", "01000", "01000"});
+        GLYPHS.put('8', new String[] {"01110", "10001", "10001", "01110", "10001", "10001", "01110"});
+        GLYPHS.put('9', new String[] {"01110", "10001", "10001", "01111", "00001", "00010", "01100"});
+        GLYPHS.put(':', new String[] {"00000", "00100", "00100", "00000", "00100", "00100", "00000"});
+        GLYPHS.put('.', new String[] {"00000", "00000", "00000", "00000", "00000", "01100", "01100"});
+        GLYPHS.put('?', new String[] {"01110", "10001", "00001", "00110", "00100", "00000", "00100"});
+        GLYPHS.put('/', new String[] {"00001", "00010", "00010", "00100", "01000", "01000", "10000"});
+        GLYPHS.put('\'', new String[] {"00100", "00100", "00000", "00000", "00000", "00000", "00000"});
+        GLYPHS.put(',', new String[] {"00000", "00000", "00000", "00000", "00110", "00100", "01000"});
     }
 }

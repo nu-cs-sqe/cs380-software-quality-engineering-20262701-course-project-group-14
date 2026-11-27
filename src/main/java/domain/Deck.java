@@ -17,8 +17,7 @@ public class Deck {
     }
 
     Deck(Random random) {
-        this.random = Objects.requireNonNull(
-                random, "Random must not be null");
+        this(random, List.of());
 
         for (CardType type : CardType.values()) {
             int count = 4;
@@ -36,15 +35,21 @@ public class Deck {
         }
     }
 
+    static Deck fromTopToBottom(List<Card> cards) {
+        return new Deck(new Random(), cards);
+    }
+
+    private Deck(Random random, List<Card> initialCards) {
+        this.random = Objects.requireNonNull(random, "Random must not be null");
+        validateCards(initialCards);
+        cards.addAll(initialCards);
+    }
+
     // Removes and returns the requested cards.
     public List<Card> removeCards(CardType type, int count) {
         Objects.requireNonNull(type, "Card type must not be null");
-        if (count < 0) {
-            throw new IllegalArgumentException("Count must not be negative");
-        }
-        if (count > countOf(type)) {
-            throw new IllegalArgumentException("Not enough cards of the requested type");
-        }
+        validateRemovalCount(type, count);
+
         List<Card> removed = new ArrayList<>();
         Iterator<Card> iterator = cards.iterator();
 
@@ -59,16 +64,36 @@ public class Deck {
 
         return removed;
     }
+    private void validateRemovalCount(CardType type, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("Count must not be negative");
+        }
+        if (count > countOf(type)) {
+            throw new IllegalArgumentException("Not enough cards of the requested type");
+        }
+    }
 
     // Adds the supplied cards without shuffling.
     public void addCards(List<Card> cards) {
+        validateCards(cards);
+        this.cards.addAll(cards);
+    }
+
+    private static void validateCards(List<Card> cards) {
         Objects.requireNonNull(cards, "Cards must not be null");
 
         for (Card card : cards) {
             Objects.requireNonNull(card, "Card must not be null");
         }
+    }
 
-        this.cards.addAll(cards);
+    public void insertAt(Card card, int position) {
+        Objects.requireNonNull(card, "Card must not be null");
+        if (position < 0 || position > cards.size()) {
+            throw new IllegalArgumentException(
+                    "Position must be between 0 and the deck size");
+        }
+        cards.add(position, card);
     }
 
     // Removes and returns the top card.
