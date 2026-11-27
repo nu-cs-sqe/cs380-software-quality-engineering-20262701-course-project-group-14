@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!--
+      Constructors validate their arguments by throwing exceptions. This desktop
+      application has no finalizers and does not execute untrusted subclasses, so
+      CT_CONSTRUCTOR_THROW does not represent an exploitable finalizer attack here.
+    -->
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+
+    <!--
+      GameState and TurnEngine intentionally share the mutable Deck that represents
+      the draw pile. TurnEngine remains the sole turn orchestrator that mutates it.
+    -->
+    <Match>
+        <Class name="domain.GameState"/>
+        <Field name="deck"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+</FindBugsFilter>
