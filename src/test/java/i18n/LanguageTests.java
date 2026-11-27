@@ -58,4 +58,12 @@ public class LanguageTests {
 
         assertEquals("Language display name must not be null.", exception.getMessage());
     }
+
+    @Test
+    public void Constructor_WithBlankDisplayName_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> new Language("en", ""));
+
+        assertEquals("Language display name must not be blank.", exception.getMessage());
+    }
 }

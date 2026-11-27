@@ -13,7 +13,7 @@ language menu, and the matching `Locale`.
 | LG-04 | No language exists. | `code = "  "` | Throws `IllegalArgumentException` with `"Language code must not be blank."`. | :white_check_mark: |
 | LG-05 | No language exists. | `code = "not a tag"` | Throws `IllegalArgumentException` with `"Language code must be a language tag: not a tag"`. | :white_check_mark: |
 | LG-06 | No language exists. | `displayName = null` | Throws `NullPointerException` with `"Language display name must not be null."`. | :white_check_mark: |
-| LG-07 | No language exists. | `displayName = ""` | Throws `IllegalArgumentException` with `"Language display name must not be blank."`. | :x: |
+| LG-07 | No language exists. | `displayName = ""` | Throws `IllegalArgumentException` with `"Language display name must not be blank."`. | :white_check_mark: |
 
 ## Method under test: `toString()`
 
