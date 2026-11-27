@@ -24,7 +24,7 @@ Failed calls leave the entire deck unchanged.
 | Deck08 | All 4 Exploding Kittens have been removed; removeCards(EXPLODING_KITTEN, 0) | Returns an empty list; size remains 52; no Exploding Kittens remain       | Yes          |
 | Deck09 | All 4 Exploding Kittens have been removed; removeCards(EXPLODING_KITTEN, 1) | Throws IllegalArgumentException; deck remains unchanged                   | Yes          |
 | Deck10 | New deck; removeCards(null, 1)                                              | Throws NullPointerException; deck remains unchanged                       | Yes          |
-| Deck40 | Empty deck; removeCards(DEFUSE, 0)                                          | Returns an empty list; size remains 0                                     | No           |
+| Deck40 | Empty deck; removeCards(DEFUSE, 0)                                          | Returns an empty list; size remains 0                                     | Yes          |
 
 ### Method under test: addCards(List<Card> cards)
 

@@ -80,6 +80,16 @@ public class DeckTests {
     }
 
     @Test
+    public void RemoveCards_ZeroFromEmptyDeck_ReturnsEmptyList() {
+        Deck deck = createEmptyDeck();
+
+        List<Card> removed = deck.removeCards(CardType.DEFUSE, 0);
+
+        assertTrue(removed.isEmpty());
+        assertEquals(0, deck.size());
+    }
+
+    @Test
     public void RemoveCards_WithOne_ReturnsOneMatchingCard() {
         Deck deck = new Deck();
         Deck deck2 = new Deck();
