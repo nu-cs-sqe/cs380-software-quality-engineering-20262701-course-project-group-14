@@ -7,7 +7,7 @@ language menu, and the matching `Locale`.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| LG-01 | No language exists. | `code = "en"`, `displayName = "English"` | Keeps the code and name; the locale has language `en` and no country. | :x: |
+| LG-01 | No language exists. | `code = "en"`, `displayName = "English"` | Keeps the code and name; the locale has language `en` and no country. | :white_check_mark: |
 | LG-02 | No language exists. | `code = "zh-CN"`, `displayName = "简体中文"` | Keeps the code and name; the locale has language `zh` and country `CN`. | :x: |
 | LG-03 | No language exists. | `code = null` | Throws `NullPointerException` with `"Language code must not be null."`. | :x: |
 | LG-04 | No language exists. | `code = "  "` | Throws `IllegalArgumentException` with `"Language code must not be blank."`. | :x: |
