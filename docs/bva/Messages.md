@@ -32,7 +32,7 @@ Test bundles live in `src/test/resources/i18n/test-messages*.properties`.
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | MB-01 | Every non-default language listed in `languages.properties`. | Compare the keys of its `messages_<locale>.properties` with the base bundle | The key sets are equal: no missing and no extra keys. | :white_check_mark: |
-| MB-02 | Every language whose `ui.font` is `fallback`. | Check each character of its `messages_<locale>.properties` against the bundled Ark Pixel font | Every non-ASCII character exists in the font, so no text shows as empty boxes. | :x: |
+| MB-02 | Every language whose `ui.font` is `fallback`. | Check each character of its `messages_<locale>.properties` against the bundled Ark Pixel font | Every non-ASCII character exists in the font, so no text shows as empty boxes. | :white_check_mark: |
 
 ## Getter coverage
 
