@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FallbackFontGlyphTests {
     @Test
+    void CanDisplay_Space_ReturnsTrue() {
+        assertTrue(FallbackFont.canDisplay(' '));
+    }
+    @Test
     void CanDisplay_CharacterMissingFromFont_ReturnsFalse() {
         assertFalse(FallbackFont.canDisplay('暹'));
     }
