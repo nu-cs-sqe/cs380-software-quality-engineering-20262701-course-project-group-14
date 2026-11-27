@@ -28,6 +28,7 @@ public class GameSetupController {
     }
 
     public GameState startNamedGame(List<String> playerNames) {
+        validatePlayerCount(playerNames.size());
         List<Player> players = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (String name : playerNames) {

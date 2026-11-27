@@ -253,6 +253,16 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithOneName_ThrowsPlayerCountKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada")));
+
+        assertEquals("setup.error.player-count", exception.getMessage());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 
