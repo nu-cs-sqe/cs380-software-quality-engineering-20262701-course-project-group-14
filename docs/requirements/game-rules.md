@@ -28,6 +28,10 @@ The linked rulebook defines the complete gameplay, card effects, and special com
 | Rainbow-Ralphing Cat | RAINBOW_RALPHING_CAT      |      4 |
 | Total                |                           |     56 |
 
+Original cards invented by the team (for example `SNIFF_TEST`, see
+`docs/design/original-card-sniff-test.md`) are not part of this 56-card deck.
+Their counts are confirmed by the team and they are added during setup.
+
 ### Game Setup
 
 1. Remove all Exploding Kittens and Defuse cards.
