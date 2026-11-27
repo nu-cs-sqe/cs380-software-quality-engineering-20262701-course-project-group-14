@@ -112,7 +112,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
 
     @Override
     public DefuseResult resolveDefuse(int position) {
-        if (!(pendingAction instanceof PendingDefuse)) {
+        if (getPhase() != TurnPhase.AWAITING_DEFUSE_POSITION) {
             return DefuseResult.NOT_AWAITING_DEFUSE;
         }
         Card kitten = ((PendingDefuse) pendingAction).getKitten();
