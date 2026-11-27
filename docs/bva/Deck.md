@@ -6,6 +6,7 @@
 |--------|-----------------------------------------------------------------------------|---------------------------------------------------------------------|--------------|
 | Deck01 | Create a new Deck and call size()                                           | Construction succeeds; size() returns 56                            | Yes          |
 | Deck02 | Create a new Deck and call countOf(type) for each of the 13 CardType values | DEFUSE: 6; SEE_THE_FUTURE and NOPE: 5 each; all other types: 4 each | Yes          |
+| Deck39 | Create a new Deck and call countOf(SNIFF_TEST) and size()                   | countOf returns 0 and size() returns 56; original cards are not part of the standard deck | Yes          |
 
 ### Method under test: removeCards(CardType type, int count)
 
@@ -76,4 +77,26 @@ This package-private constructor allows controlled randomness in tests.
 | Deck27 | New deck; call countOf(null)         | Throws NullPointerException; deck remains unchanged | Yes          |
 
 
+### Method under test: insertAt(Card card, int position)
 
+Position 0 is the top of the deck. Position size() is the bottom.
+A failed insertion preserves the original cards and their draw order.
+
+| ID     | State of the system / Input              | Expected output                                               | Implemented? |
+|--------|------------------------------------------|---------------------------------------------------------------|--------------|
+| Deck28 | Deck [Attack, Skip]; insert Kitten at 0  | Draw order is [Kitten, Attack, Skip]                          | Yes          |
+| Deck29 | Deck [Attack, Skip]; insert Kitten at 1  | Draw order is [Attack, Kitten, Skip]                          | Yes          |
+| Deck30 | Deck [Attack, Skip]; insert Kitten at 2  | Draw order is [Attack, Skip, Kitten]                          | Yes          |
+| Deck31 | Empty deck; insert Kitten at 0           | Kitten is the only card                                       | Yes          |
+| Deck32 | Deck [Attack, Skip]; insert Kitten at -1 | Throws IllegalArgumentException; size and order are preserved | Yes          |
+| Deck33 | Deck [Attack, Skip]; insert Kitten at 3  | Throws IllegalArgumentException; size and order are preserved | Yes          |
+| Deck34 | Deck [Attack, Skip]; insert null at 1    | Throws NullPointerException; size and order are preserved     | Yes          |
+
+### Package-private factory under test: fromTopToBottom(List<Card> cards)
+
+| ID     | State of the system / Input                                          | Expected output                                               | Implemented? |
+|--------|----------------------------------------------------------------------|---------------------------------------------------------------|--------------|
+| Deck35 | Build a deck from [Skip, Attack, Defuse], then clear the source list | Size is 3; the deck draws the same card objects in that order | Yes          |
+| Deck36 | Build a deck from an empty list                                      | Creates an empty deck                                         | Yes          |
+| Deck37 | Build a deck from a null list                                        | Throws NullPointerException                                   | Yes          |
+| Deck38 | Build a deck from a list containing a null card                      | Throws NullPointerException                                   | Yes          |
