@@ -89,5 +89,5 @@ These cases use the local draft-engine baseline for controller integration.
 |---|---|---|---|---|
 | GSP-29 | A snapshot was created with `create(...)` only. | None | Returns `Optional.empty()`. | :white_check_mark: |
 | GSP-30 | The last opponent was eliminated through `TurnEngine`. | Read the terminal snapshot. | Returns `LAST_SURVIVOR`. | :white_check_mark: |
-| GSP-31 | Player 1 completed a second Defuse through `TurnEngine`. | Read the terminal snapshot. | Returns `DEFUSE_MASTER`. | :x: |
+| GSP-31 | Player 1 completed a second Defuse through `TurnEngine`. | Read the terminal snapshot. | Returns `DEFUSE_MASTER`. | :white_check_mark: |
 | GSP-32 | Player 1 completed a first Defuse; the game continues. | Read the gameplay snapshot. | Returns `Optional.empty()`. | :x: |

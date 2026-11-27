@@ -835,6 +835,21 @@ public class TurnEngineTests {
         assertSame(first, state.getCurrentPlayer());
     }
 
+    @Test
+    public void GetSnapshot_SecondDefuse_ReportsDefuseMaster() {
+        GameState state = new GameState(List.of(new Player("Player 1"), new Player("Player 2")),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.TACOCAT, CardType.EXPLODING_KITTEN));
+        TurnEngine engine = defuseMasterEngine(state);
+        engine.draw();
+        engine.resolveDefuse(0);
+        engine.draw();
+        engine.draw();
+
+        engine.resolveDefuse(0);
+
+        assertEquals(Optional.of(WinReason.DEFUSE_MASTER), engine.getSnapshot().getWinReason());
+    }
+
     private static Deck deckOf(CardType... types) {
         Deck deck = createEmptyDeck();
         for (CardType type : types) {

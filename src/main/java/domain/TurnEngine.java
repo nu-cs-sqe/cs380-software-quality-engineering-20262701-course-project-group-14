@@ -122,6 +122,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
             pendingAction = null;
             if (defuseCounts.merge(state.getCurrentPlayer(), 1, Integer::sum) >= DEFUSES_TO_WIN) {
                 gameOver = true;
+                winReason = WinReason.DEFUSE_MASTER;
                 remainingTurns = 0;
             } else {
                 finishOneTurn();
