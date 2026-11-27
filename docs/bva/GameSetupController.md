@@ -33,3 +33,22 @@ results are message keys that the view translates.
 | GSC-19 | No ready game exists. | `["Ada"]` | Validation fails with the message key `setup.error.player-count`. | :white_check_mark: |
 | GSC-20 | No ready game exists. | Six distinct names | Validation fails with the message key `setup.error.player-count`. | :white_check_mark: |
 | GSC-21 | No ready game exists. | `null` | Throws `NullPointerException` with `"Player names must not be null."`. | :white_check_mark: |
+
+### Name characters and normalization
+
+Names are normalized to Unicode NFC and runs of whitespace inside a name become
+one space before the length, blank and duplicate checks. Characters the game
+cannot show are rejected: characters outside the Basic Multilingual Plane (for
+example emoji), control characters, invisible format characters (for example
+zero-width spaces), private-use and unassigned code points. The view also
+blocks characters missing from the bundled pixel font while typing.
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GSC-22 | No ready game exists. | `["Ada \t  Lovelace", "Bo"]` | The first player is named `Ada Lovelace`. | :x: |
+| GSC-23 | No ready game exists. | `["é", "é"]` (é composed and decomposed) | Validation fails with the message key `setup.error.name-duplicate`. | :x: |
+| GSC-24 | No ready game exists. | `["Ada😀", "Bo"]` (Ada + emoji) | Validation fails with the message key `setup.error.name-characters`. | :x: |
+| GSC-25 | No ready game exists. | `["A\u0007da", "Bo"]` (control character) | Validation fails with the message key `setup.error.name-characters`. | :x: |
+| GSC-26 | No ready game exists. | `["Ada", "​"]` (zero-width space only) | Validation fails with the message key `setup.error.name-characters`. | :x: |
+| GSC-27 | No ready game exists. | `["一二三四五六七八九十甲乙", "Bo"]` (12 characters) | Returns a ready state keeping all 12 characters. | :x: |
+| GSC-28 | No ready game exists. | `["éééééééééééé", "Bo"]` (12 decomposed é, 24 code units) | Returns a ready state; the name has 12 characters after normalization. | :x: |
