@@ -34,4 +34,12 @@ public class LanguageTests {
 
         assertEquals("Language code must not be null.", exception.getMessage());
     }
+
+    @Test
+    public void Constructor_WithBlankCode_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> new Language("  ", "English"));
+
+        assertEquals("Language code must not be blank.", exception.getMessage());
+    }
 }

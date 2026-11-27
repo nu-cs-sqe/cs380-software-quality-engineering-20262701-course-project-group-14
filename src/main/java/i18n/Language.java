@@ -10,6 +10,9 @@ public final class Language {
 
     public Language(String code, String displayName) {
         this.code = Objects.requireNonNull(code, "Language code must not be null.");
+        if (code.isBlank()) {
+            throw new IllegalArgumentException("Language code must not be blank.");
+        }
         this.displayName = displayName;
         this.locale = Locale.forLanguageTag(code);
     }
