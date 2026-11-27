@@ -78,6 +78,29 @@ public class StartingHandDealerTests {
         assertEquals(2, playerDefuses.size());
     }
 
+    // SHD-06
+    @Test
+    public void Deal_WithDeckOfExactlySevenCardsPerPlayer_DealsEveryCard() {
+        Player player1 = new Player("Player 1");
+        Player player2 = new Player("Player 2");
+        List<Player> players = List.of(player1, player2);
+        Deck deck = new Deck();
+        while (deck.size() > 14) {
+            deck.drawCard();
+        }
+        List<Card> playerDefuses = new ArrayList<>(
+                List.of(new Card(CardType.DEFUSE), new Card(CardType.DEFUSE)));
+
+        new StartingHandDealer().deal(players, deck, playerDefuses);
+
+        assertEquals(8, player1.getHand().size());
+        assertEquals(8, player2.getHand().size());
+        assertEquals(CardType.DEFUSE, player1.getHand().get(7).getType());
+        assertEquals(CardType.DEFUSE, player2.getHand().get(7).getType());
+        assertEquals(0, deck.size());
+        assertTrue(playerDefuses.isEmpty());
+    }
+
     // SHD-04
     @Test
     public void Deal_WithOneReservedDefuseShort_ThrowsAndChangesNothing() {
