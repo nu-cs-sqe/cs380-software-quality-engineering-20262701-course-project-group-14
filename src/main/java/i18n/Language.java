@@ -13,7 +13,7 @@ public final class Language {
         if (code.isBlank()) {
             throw new IllegalArgumentException("Language code must not be blank.");
         }
-        this.displayName = displayName;
+        this.displayName = Objects.requireNonNull(displayName, "Language display name must not be null.");
         this.locale = Locale.forLanguageTag(code);
         if (locale.getLanguage().isEmpty()) {
             throw new IllegalArgumentException("Language code must be a language tag: " + code);

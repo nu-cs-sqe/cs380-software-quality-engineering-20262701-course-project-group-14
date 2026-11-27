@@ -50,4 +50,12 @@ public class LanguageTests {
 
         assertEquals("Language code must be a language tag: not a tag", exception.getMessage());
     }
+
+    @Test
+    public void Constructor_WithNullDisplayName_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> new Language("en", null));
+
+        assertEquals("Language display name must not be null.", exception.getMessage());
+    }
 }
