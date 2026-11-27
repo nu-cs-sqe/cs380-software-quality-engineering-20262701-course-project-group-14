@@ -17,7 +17,7 @@ Adding a language means adding its code and name here and a
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | LC-01 | No catalog exists. | `languages=en,zh-CN`, `default=en`, both names | Lists `en` then `zh-CN` with their names, in configuration order; the default is `en`. | :white_check_mark: |
-| LC-02 | No catalog exists. | Same list, `default=zh-CN` | The default is `zh-CN`. | :x: |
+| LC-02 | No catalog exists. | Same list, `default=zh-CN` | The default is `zh-CN`. | :white_check_mark: |
 | LC-03 | No catalog exists. | `languages=" en , zh-CN "` | Codes are trimmed: `en`, `zh-CN`. | :x: |
 | LC-04 | No catalog exists. | No `languages` entry | Throws `IllegalArgumentException` with `"Language list must not be empty."`. | :x: |
 | LC-05 | No catalog exists. | `languages=` (blank) | Throws `IllegalArgumentException` with `"Language list must not be empty."`. | :x: |

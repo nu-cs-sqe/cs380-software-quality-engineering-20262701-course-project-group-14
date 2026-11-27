@@ -20,6 +20,14 @@ public class LanguageCatalogTests {
         assertEquals("en", catalog.getDefaultLanguage().getCode());
     }
 
+    @Test
+    public void FromProperties_WithChineseDefault_UsesChineseAsDefault() {
+        LanguageCatalog catalog = LanguageCatalog.fromProperties(
+                config("en,zh-CN", "zh-CN", "en", "English", "zh-CN", "简体中文"));
+
+        assertEquals("zh-CN", catalog.getDefaultLanguage().getCode());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
