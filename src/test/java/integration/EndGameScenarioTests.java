@@ -30,6 +30,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EndGameScenarioTests {
     // TESTS
     @Test
+    void InvalidDefusePosition_KeepsDefusePending_ThenValidPositionContinuesGame() {
+        Player first = player("Ada", CardType.DEFUSE, CardType.SKIP);
+        Player second = player("Bo");
+        GameState state = new GameState(List.of(first, second),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.TACOCAT));
+        TurnEngine engine = engine(state, new DiscardPile());
+        engine.draw();
+
+        assertEquals(DefuseResult.INVALID_POSITION, engine.resolveDefuse(3));
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
+        assertTrue(first.hasCard(CardType.DEFUSE));
+        assertEquals(DefuseResult.DEFUSED, engine.resolveDefuse(1));
+
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertEquals(second, state.getCurrentPlayer());
+        assertEquals(2, state.getDeck().size());
+        assertEquals(Optional.empty(), engine.getSnapshot().getWinReason());
+    }
+
+    @Test
     void TwoPlayers_DefusedKittenPutOnTop_OpponentExplodes() {
         Player first = player("Ada", CardType.DEFUSE);
         Player second = player("Bo", CardType.SKIP);
