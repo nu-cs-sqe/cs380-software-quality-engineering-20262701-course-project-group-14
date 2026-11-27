@@ -9,10 +9,7 @@ import domain.TurnPhase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -892,7 +889,6 @@ public final class GamePlayView extends StackPane
         // 2. Top tabletop strip aligned over the inlaid velvet mat
         double feltW = TavernBackground.feltWidth(w, compact);
         double leftEdge = TavernBackground.feltLeft(w, feltW);
-        double rightEdge = leftEdge + feltW;
 
         seatRow.resizeRelocate(leftEdge, 112, feltW, 46);
 
