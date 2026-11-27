@@ -17,6 +17,19 @@ public class GameSetupController {
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
         validatePlayerCount(playerCount);
+        return setUp(createPlayers(playerCount));
+    }
+
+    public GameState startNamedGame(List<String> playerNames) {
+        List<Player> players = new ArrayList<>();
+        for (String name : playerNames) {
+            players.add(new Player(name));
+        }
+        return setUp(players);
+    }
+
+    private GameState setUp(List<Player> players) {
+        int playerCount = players.size();
         Deck deck = new Deck();
 
         List<Card> explodingKittens = deck.removeCards(
@@ -27,8 +40,6 @@ public class GameSetupController {
                 CardType.DEFUSE,
                 TOTAL_DEFUSES
         );
-
-        List<Player> players = createPlayers(playerCount);
 
         List<Card> playerDefuses = new ArrayList<>(
                 defuses.subList(0, playerCount)

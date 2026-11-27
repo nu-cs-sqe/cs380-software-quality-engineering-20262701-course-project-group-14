@@ -24,7 +24,7 @@ results are message keys that the view translates.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| GSC-13 | No ready game exists. | `["Ada", "Bo"]` | Returns a ready state whose players are named `Ada` and `Bo` in seat order. | :x: |
+| GSC-13 | No ready game exists. | `["Ada", "Bo"]` | Returns a ready state whose players are named `Ada` and `Bo` in seat order. | :white_check_mark: |
 | GSC-14 | No ready game exists. | `["  Ada ", "Bo"]` | Surrounding whitespace is removed: the first player is named `Ada`. | :x: |
 | GSC-15 | No ready game exists. | Five names of exactly 12 characters | Returns a ready state with 5 players keeping all 12 characters of each name. | :x: |
 | GSC-16 | No ready game exists. | `["Ada", "ABCDEFGHIJKLM"]` (13 characters) | Validation fails with the message key `setup.error.name-length`. | :x: |

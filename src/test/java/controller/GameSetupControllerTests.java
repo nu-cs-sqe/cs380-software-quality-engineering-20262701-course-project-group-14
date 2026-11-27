@@ -3,6 +3,7 @@ package controller;
 import domain.CardType;
 import domain.GameState;
 import domain.Player;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -186,6 +187,17 @@ public class GameSetupControllerTests {
 
         assertEquals("setup.error.player-count", exception.getMessage());
     }
+    @Test
+    public void StartNamedGame_WithTwoNames_NamesPlayersInSeatOrder() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("Ada", "Bo"));
+
+        assertEquals("Ada", gameState.getPlayers().get(0).getName());
+        assertEquals("Bo", gameState.getPlayers().get(1).getName());
+        assertEquals(8, gameState.getPlayers().get(1).getHand().size());
+    }
+
     @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
