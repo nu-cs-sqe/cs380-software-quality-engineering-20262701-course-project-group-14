@@ -15,4 +15,14 @@ public class LanguageTests {
         assertEquals("en", language.getLocale().getLanguage());
         assertEquals("", language.getLocale().getCountry());
     }
+
+    @Test
+    public void Constructor_WithChineseTag_KeepsCodeNameAndLocale() {
+        Language language = new Language("zh-CN", "简体中文");
+
+        assertEquals("zh-CN", language.getCode());
+        assertEquals("简体中文", language.getDisplayName());
+        assertEquals("zh", language.getLocale().getLanguage());
+        assertEquals("CN", language.getLocale().getCountry());
+    }
 }
