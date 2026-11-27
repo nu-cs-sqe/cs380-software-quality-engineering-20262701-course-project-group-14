@@ -3,6 +3,7 @@ package i18n;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MessagesTests {
     private static final String TEST_BUNDLE = "i18n.test-messages";
@@ -41,6 +42,14 @@ public class MessagesTests {
     @Test
     public void Text_WithoutArguments_KeepsApostrophe() {
         assertEquals("Don't stop", english().text("apostrophe"));
+    }
+
+    @Test
+    public void Text_WithNullKey_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> english().text(null));
+
+        assertEquals("Message key must not be null.", exception.getMessage());
     }
 
     private static Messages english() {

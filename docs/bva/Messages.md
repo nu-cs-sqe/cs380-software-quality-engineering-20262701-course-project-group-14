@@ -17,7 +17,7 @@ Test bundles live in `src/test/resources/i18n/test-messages*.properties`.
 | MS-04 | English messages; no bundle has `missing`. | `"missing"` | Returns the key `missing`. | :white_check_mark: |
 | MS-05 | English messages; `cards={0,choice,0#no cards\|1#1 card\|1<{0} cards}`. | `"cards"`, `1` and `3` | Returns `1 card` and `3 cards`. | :white_check_mark: |
 | MS-06 | English messages; `apostrophe=Don't stop`. | `"apostrophe"` with no arguments | Returns `Don't stop` unchanged. | :white_check_mark: |
-| MS-07 | Any messages. | `key = null` | Throws `NullPointerException` with `"Message key must not be null."`. | :x: |
+| MS-07 | Any messages. | `key = null` | Throws `NullPointerException` with `"Message key must not be null."`. | :white_check_mark: |
 
 ## Method under test: `forLanguage(Language)` / `forLanguage(String bundle, Language)`
 

@@ -1,6 +1,7 @@
 package i18n;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public final class Messages {
@@ -26,6 +27,7 @@ public final class Messages {
     }
 
     public String text(String key, Object... arguments) {
+        Objects.requireNonNull(key, "Message key must not be null.");
         if (!bundle.containsKey(key)) {
             return key;
         }
