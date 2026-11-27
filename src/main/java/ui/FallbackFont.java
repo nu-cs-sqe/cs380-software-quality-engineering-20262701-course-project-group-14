@@ -42,6 +42,27 @@ final class FallbackFont {
         return font;
     }
 
+    private static java.awt.Font glyphs;
+
+    /** Whether a player name may contain this character: the bundled font has a glyph for it. */
+    static synchronized boolean canDisplay(int codePoint) {
+        if (glyphs == null) {
+            glyphs = loadGlyphs();
+        }
+        return glyphs.canDisplay(codePoint);
+    }
+
+    private static java.awt.Font loadGlyphs() {
+        try (InputStream input = FallbackFont.class.getResourceAsStream(RESOURCE)) {
+            if (input == null) {
+                throw new IllegalStateException("Missing font: " + RESOURCE);
+            }
+            return java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, input);
+        } catch (IOException | java.awt.FontFormatException exception) {
+            throw new IllegalStateException("Unreadable font: " + RESOURCE, exception);
+        }
+    }
+
     static String family() {
         return font().getFamily();
     }
