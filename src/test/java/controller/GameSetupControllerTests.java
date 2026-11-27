@@ -208,6 +208,21 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithFiveNamesOfMaximumLength_KeepsEveryName() {
+        GameSetupController controller = new GameSetupController();
+
+        List<String> names = List.of("AAAAAAAAAAAA", "BBBBBBBBBBBB", "CCCCCCCCCCCC",
+                "DDDDDDDDDDDD", "EEEEEEEEEEEE");
+
+        GameState gameState = controller.startNamedGame(names);
+
+        assertEquals(5, gameState.getPlayers().size());
+        for (int seat = 0; seat < 5; seat++) {
+            assertEquals(names.get(seat), gameState.getPlayers().get(seat).getName());
+        }
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 
