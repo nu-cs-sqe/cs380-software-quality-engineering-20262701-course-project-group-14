@@ -111,7 +111,11 @@ final class PixelArt {
      * Bitmap-font text. Rows above {@code split} use {@code top}, the others {@code bottom}.
      * A non-zero {@code shadow} adds a one-pixel extruded drop shadow.
      */
-    static WritableImage textImage(String s, int scale, int top, int bottom, int split, int shadow) {
+    static WritableImage textImage(String text, int scale, int top, int bottom, int split, int shadow) {
+        String s = text.toUpperCase(Locale.ROOT);
+        if (needsFallback(text)) {
+            return fallbackText(text, scale, top, bottom, split, shadow);
+        }
         int extra = shadow != 0 ? scale : 0;
         Buffer b = new Buffer(textWidth(s, scale) + extra, 7 * scale + extra);
         if (shadow != 0) {
@@ -123,11 +127,45 @@ final class PixelArt {
         return b.toImage();
     }
 
+    /** True for non-blank text that contains characters missing from the bitmap font. */
+    static boolean needsFallback(String text) {
+        return text != null && !text.isBlank() && !canRender(text.toUpperCase(Locale.ROOT));
+    }
+
+    private static WritableImage fallbackText(String text, int scale, int top, int bottom, int split, int shadow) {
+        int k = FallbackFont.factor(scale);
+        boolean[][] mask = FallbackFont.mask(text);
+        int extra = shadow != 0 ? k : 0;
+        Buffer b = new Buffer(mask[0].length * k + extra, mask.length * k + extra);
+        int splitRow = Math.round(mask.length * split / 7f);
+        if (shadow != 0) {
+            paintMask(b, mask, extra, extra, k, shadow, shadow, splitRow);
+            paintMask(b, mask, 0, extra, k, shadow, shadow, splitRow);
+            paintMask(b, mask, extra, 0, k, shadow, shadow, splitRow);
+        }
+        paintMask(b, mask, 0, 0, k, top, bottom, splitRow);
+        return b.toImage();
+    }
+
+    private static void paintMask(Buffer b, boolean[][] mask, int x, int y, int k,
+                                  int top, int bottom, int splitRow) {
+        for (int row = 0; row < mask.length; row++) {
+            for (int column = 0; column < mask[row].length; column++) {
+                if (mask[row][column]) {
+                    b.rect(x + column * k, y + row * k, k, k, row < splitRow ? top : bottom);
+                }
+            }
+        }
+    }
+
     static ImageView textView(String s, int scale, int color) {
         return view(textImage(s, scale, color, color, 7, 0));
     }
 
     static int textWidth(String s, int scale) {
+        if (needsFallback(s)) {
+            return FallbackFont.width(s, FallbackFont.factor(scale));
+        }
         return Math.max(1, s.length() * 6 - 1) * scale;
     }
 
@@ -147,6 +185,9 @@ final class PixelArt {
 
     /** Word-wrapped bitmap-font paragraph (upper case). Lines are at most {@code maxWidth} pixels wide. */
     static WritableImage paragraph(String text, int scale, int color, int maxWidth) {
+        if (needsFallback(text)) {
+            return fallbackParagraph(text, scale, color, maxWidth);
+        }
         String upper = text.toUpperCase(Locale.ROOT);
         int maxChars = Math.max(1, (int) ((maxWidth / (double) scale + 1) / 6));
         List<String> lines = wrapWords(upper, maxChars);
@@ -162,6 +203,68 @@ final class PixelArt {
             b.text(lines.get(i), 0, i * (lineHeight + gap), scale, color, color, 7);
         }
         return b.toImage();
+    }
+
+    /** Wraps between characters of scripts without spaces and between words elsewhere. */
+    private static WritableImage fallbackParagraph(String text, int scale, int color, int maxWidth) {
+        int k = FallbackFont.factor(scale);
+        List<String> lines = new ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (String token : fallbackTokens(text.trim())) {
+            String candidate = line + token;
+            if (line.length() > 0 && FallbackFont.width(candidate.trim(), k) > maxWidth) {
+                lines.add(line.toString().trim());
+                line.setLength(0);
+                line.append(token.trim().isEmpty() ? "" : token.replaceAll("^\\s+", ""));
+            } else {
+                line.append(token);
+            }
+        }
+        if (line.toString().trim().length() > 0 || lines.isEmpty()) {
+            lines.add(line.toString().trim());
+        }
+        int gap = 2 * k;
+        int width = 1;
+        int lineHeight = FallbackFont.mask(lines.get(0).isEmpty() ? " " : lines.get(0)).length * k;
+        for (String l : lines) {
+            width = Math.max(width, l.isEmpty() ? 1 : FallbackFont.width(l, k));
+        }
+        Buffer b = new Buffer(width, lines.size() * lineHeight + (lines.size() - 1) * gap);
+        for (int i = 0; i < lines.size(); i++) {
+            if (!lines.get(i).isEmpty()) {
+                paintMask(b, FallbackFont.mask(lines.get(i)), 0, i * (lineHeight + gap), k, color, color, 0);
+            }
+        }
+        return b.toImage();
+    }
+
+    /** Each CJK character is its own token; runs of other characters stay together with their spaces. */
+    private static List<String> fallbackTokens(String text) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder word = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            boolean wide = Character.UnicodeScript.of(c) == Character.UnicodeScript.HAN
+                    || Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                    || Character.UnicodeBlock.of(c) == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
+            if (wide || c == ' ') {
+                if (word.length() > 0) {
+                    tokens.add(word.toString());
+                    word.setLength(0);
+                }
+                if (wide) {
+                    tokens.add(String.valueOf(c));
+                } else {
+                    word.append(c);
+                }
+            } else {
+                word.append(c);
+            }
+        }
+        if (word.length() > 0) {
+            tokens.add(word.toString());
+        }
+        return tokens;
     }
 
     static ImageView paragraphView(String text, int scale, int color, int maxWidth) {
