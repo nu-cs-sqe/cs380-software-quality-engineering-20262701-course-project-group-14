@@ -178,6 +178,9 @@ public final class GamePlayView extends StackPane
     private VBox victoryPanel;
     private final StackPane victoryNameHolder = new StackPane();
     private final StackPane victoryTitleHolder = new StackPane();
+    private final ImageView victoryCat = PixelArt.view(CatAvatar.image(0, 5));
+    private List<Integer> avatars = List.of();
+    private final ImageView bannerFace = PixelArt.view(CatAvatar.image(0, 2));
     private final StackPane victoryStatsHolder = new StackPane();
     private final VBox victoryChronicle = new VBox(4);
     private final Pane confettiLayer = new Pane();
@@ -377,6 +380,7 @@ public final class GamePlayView extends StackPane
         aliveCount = snapshot.getAlivePlayerCount();
         seats = snapshot.getPlayers();
         currentSeat = snapshot.getCurrentPlayerIndex();
+        bannerFace.setImage(CatAvatar.image(avatarOf(currentSeat), 2));
         remainingTurns = snapshot.getRemainingTurns();
         hand = List.copyOf(snapshot.getCurrentPlayerHand());
         boolean wasDanger = danger;
@@ -550,8 +554,7 @@ public final class GamePlayView extends StackPane
         banner.setAlignment(Pos.CENTER_LEFT);
         banner.setPadding(new Insets(10, 14, 10, 14));
 
-        StackPane avatarSlot = new StackPane(PixelArt.view(PixelArt.sprite(
-                PixelData.HEAD_OPEN, 2, PixelArt.TAVERN_PALETTE)));
+        StackPane avatarSlot = new StackPane(bannerFace);
         avatarSlot.getStyleClass().add("avatar-slot");
         fixSize(avatarSlot, 58, 58);
 
@@ -1188,13 +1191,12 @@ public final class GamePlayView extends StackPane
         }
         double feltW = TavernBackground.feltWidth(getWidth() > 0 ? getWidth() : 900, compact);
         double plaqueW = Math.min(170, (feltW - seatRow.getSpacing() * (seats.size() - 1)) / seats.size());
-        WritableImage head = PixelArt.sprite(PixelData.HEAD_OPEN, 1, PixelArt.TAVERN_PALETTE);
         WritableImage ghost = PixelArt.mono(PixelData.HEAD_OPEN, 1, 0xFF5A4636);
         for (PlayerSummary seat : seats) {
             boolean current = seat.getPlayerIndex() == currentSeat && !seat.isEliminated();
             boolean winner = current && turnActionsDisabled;
             boolean out = seat.isEliminated();
-            ImageView face = PixelArt.view(out ? ghost : head);
+            ImageView face = PixelArt.view(out ? ghost : CatAvatar.image(avatarOf(seat.getPlayerIndex()), 1));
             int nameColor = out ? DIM_TEXT : current ? GameTheme.BRASS_BRIGHT : GameTheme.CREAM;
             double textW = plaqueW - 22 - 30;
             Node name = seatName(seat.getName(), textW, nameColor);
@@ -1227,6 +1229,17 @@ public final class GamePlayView extends StackPane
                 seatRow.getChildren().add(plaque);
             }
         }
+    }
+
+    /** Sets the cat face chosen for each seat; seats without a choice show the default coat. */
+    public void setAvatars(List<Integer> seatAvatars) {
+        avatars = List.copyOf(seatAvatars);
+        bannerFace.setImage(CatAvatar.image(avatarOf(currentSeat), 2));
+        updateSeats();
+    }
+
+    private int avatarOf(int seat) {
+        return seat >= 0 && seat < avatars.size() ? avatars.get(seat) : 0;
     }
 
     private Node turnTag(String key) {
@@ -1274,8 +1287,7 @@ public final class GamePlayView extends StackPane
         ImageView seal = PixelArt.textView(
                 Texts.get("victory.seal"), 2, GameTheme.BRASS);
         ImageView crown = PixelArt.view(PixelArt.sprite(PixelData.CROWN, 4, PixelArt.TAVERN_PALETTE));
-        ImageView cat = PixelArt.view(PixelArt.sprite(PixelData.HEAD_OPEN, 5, PixelArt.TAVERN_PALETTE));
-        VBox crowned = new VBox(-2, crown, cat);
+        VBox crowned = new VBox(-2, crown, victoryCat);
         crowned.setAlignment(Pos.CENTER);
         Region rule = new Region();
         rule.getStyleClass().add("victory-rule");
@@ -1299,6 +1311,7 @@ public final class GamePlayView extends StackPane
 
     private void showVictory() {
         String winner = playerName;
+        victoryCat.setImage(CatAvatar.image(avatarOf(currentSeat), 5));
         String titleKey = winReason == WinReason.DEFUSE_MASTER
                 ? "victory.title.defuse-master" : "victory.title";
         victoryTitleHolder.getChildren().setAll(

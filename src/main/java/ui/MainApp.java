@@ -5,8 +5,10 @@ import controller.GamePlayViewPort;
 import controller.GameSetupController;
 import domain.GameState;
 import domain.TurnEngineFactory;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -26,9 +28,14 @@ public final class MainApp extends Application {
     }
 
     private static void configureSetup(Scene scene, GameSetupView view) {
-        view.setOnStart(() -> startGame(
+        view.setOnStart(() -> checkPlayerCount(
                 view.getPlayerCountInput(),
-                state -> showGameplay(scene, state),
+                view::showNameEntry,
+                view::showMessage
+        ));
+        view.setOnBegin(() -> startNamedGame(
+                view.getPlayerNames(),
+                state -> showGameplay(scene, state, view.getAvatars()),
                 view::showMessage
         ));
 
@@ -41,7 +48,12 @@ public final class MainApp extends Application {
     }
 
     static void showGameplay(Scene scene, GameState state) {
+        showGameplay(scene, state, List.of());
+    }
+
+    static void showGameplay(Scene scene, GameState state, List<Integer> avatars) {
         GamePlayView gameplay = new GamePlayView();
+        gameplay.setAvatars(avatars);
         bindGameplayNavigation(scene, createController(state, gameplay));
         scene.setRoot(gameplay);
     }
@@ -61,6 +73,23 @@ public final class MainApp extends Application {
             scene.setRoot(setup);
         });
         controller.initialize();
+    }
+
+    static void checkPlayerCount(String playerCountText, IntConsumer showNameStep,
+                                 Consumer<String> showError) {
+        startGame(playerCountText, state -> showNameStep.accept(state.getPlayers().size()), showError);
+    }
+
+    static void startNamedGame(List<String> playerNames, Consumer<GameState> openGameplay,
+                               Consumer<String> showError) {
+        GameState state;
+        try {
+            state = new GameSetupController().startNamedGame(playerNames);
+        } catch (IllegalArgumentException exception) {
+            showError.accept(Texts.get(exception.getMessage()));
+            return;
+        }
+        openGameplay.accept(state);
     }
 
     static void startGame(

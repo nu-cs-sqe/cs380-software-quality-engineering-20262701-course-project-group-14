@@ -3,6 +3,8 @@ package controller;
 import domain.CardType;
 import domain.GameState;
 import domain.Player;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -186,6 +188,178 @@ public class GameSetupControllerTests {
 
         assertEquals("setup.error.player-count", exception.getMessage());
     }
+    @Test
+    public void StartNamedGame_WithTwoNames_NamesPlayersInSeatOrder() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("Ada", "Bo"));
+
+        assertEquals("Ada", gameState.getPlayers().get(0).getName());
+        assertEquals("Bo", gameState.getPlayers().get(1).getName());
+        assertEquals(8, gameState.getPlayers().get(1).getHand().size());
+    }
+
+    @Test
+    public void StartNamedGame_WithSurroundingWhitespace_TrimsName() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("  Ada ", "Bo"));
+
+        assertEquals("Ada", gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
+    public void StartNamedGame_WithFiveNamesOfMaximumLength_KeepsEveryName() {
+        GameSetupController controller = new GameSetupController();
+
+        List<String> names = List.of("AAAAAAAAAAAA", "BBBBBBBBBBBB", "CCCCCCCCCCCC",
+                "DDDDDDDDDDDD", "EEEEEEEEEEEE");
+
+        GameState gameState = controller.startNamedGame(names);
+
+        assertEquals(5, gameState.getPlayers().size());
+        for (int seat = 0; seat < 5; seat++) {
+            assertEquals(names.get(seat), gameState.getPlayers().get(seat).getName());
+        }
+    }
+
+    @Test
+    public void StartNamedGame_WithThirteenCharacterName_ThrowsNameLengthKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada", "ABCDEFGHIJKLM")));
+
+        assertEquals("setup.error.name-length", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithNamesDifferingOnlyInCase_ThrowsDuplicateKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada", "ada")));
+
+        assertEquals("setup.error.name-duplicate", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithBlankName_ThrowsNameBlankKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada", "   ")));
+
+        assertEquals("setup.error.name-blank", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithOneName_ThrowsPlayerCountKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada")));
+
+        assertEquals("setup.error.player-count", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithSixNames_ThrowsPlayerCountKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("A", "B", "C", "D", "E", "F")));
+
+        assertEquals("setup.error.player-count", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithNullList_ThrowsNullPointerException() {
+        GameSetupController controller = new GameSetupController();
+
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> controller.startNamedGame(null));
+
+        assertEquals("Player names must not be null.", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithWhitespaceRunInside_CollapsesToOneSpace() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("Ada \t  Lovelace", "Bo"));
+
+        assertEquals("Ada Lovelace", gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
+    public void StartNamedGame_WithComposedAndDecomposedAccent_ThrowsDuplicateKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("\u00e9", "e\u0301")));
+
+        assertEquals("setup.error.name-duplicate", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithEmoji_ThrowsNameCharactersKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada\uD83D\uDE00", "Bo")));
+
+        assertEquals("setup.error.name-characters", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithControlCharacter_ThrowsNameCharactersKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("A\u0007da", "Bo")));
+
+        assertEquals("setup.error.name-characters", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithZeroWidthSpaceOnly_ThrowsNameCharactersKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada", "\u200B")));
+
+        assertEquals("setup.error.name-characters", exception.getMessage());
+    }
+
+    @Test
+    public void StartNamedGame_WithTwelveChineseCharacters_KeepsName() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("一二三四五六七八九十甲乙", "Bo"));
+
+        assertEquals("一二三四五六七八九十甲乙", gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
+    public void StartNamedGame_WithTwelveDecomposedAccents_CountsTwelveCharacters() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("e\u0301".repeat(12), "Bo"));
+
+        assertEquals("\u00e9".repeat(12), gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
+    public void StartNamedGame_WithNullName_ThrowsNullPointerException() {
+        GameSetupController controller = new GameSetupController();
+
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> controller.startNamedGame(Arrays.asList("Ada", null)));
+
+        assertEquals("Player name must not be null.", exception.getMessage());
+    }
+
     @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();

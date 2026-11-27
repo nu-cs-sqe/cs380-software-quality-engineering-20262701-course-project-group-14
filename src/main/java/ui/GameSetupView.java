@@ -17,6 +17,7 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
@@ -27,10 +28,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class GameSetupView extends StackPane {
 
     private static final int CARD_WIDTH = 360;
+    private static final int NAME_LIMIT = 12;
 
     private final ComboBox<Language> languageBox = new ComboBox<>();
     private final ImageView languageLabel = new ImageView();
@@ -40,6 +44,17 @@ public final class GameSetupView extends StackPane {
     private final TextField playerCountInput = new TextField();
     private final Button startGameButton = new Button();
     private final Label messageLabel = new Label();
+    private final ImageView namesTitle = new ImageView();
+    private final ImageView namesHint = new ImageView();
+    private final VBox nameRows = new VBox(6);
+    private final Button backButton = new Button();
+    private final Button beginButton = new Button();
+    private final List<TextField> nameFields = new ArrayList<>();
+    private final List<Integer> chosenAvatars = new ArrayList<>();
+    private final List<Button> avatarButtons = new ArrayList<>();
+    private VBox setupCard;
+    private List<Node> countStep;
+    private List<Node> nameStep;
     private final StackPane cardWrap;
     private Timeline shake;
     private boolean introPlayed;
@@ -88,14 +103,10 @@ public final class GameSetupView extends StackPane {
         messageLabel.setWrapText(true);
         messageLabel.setMaxWidth(Double.MAX_VALUE);
 
-        VBox setupCard = new VBox(
-                16,
-                languageRow,
-                instruction,
-                playerCountInput,
-                startGameButton,
-                messageLabel
-        );
+        countStep = List.of(languageRow, instruction, playerCountInput, startGameButton, messageLabel);
+        setupCard = new VBox(16);
+        setupCard.getChildren().setAll(countStep);
+        nameStep = List.of(namesTitle, namesHint, nameRows, buildNameButtons(), messageLabel);
         setupCard.setPadding(new Insets(30, 30, 26, 30));
         setupCard.getStyleClass().add("setup-card");
 
@@ -139,6 +150,152 @@ public final class GameSetupView extends StackPane {
         applyTexts();
     }
 
+    private HBox buildNameButtons() {
+        for (Button button : List.of(backButton, beginButton)) {
+            button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            button.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(button, Priority.ALWAYS);
+        }
+        backButton.getStyleClass().add("back-button");
+        backButton.setCancelButton(true);
+        backButton.setOnAction(event -> showCountStep());
+        HBox row = new HBox(12, backButton, beginButton);
+        row.setAlignment(Pos.CENTER);
+        return row;
+    }
+
+    /** Second setup step: one row per player with a cat face to choose and a name to enter. */
+    public void showNameEntry(int playerCount) {
+        nameFields.clear();
+        chosenAvatars.clear();
+        avatarButtons.clear();
+        nameRows.getChildren().clear();
+        for (int seat = 0; seat < playerCount; seat++) {
+            chosenAvatars.add(CatAvatar.normalize(seat));
+            Button avatar = new Button();
+            avatar.getStyleClass().add("avatar-button");
+            int index = seat;
+            avatar.setOnAction(event -> {
+                chosenAvatars.set(index, CatAvatar.normalize(chosenAvatars.get(index) + 1));
+                showAvatar(index);
+            });
+            avatarButtons.add(avatar);
+            TextField field = new TextField();
+            field.getStyleClass().add("name-field");
+            field.setTextFormatter(new TextFormatter<String>(this::filterName));
+            field.setOnAction(event -> beginButton.fire());
+            HBox.setHgrow(field, Priority.ALWAYS);
+            nameFields.add(field);
+            HBox row = new HBox(10, avatar, field);
+            row.setAlignment(Pos.CENTER_LEFT);
+            nameRows.getChildren().add(row);
+        }
+        applyNameTexts();
+        messageLabel.setText("");
+        setupCard.setSpacing(10);
+        setupCard.getChildren().setAll(nameStep);
+        startGameButton.setDefaultButton(false);
+        beginButton.setDefaultButton(true);
+        if (!nameFields.isEmpty()) {
+            nameFields.get(0).requestFocus();
+        }
+    }
+
+    private void showCountStep() {
+        messageLabel.setText("");
+        setupCard.setSpacing(16);
+        setupCard.getChildren().setAll(countStep);
+        beginButton.setDefaultButton(false);
+        startGameButton.setDefaultButton(true);
+        playerCountInput.requestFocus();
+    }
+
+    private void showAvatar(int seat) {
+        Button button = avatarButtons.get(seat);
+        int avatar = chosenAvatars.get(seat);
+        button.setGraphic(PixelArt.view(CatAvatar.image(avatar, 2)));
+        button.setAccessibleText(Texts.get("setup.names.avatar", seat + 1, Texts.get(CatAvatar.nameKey(avatar))));
+    }
+
+    private void applyNameTexts() {
+        int labelScale = PixelArt.needsFallback(Texts.get("setup.names.title")) ? 3 : 2;
+        namesTitle.setImage(PixelArt.textImage(
+                Texts.get("setup.names.title"), labelScale, PixelArt.CREAM, PixelArt.CREAM, 7, 0));
+        namesHint.setImage(PixelArt.textImage(
+                Texts.get("setup.names.hint"), 1, PixelArt.LILAC, PixelArt.LILAC, 7, 0));
+        for (int seat = 0; seat < nameFields.size(); seat++) {
+            nameFields.get(seat).setPromptText(defaultName(seat));
+            nameFields.get(seat).setAccessibleText(Texts.get("setup.names.field", seat + 1));
+            showAvatar(seat);
+        }
+        backButton.setGraphic(PixelArt.view(PixelArt.textImage(
+                Texts.get("setup.names.back"), labelScale, PixelArt.INK, PixelArt.INK, 7, 0)));
+        backButton.setAccessibleText(Texts.get("setup.names.back"));
+        beginButton.setGraphic(PixelArt.view(PixelArt.textImage(
+                Texts.get("setup.names.begin"), labelScale, PixelArt.INK, PixelArt.INK, 7, 0)));
+        beginButton.setAccessibleText(Texts.get("setup.names.begin"));
+    }
+
+    /**
+     * Keeps a name field to what the game can draw: characters missing from the pixel fonts
+     * (emoji, rare characters, control and invisible characters) are dropped with a hint, line
+     * breaks and tabs become spaces, and pasted text is cut to the name limit.
+     */
+    private TextFormatter.Change filterName(TextFormatter.Change change) {
+        if (!change.isContentChange()) {
+            return change;
+        }
+        String typed = change.getText().replaceAll("[\\r\\n\\t]", " ");
+        StringBuilder kept = new StringBuilder();
+        typed.codePoints()
+                .filter(GameSetupView::isDrawable)
+                .forEach(kept::appendCodePoint);
+        boolean dropped = kept.length() < typed.length();
+        int unchanged = change.getControlText().length() - (change.getRangeEnd() - change.getRangeStart());
+        int room = Math.max(0, NAME_LIMIT - unchanged);
+        if (kept.length() > room) {
+            kept.setLength(room);
+        }
+        change.setText(kept.toString());
+        int caret = change.getRangeStart() + kept.length();
+        change.setCaretPosition(caret);
+        change.setAnchor(caret);
+        if (dropped) {
+            showMessage(Texts.get("setup.error.name-characters"));
+        }
+        return change;
+    }
+
+    private static boolean isDrawable(int codePoint) {
+        return Character.isBmpCodePoint(codePoint)
+                && !Character.isISOControl(codePoint)
+                && Character.getType(codePoint) != Character.FORMAT
+                && FallbackFont.canDisplay(codePoint);
+    }
+
+    private static String defaultName(int seat) {
+        return Texts.get("setup.names.default", seat + 1);
+    }
+
+    /** Entered names in seat order; an empty field means the seat's default name. */
+    public List<String> getPlayerNames() {
+        List<String> names = new ArrayList<>();
+        for (int seat = 0; seat < nameFields.size(); seat++) {
+            String text = nameFields.get(seat).getText();
+            names.add(text == null || text.isBlank() ? defaultName(seat) : text);
+        }
+        return names;
+    }
+
+    /** The chosen cat face for each seat, in seat order. */
+    public List<Integer> getAvatars() {
+        return List.copyOf(chosenAvatars);
+    }
+
+    public void setOnBegin(Runnable action) {
+        beginButton.setOnAction(event -> action.run());
+    }
+
     /** The language menu; the whole game uses the language chosen here. */
     private HBox buildLanguageRow() {
         languageBox.getItems().setAll(Texts.languages());
@@ -178,6 +335,7 @@ public final class GameSetupView extends StackPane {
         startGameButton.setAccessibleText(Texts.get("setup.start.accessible"));
         languageBox.setAccessibleText(Texts.get("setup.language"));
         messageLabel.setText("");
+        applyNameTexts();
         if (getScene() != null && getScene().getWindow() instanceof Stage) {
             ((Stage) getScene().getWindow()).setTitle(Texts.get("window.title"));
         }

@@ -2,8 +2,13 @@ package controller;
 
 import domain.*;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
 
 public class GameSetupController {
     private static final int MINIMUM_PLAYER_COUNT = 2;
@@ -13,10 +18,56 @@ public class GameSetupController {
     private static final int EXTRA_DEFUSES_FOR_SMALL_GAME = 2;
     /** Message key; the view shows the text in the player's language. */
     private static final String PLAYER_COUNT_ERROR_MESSAGE = "setup.error.player-count";
+    private static final int MAXIMUM_NAME_LENGTH = 12;
+    private static final String NAME_LENGTH_ERROR_MESSAGE = "setup.error.name-length";
+    private static final String NAME_DUPLICATE_ERROR_MESSAGE = "setup.error.name-duplicate";
+    private static final String NAME_BLANK_ERROR_MESSAGE = "setup.error.name-blank";
+    private static final String NAME_CHARACTERS_ERROR_MESSAGE = "setup.error.name-characters";
+    /** Character types that cannot be shown: invisible formatting, private use, unassigned. */
+    private static final Set<Integer> HIDDEN_CHARACTER_TYPES = Set.of(
+            (int) Character.FORMAT, (int) Character.PRIVATE_USE,
+            (int) Character.UNASSIGNED, (int) Character.SURROGATE);
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
         validatePlayerCount(playerCount);
+        return setUp(createPlayers(playerCount));
+    }
+
+    public GameState startNamedGame(List<String> playerNames) {
+        Objects.requireNonNull(playerNames, "Player names must not be null.");
+        validatePlayerCount(playerNames.size());
+        List<Player> players = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        for (String name : playerNames) {
+            Objects.requireNonNull(name, "Player name must not be null.");
+            String collapsed = Normalizer.normalize(name, Normalizer.Form.NFC).replaceAll("\\s+", " ");
+            if (!collapsed.codePoints().allMatch(GameSetupController::isDisplayable)) {
+                throw new IllegalArgumentException(NAME_CHARACTERS_ERROR_MESSAGE);
+            }
+            String trimmed = collapsed.trim();
+            if (trimmed.isEmpty()) {
+                throw new IllegalArgumentException(NAME_BLANK_ERROR_MESSAGE);
+            }
+            if (trimmed.length() > MAXIMUM_NAME_LENGTH) {
+                throw new IllegalArgumentException(NAME_LENGTH_ERROR_MESSAGE);
+            }
+            if (!seen.add(trimmed.toLowerCase(Locale.ROOT))) {
+                throw new IllegalArgumentException(NAME_DUPLICATE_ERROR_MESSAGE);
+            }
+            players.add(new Player(trimmed));
+        }
+        return setUp(players);
+    }
+
+    private static boolean isDisplayable(int codePoint) {
+        return !Character.isSupplementaryCodePoint(codePoint)
+                && !Character.isISOControl(codePoint)
+                && !HIDDEN_CHARACTER_TYPES.contains(Character.getType(codePoint));
+    }
+
+    private GameState setUp(List<Player> players) {
+        int playerCount = players.size();
         Deck deck = new Deck();
 
         List<Card> explodingKittens = deck.removeCards(
@@ -27,8 +78,6 @@ public class GameSetupController {
                 CardType.DEFUSE,
                 TOTAL_DEFUSES
         );
-
-        List<Player> players = createPlayers(playerCount);
 
         List<Card> playerDefuses = new ArrayList<>(
                 defuses.subList(0, playerCount)
