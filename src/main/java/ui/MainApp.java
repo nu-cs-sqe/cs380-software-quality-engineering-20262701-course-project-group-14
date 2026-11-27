@@ -5,6 +5,7 @@ import controller.GamePlayViewPort;
 import controller.GameSetupController;
 import domain.GameState;
 import domain.TurnEngineFactory;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
@@ -67,6 +68,11 @@ public final class MainApp extends Application {
     static void checkPlayerCount(String playerCountText, IntConsumer showNameStep,
                                  Consumer<String> showError) {
         startGame(playerCountText, state -> showNameStep.accept(state.getPlayers().size()), showError);
+    }
+
+    static void startNamedGame(List<String> playerNames, Consumer<GameState> openGameplay,
+                               Consumer<String> showError) {
+        openGameplay.accept(new GameSetupController().startNamedGame(playerNames));
     }
 
     static void startGame(

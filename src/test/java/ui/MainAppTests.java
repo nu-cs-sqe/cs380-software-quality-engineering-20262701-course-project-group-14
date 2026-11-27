@@ -47,6 +47,18 @@ public class MainAppTests {
     }
 
     @Test
+    public void StartNamedGame_WithTwoNames_OpensGameplayWithNamedPlayers() {
+        List<GameState> openedGames = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        MainApp.startNamedGame(List.of("Ada", "Bo"), openedGames::add, errors::add);
+
+        assertEquals(1, openedGames.size());
+        assertEquals("Ada", openedGames.get(0).getCurrentPlayer().getName());
+        assertEquals(List.of(), errors);
+    }
+
+    @Test
     public void StartGame_WithCountBelowMinimum_ReportsErrorWithoutOpeningGameplay() {
         List<GameState> openedGames = new ArrayList<>();
         List<String> errors = new ArrayList<>();
