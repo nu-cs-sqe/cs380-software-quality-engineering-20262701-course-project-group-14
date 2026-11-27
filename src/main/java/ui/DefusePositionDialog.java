@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -58,23 +57,14 @@ final class DefusePositionDialog {
 
         // ---- header ----
         ImageView warn = PixelArt.view(PixelArt.sprite(PixelData.WARN, 3, PixelArt.TAVERN_PALETTE));
-        ImageView title = PixelArt.textView("RETURN THE KITTEN", 3, GameTheme.CREAM);
+        ImageView title = PixelArt.textView(Texts.get("defuse.dialog.title"), 3, GameTheme.CREAM);
         HBox header = new HBox(14, warn, title);
         header.setAlignment(Pos.CENTER_LEFT);
 
         String help = minimum == maximum
-                ? "The draw pile is empty, so the Kitten goes in as the only card."
-                : "Choose where the Exploding Kitten goes. " + minimum
-                        + " is the top of the draw pile, " + maximum + " is the bottom.";
-        Node description;
-        if (PixelArt.canRender(help.toUpperCase(java.util.Locale.ROOT))) {
-            description = PixelArt.paragraphView(help, 2, GameTheme.SAND, GRID_WIDTH);
-        } else {
-            Label fallback = new Label(help);
-            fallback.getStyleClass().add("dialog-text");
-            fallback.setWrapText(true);
-            description = fallback;
-        }
+                ? Texts.get("defuse.dialog.only-card")
+                : Texts.get("defuse.dialog.help", minimum, maximum);
+        Node description = PixelArt.paragraphView(help, 2, GameTheme.SAND, GRID_WIDTH);
 
         // ---- number tiles ----
         StackPane summary = new StackPane();
@@ -94,7 +84,7 @@ final class DefusePositionDialog {
             tile.setMinSize(TILE_WIDTH, TILE_HEIGHT);
             tile.setMaxSize(TILE_WIDTH, TILE_HEIGHT);
             tile.setUserData(position);
-            tile.setAccessibleText("Position " + position);
+            tile.setAccessibleText(Texts.get("defuse.dialog.position", position));
             tile.setSelected(position == minimum);
             grid.getChildren().add(tile);
         }
@@ -122,15 +112,15 @@ final class DefusePositionDialog {
 
         // ---- buttons ----
         Stage stage = new Stage();
-        Button confirm = actionButton("CONFIRM", "confirm-button");
-        Button cancel = actionButton("CANCEL", "cancel-button");
+        Button confirm = actionButton(Texts.get("defuse.dialog.confirm"), "confirm-button");
+        Button cancel = actionButton(Texts.get("defuse.dialog.cancel"), "cancel-button");
         confirm.setOnAction(e -> {
             confirmed = true;
             stage.close();
         });
         cancel.setOnAction(e -> stage.close());
 
-        ImageView keys = PixelArt.textView("ARROWS MOVE   ENTER CONFIRMS   ESC CANCELS", 2, GameTheme.MUTED);
+        ImageView keys = PixelArt.textView(Texts.get("defuse.dialog.keys"), 2, GameTheme.MUTED);
         Region spacer = new Region();
         HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
         HBox buttons = new HBox(12, spacer, cancel, confirm);
@@ -138,6 +128,7 @@ final class DefusePositionDialog {
 
         VBox root = new VBox(14, header, description, scroll, preview, summary, keys, buttons);
         root.getStyleClass().add("dialog-root");
+        Texts.applyFont(root);
         root.setAlignment(Pos.TOP_LEFT);
         root.setPadding(new Insets(26, 28, 24, 28));
         root.setPrefWidth(GRID_WIDTH + 12 + 56 + 8);
@@ -160,7 +151,7 @@ final class DefusePositionDialog {
         }
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.UNDECORATED);
-        stage.setTitle("Return Exploding Kitten");
+        stage.setTitle(Texts.get("defuse.dialog.window"));
         stage.setScene(scene);
         stage.setOnShown(e -> {
             if (owner != null) {
@@ -179,7 +170,7 @@ final class DefusePositionDialog {
         button.getStyleClass().addAll("dialog-button", styleClass);
         button.setGraphic(PixelArt.textView(text, 2, styleClass.startsWith("confirm")
                 ? GameTheme.PLATE : GameTheme.CREAM));
-        button.setAccessibleText(text.charAt(0) + text.substring(1).toLowerCase());
+        button.setAccessibleText(text);
         button.setPrefSize(150, 48);
         return button;
     }
@@ -204,8 +195,6 @@ final class DefusePositionDialog {
                 gc.fillRect(x, 14, sliverWidth, h - 28);
             }
         }
-        summary.getChildren().setAll(PixelArt.textView(
-                slot == 1 ? "1 CARD ABOVE THE KITTEN" : slot + " CARDS ABOVE THE KITTEN",
-                2, GameTheme.CREAM));
+        summary.getChildren().setAll(PixelArt.textView(Texts.get("defuse.dialog.above", slot), 2, GameTheme.CREAM));
     }
 }

@@ -41,6 +41,55 @@
     -fx-background-color: #FFB84D, #FFB84D, #120E26, #120E26;
 }
 
+/* ---------- language menu ---------- */
+
+.game-setup-root .language-box {
+    -fx-background-color: #7B68E0, #7B68E0, #120E26, #120E26;
+    -fx-background-insets: 0 4 0 4, 4 0 4 0, 4 8 4 8, 8 4 8 4;
+    -fx-background-radius: 0;
+    -fx-padding: 6px 10px 6px 10px;
+    -fx-cursor: hand;
+}
+
+.game-setup-root .language-box:focused,
+.game-setup-root .language-box:showing {
+    -fx-background-color: #FFB84D, #FFB84D, #120E26, #120E26;
+}
+
+.language-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 24px;
+    -fx-padding: 2px 8px 2px 8px;
+}
+
+.language-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.language-box .arrow {
+    -fx-background-color: #FFB84D;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #FFF1D6, #120E26;
+    -fx-background-insets: 0, 3;
+    -fx-background-radius: 0;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #120E26;
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 24px;
+    -fx-padding: 6px 14px 6px 14px;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover,
+.combo-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: #FFB84D;
+    -fx-text-fill: #141026;
+}
+
 /* ---------- button ---------- */
 
 .game-setup-root .button {

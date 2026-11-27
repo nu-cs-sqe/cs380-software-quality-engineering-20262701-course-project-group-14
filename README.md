@@ -12,6 +12,16 @@
 - JUnit 5.10
 - Gradle 8.10
 
+## Languages
+English (default) and Simplified Chinese, chosen on the setup screen. See
+`docs/design/i18n-plan.md` for how to add a language.
+
+## Third-party assets
+- [Ark Pixel Font](https://github.com/TakWolf/ark-pixel-font) 12px proportional
+  (Simplified Chinese) by TakWolf, licensed under the SIL Open Font License 1.1
+  (`src/main/resources/fonts/ark-pixel-OFL.txt`). Used to draw Chinese text in
+  the game's pixel style.
+
 ## Exceptions
 ### Code Coverage
 N/A

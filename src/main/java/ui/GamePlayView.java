@@ -6,16 +6,12 @@ import domain.CardType;
 import domain.GameSnapshot;
 import domain.PlayerSummary;
 import domain.TurnPhase;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
@@ -65,43 +61,12 @@ import javafx.util.Duration;
  */
 public final class GamePlayView extends StackPane
         implements CatPairViewPort, GameOverViewPort {
-    private static final ResourceBundle GAME_OVER_TEXT =
-            ResourceBundle.getBundle("ui.GameOverMessages");
-    private static final ResourceBundle SNIFF_TEST_TEXT =
-            ResourceBundle.getBundle("ui.SniffTestMessages");
-    private static final ResourceBundle CHRONICLE_TEXT =
-            ResourceBundle.getBundle("ui.ChronicleMessages");
     private static final int CHRONICLE_LINES = 2;
-    private static final Map<String, String> MESSAGES = Map.ofEntries(
-            Map.entry("game.over", GAME_OVER_TEXT.getString("closed")),
-            Map.entry("draw.normal-card", "Card drawn. Next player's turn."),
-            Map.entry("draw.empty-deck", "The draw pile is empty."),
-            Map.entry(
-                    "draw.pending-defuse",
-                    "Choose where to return the Exploding Kitten first."
-            ),
-            Map.entry("draw.player-eliminated", "The player was eliminated."),
-            Map.entry(
-                    "draw.defuse-position-required",
-                    "Defuse played. Choose a deck position for the Kitten."
-            ),
-            Map.entry("play.invalid-hand-index", "That hand position is invalid."),
-            Map.entry("play.card-not-playable", "That card cannot be played yet."),
-            Map.entry(
-                    "play.precondition-not-met",
-                    "The requirements for that card are not met."
-            ),
-            Map.entry(
-                    "play.defuse-required",
-                    "Resolve the Exploding Kitten before playing another card."
-            ),
-            Map.entry("defuse.success", "The Kitten was returned to the deck."),
-            Map.entry("defuse.invalid-position", "Choose a position in the shown range."),
-            Map.entry("defuse.not-awaiting", "There is no Kitten waiting to be returned."),
-            Map.entry("defuse.not-found", "The current player has no Defuse card."),
-            Map.entry("sniff.kitten-moved", SNIFF_TEST_TEXT.getString("kitten-moved")),
-            Map.entry("sniff.safe", SNIFF_TEST_TEXT.getString("safe"))
-    );
+    /** Controller message keys that also add a line to the tavern chronicle. */
+    private static final Set<String> NARRATED = Set.of("draw.normal-card", "draw.player-eliminated",
+            "draw.defuse-position-required", "defuse.success", "sniff.kitten-moved", "sniff.safe");
+    /** Played cards with their own chronicle line; other cards use the generic one. */
+    private static final Set<CardType> NARRATED_PLAYS = EnumSet.of(CardType.ATTACK, CardType.SKIP);
 
     private static final Set<String> WARNING_MESSAGES = Set.of(
             "draw.pending-defuse",
@@ -110,18 +75,7 @@ public final class GamePlayView extends StackPane
             "play.defuse-required"
     );
 
-    private static final String[] CAT_QUIPS = {
-            "Purrr... the tavern calico approves of your poker face.",
-            "The calico twitches an ear. Something furry is ticking in that deck...",
-            "Mrrp! Scratching behind the ears grants +10% Defuse confidence.",
-            "The tavern cat kneads the oak wood and eyes the discard pile."
-    };
-
-    private static final String[] PROP_QUIPS = {
-            "Spiced milk-punch in an oak-and-brass stein. Steady your nerves!",
-            "Tavern Rule: Match any two Cat cards to pilfer from a rival.",
-            "Bounty Notice: Keep a Defuse close when the deck grows thin."
-    };
+    private static final String[] CAT_QUIP_KEYS = {"quip.cat.1", "quip.cat.2", "quip.cat.3", "quip.cat.4"};
 
     private static final PseudoClass DANGER = PseudoClass.getPseudoClass("danger");
     private static final PseudoClass CURRENT = PseudoClass.getPseudoClass("current");
@@ -276,6 +230,7 @@ public final class GamePlayView extends StackPane
                 "Missing game-play.css"
         ).toExternalForm();
         getStylesheets().add(stylesheetUrl);
+        Texts.applyFont(this);
 
         buildBanner();
         buildTopTableStrip();
@@ -424,11 +379,9 @@ public final class GamePlayView extends StackPane
         danger = snapshot.getPhase() == TurnPhase.AWAITING_DEFUSE_POSITION;
         turnActionsDisabled = snapshot.getPhase() == TurnPhase.GAME_OVER;
         boolean newlyFinished = turnActionsDisabled && winnerMessage == null;
-        winnerMessage = turnActionsDisabled
-                ? MessageFormat.format(GAME_OVER_TEXT.getString("winner"), playerName)
-                : null;
+        winnerMessage = turnActionsDisabled ? Texts.get("game.winner", playerName) : null;
         if (newlyFinished) {
-            addChronicle(chronicleLine("game.winner", playerName));
+            addChronicle(Texts.get("chronicle.game.winner", playerName));
         }
         if (turnActionsDisabled) {
             currentWarning = false;
@@ -453,18 +406,14 @@ public final class GamePlayView extends StackPane
         } else if ("draw.player-eliminated".equals(messageKey)) {
             catsExploded++;
         }
-        if (CHRONICLE_TEXT.containsKey(messageKey)) {
-            addChronicle(chronicleLine(messageKey, playerName));
-            currentMessage = warning ? MESSAGES.getOrDefault(messageKey, messageKey) : null;
+        if (NARRATED.contains(messageKey)) {
+            addChronicle(Texts.get("chronicle." + messageKey, playerName));
+            currentMessage = warning ? Texts.get(messageKey) : null;
         } else {
-            currentMessage = MESSAGES.getOrDefault(messageKey, messageKey);
+            currentMessage = Texts.get(messageKey);
         }
         currentWarning = warning;
         layoutStage();
-    }
-
-    private static String chronicleLine(String key, Object... arguments) {
-        return MessageFormat.format(CHRONICLE_TEXT.getString(key), arguments);
     }
 
     private void addChronicle(String line) {
@@ -603,7 +552,7 @@ public final class GamePlayView extends StackPane
         fixSize(avatarSlot, 58, 58);
 
         nameHolder.setAlignment(Pos.CENTER_LEFT);
-        VBox who = new VBox(4, PixelArt.textView("NOW PLAYING", 2, GameTheme.SAND), nameHolder);
+        VBox who = new VBox(4, PixelArt.textView(Texts.get("banner.now-playing"), 2, GameTheme.SAND), nameHolder);
         who.setAlignment(Pos.CENTER_LEFT);
 
         Region spacer = new Region();
@@ -637,13 +586,13 @@ public final class GamePlayView extends StackPane
         catMascotButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         catMascotButton.setPadding(Insets.EMPTY);
         catMascotButton.setFocusTraversable(false);
-        catMascotButton.setAccessibleText("Pet Tavern Cat");
+        catMascotButton.setAccessibleText(Texts.get("prop.cat.accessible"));
         fixSize(catMascotButton, catSleepA.getWidth(), catSleepA.getHeight());
 
         catMascotButton.setOnMouseEntered(e -> {
             catMascotButton.setTranslateY(-3);
             if (!danger && !currentWarning) {
-                showFlavorQuip("Click to pet the sleeping tavern calico.");
+                showFlavorQuip(Texts.get("prop.cat.hint"));
             }
         });
         catMascotButton.setOnMouseExited(e -> catMascotButton.setTranslateY(0));
@@ -653,7 +602,7 @@ public final class GamePlayView extends StackPane
                     catMascotButton.getLayoutY() - 6
             );
             if (!danger && !currentWarning) {
-                showFlavorQuip(CAT_QUIPS[quipIndex % CAT_QUIPS.length]);
+                showFlavorQuip(Texts.get(CAT_QUIP_KEYS[quipIndex % CAT_QUIP_KEYS.length]));
                 quipIndex++;
             }
         });
@@ -664,17 +613,17 @@ public final class GamePlayView extends StackPane
                     steinHotspot.getLayoutY() + 6
             );
             if (!danger && !currentWarning) {
-                showFlavorQuip(PROP_QUIPS[0]);
+                showFlavorQuip(Texts.get("quip.stein"));
             }
         });
         setupPropHotspot(scrollHotspot, () -> {
             if (!danger && !currentWarning) {
-                showFlavorQuip(PROP_QUIPS[1]);
+                showFlavorQuip(Texts.get("quip.scroll"));
             }
         });
         setupPropHotspot(posterHotspot, () -> {
             if (!danger && !currentWarning) {
-                showFlavorQuip(PROP_QUIPS[2]);
+                showFlavorQuip(Texts.get("quip.poster"));
             }
         });
     }
@@ -717,7 +666,7 @@ public final class GamePlayView extends StackPane
 
     private void buildArenaStations() {
         deckStackHolder.setAlignment(Pos.CENTER);
-        deckStackHolder.setAccessibleText("Draw Card");
+        deckStackHolder.setAccessibleText(Texts.get("deck.accessible"));
         deckStackHolder.getStyleClass().add("deck-hotspot");
         deckStackHolder.setOnMouseEntered(e -> {
             if (!danger && !turnActionsDisabled && deckSize > 0) {
@@ -738,15 +687,15 @@ public final class GamePlayView extends StackPane
         drawButton.getStyleClass().add("draw-button");
         drawButton.setId("draw-card");
         drawButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        drawButton.setAccessibleText("Draw Card");
+        drawButton.setAccessibleText(Texts.get("deck.accessible"));
         drawButton.setOnAction(event -> triggerDrawWithFlight());
 
         returnToSetupButton.setId("return-to-setup");
         returnToSetupButton.getStyleClass().add("draw-button");
         returnToSetupButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         returnToSetupButton.setGraphic(PixelArt.textView(
-                CHRONICLE_TEXT.getString("victory.return").toUpperCase(Locale.ROOT), 3, GameTheme.PLATE));
-        returnToSetupButton.setAccessibleText(GAME_OVER_TEXT.getString("return-to-setup"));
+                Texts.get("victory.return"), 3, GameTheme.PLATE));
+        returnToSetupButton.setAccessibleText(Texts.get("victory.return"));
         returnToSetupButton.setOnAction(event -> onReturnToSetup.run());
         returnToSetupButton.setVisible(false);
 
@@ -769,10 +718,10 @@ public final class GamePlayView extends StackPane
 
         choosePositionButton.getStyleClass().add("danger-button");
         choosePositionButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        choosePositionButton.setAccessibleText("Choose Kitten Position");
+        choosePositionButton.setAccessibleText(Texts.get("button.choose-kitten.accessible"));
         HBox centered = new HBox(10,
                 PixelArt.view(PixelArt.sprite(PixelData.WARN, 2, PixelArt.TAVERN_PALETTE)),
-                PixelArt.textView("CHOOSE KITTEN POSITION", 2, GameTheme.PLATE));
+                PixelArt.textView(Texts.get("button.choose-kitten"), 2, GameTheme.PLATE));
         centered.setAlignment(Pos.CENTER);
         choosePositionButton.setGraphic(centered);
         choosePositionButton.setOnAction(event -> onChooseDefusePosition.run());
@@ -865,13 +814,13 @@ public final class GamePlayView extends StackPane
         handLabelPill.setAlignment(Pos.CENTER);
         handLabelPill.setPadding(new Insets(5, 10, 5, 10));
         handLabelPill.getChildren().addAll(
-                PixelArt.textView("HAND", 2, GameTheme.CREAM), handChip);
+                PixelArt.textView(Texts.get("hud.hand"), 2, GameTheme.CREAM), handChip);
 
         keyHintPill.getStyleClass().add("corner-plaque");
         keyHintPill.setAlignment(Pos.CENTER);
         keyHintPill.setPadding(new Insets(5, 10, 5, 10));
         keyHintPill.getChildren().add(
-                PixelArt.textView("ARROWS BROWSE  ENTER PLAYS", 2, GameTheme.SAND));
+                PixelArt.textView(Texts.get("hud.keys"), 2, GameTheme.SAND));
     }
 
     private StackPane buildHandoffOverlay() {
@@ -887,16 +836,16 @@ public final class GamePlayView extends StackPane
         );
         handoffBlink.setCycleCount(Animation.INDEFINITE);
 
-        ImageView seal = PixelArt.textView("TAVERN CURTAIN DRAWN", 2, GameTheme.BRASS);
-        ImageView title = PixelArt.textView("PASS THE COMPUTER", 4, GameTheme.CREAM);
-        ImageView next = PixelArt.textView("NEXT UP", 2, GameTheme.SAND);
+        ImageView seal = PixelArt.textView(Texts.get("handoff.seal"), 2, GameTheme.BRASS);
+        ImageView title = PixelArt.textView(Texts.get("handoff.title"), 4, GameTheme.CREAM);
+        ImageView next = PixelArt.textView(Texts.get("handoff.next"), 2, GameTheme.SAND);
         handoffNameHolder = new StackPane();
 
         handoffButton = new Button();
         handoffButton.getStyleClass().add("draw-button");
         handoffButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        handoffButton.setGraphic(PixelArt.textView("I'M READY", 3, GameTheme.PLATE));
-        handoffButton.setAccessibleText("I'm ready");
+        handoffButton.setGraphic(PixelArt.textView(Texts.get("handoff.ready"), 3, GameTheme.PLATE));
+        handoffButton.setAccessibleText(Texts.get("handoff.ready"));
         fixSize(handoffButton, 280, 60);
         handoffButton.setOnAction(event -> {
             onHandoffReady.run();
@@ -904,7 +853,7 @@ public final class GamePlayView extends StackPane
         });
 
         ImageView note = PixelArt.textView(
-                "YOUR HAND STAYS HIDDEN UNTIL YOU CONTINUE", 2, GameTheme.MUTED);
+                Texts.get("handoff.note"), 2, GameTheme.MUTED);
 
         VBox panel = new VBox(14, seal, cat, title, next, handoffNameHolder, handoffButton, note);
         panel.getStyleClass().add("handoff-panel");
@@ -940,7 +889,6 @@ public final class GamePlayView extends StackPane
         // 2. Top tabletop strip aligned over the inlaid velvet mat
         double feltW = TavernBackground.feltWidth(w, compact);
         double leftEdge = TavernBackground.feltLeft(w, feltW);
-        double rightEdge = leftEdge + feltW;
 
         seatRow.resizeRelocate(leftEdge, 112, feltW, 46);
 
@@ -1057,9 +1005,9 @@ public final class GamePlayView extends StackPane
         VBox lines = new VBox(4);
         lines.setAlignment(Pos.CENTER_LEFT);
         lines.getChildren().add(PixelArt.textView(
-                CHRONICLE_TEXT.getString("title").toUpperCase(Locale.ROOT), 1, INK_ACCENT));
+                Texts.get("chronicle.title"), 1, INK_ACCENT));
         List<String> history = chronicle.isEmpty()
-                ? List.of(CHRONICLE_TEXT.getString("empty")) : chronicle;
+                ? List.of(Texts.get("chronicle.empty")) : chronicle;
         for (String line : history) {
             if (!line.equals(text)) {
                 lines.getChildren().add(bodyText(line, 1, INK_FADED, maxTextW, "chronicle-past"));
@@ -1078,9 +1026,9 @@ public final class GamePlayView extends StackPane
             return winnerMessage;
         }
         if (targetChoice != null) {
-            return chronicleLine("target.prompt");
+            return Texts.get("chronicle.target");
         }
-        return currentMessage != null ? currentMessage : chronicleLine("prompt", playerName);
+        return currentMessage != null ? currentMessage : Texts.get("chronicle.prompt", playerName);
     }
 
     private void updateBanner() {
@@ -1092,24 +1040,24 @@ public final class GamePlayView extends StackPane
         phaseChip.getChildren().clear();
         if (turnActionsDisabled) {
             phaseChip.getChildren().add(PixelArt.textView(
-                    CHRONICLE_TEXT.getString("phase.over").toUpperCase(Locale.ROOT), 2, GameTheme.MUTED));
+                    Texts.get("phase.over"), 2, GameTheme.MUTED));
         } else if (danger) {
             phaseChip.getChildren().addAll(
                     PixelArt.view(PixelArt.sprite(PixelData.WARN, 2, PixelArt.TAVERN_PALETTE)),
-                    PixelArt.textView("PLACE KITTEN", 2, GameTheme.CREAM));
+                    PixelArt.textView(Texts.get("phase.place-kitten"), 2, GameTheme.CREAM));
         } else if (remainingTurns > 1) {
             phaseChip.getChildren().addAll(
                     PixelArt.view(CardCatalog.icon(CardCatalog.lookup("ATTACK"), true)),
-                    PixelArt.textView(chronicleLine("turns.left", remainingTurns), 2,
+                    PixelArt.textView(Texts.get("turns.left", remainingTurns), 2,
                             GameTheme.ROLE_ATTACK));
         } else {
-            phaseChip.getChildren().add(PixelArt.textView("DRAW OR PLAY", 2, GameTheme.AMBER));
+            phaseChip.getChildren().add(PixelArt.textView(Texts.get("phase.draw-or-play"), 2, GameTheme.AMBER));
         }
     }
 
     private Node nameNode(String name, int maxScale, double available, int color) {
-        String text = name == null ? "" : name.trim().toUpperCase(Locale.ROOT);
-        if (PixelArt.canRender(text)) {
+        String text = name == null ? "" : name.trim();
+        if (!text.isEmpty()) {
             for (int scale = maxScale; scale >= 2; scale--) {
                 if (PixelArt.textWidth(text, scale) <= available) {
                     return PixelArt.textView(text, scale, color);
@@ -1127,7 +1075,7 @@ public final class GamePlayView extends StackPane
         int h = compact ? 128 : 144;
         deckStackHolder.getChildren().clear();
         if (deckSize <= 0) {
-            StackPane empty = new StackPane(PixelArt.textView("EMPTY", 2, GameTheme.DANGER));
+            StackPane empty = new StackPane(PixelArt.textView(Texts.get("deck.empty"), 2, GameTheme.DANGER));
             empty.getStyleClass().add("empty-coaster");
             fixSize(empty, w, h);
             deckStackHolder.getChildren().add(empty);
@@ -1147,7 +1095,7 @@ public final class GamePlayView extends StackPane
 
         int color = deckSize <= 0 ? GameTheme.DANGER
                 : deckSize <= LOW_DECK_THRESHOLD ? GameTheme.AMBER : GameTheme.CREAM;
-        String label = deckSize == 1 ? "1 CARD LEFT" : deckSize + " CARDS LEFT";
+        String label = Texts.get("deck.cards-left", deckSize);
         deckCountHolder.getChildren().setAll(PixelArt.textView(label, 2, color));
 
         // 10-pip Fuse Tension Gauge beneath the draw pile
@@ -1172,12 +1120,12 @@ public final class GamePlayView extends StackPane
         discardPileHolder.getChildren().clear();
 
         if (discardSize <= 0) {
-            StackPane empty = new StackPane(PixelArt.textView("DISCARD", 2, GameTheme.MUTED));
+            StackPane empty = new StackPane(PixelArt.textView(Texts.get("discard.placeholder"), 2, GameTheme.MUTED));
             empty.getStyleClass().add("empty-coaster");
             fixSize(empty, compact ? 92 : 104, compact ? 128 : 144);
             discardPileHolder.getChildren().add(empty);
             discardCountBadge.getChildren().setAll(
-                    PixelArt.textView("0 PLAYED", 2, GameTheme.MUTED));
+                    PixelArt.textView(Texts.get("discard.none"), 2, GameTheme.MUTED));
             return;
         }
 
@@ -1209,7 +1157,7 @@ public final class GamePlayView extends StackPane
             CardCatalog.Info info = CardCatalog.lookup(recentDiscards.get(i).name());
             ImageView face = PixelArt.view(CardCatalog.face(info, true, CardCatalog.Face.READY));
             face.getStyleClass().add("discard-face");
-            face.setAccessibleText(info.name);
+            face.setAccessibleText(info.displayName());
             int slot = fillerCount + i;
             face.setLayoutX(baseX + (slot - totalVisible * 0.5) * spreadX);
             face.setLayoutY(baseY - i * 3);
@@ -1222,10 +1170,10 @@ public final class GamePlayView extends StackPane
             CardCatalog.Info topInfo = CardCatalog.lookup(
                     recentDiscards.get(recentDiscards.size() - 1).name());
             discardCountBadge.getChildren().setAll(
-                    PixelArt.textView(topInfo.name.toUpperCase(Locale.ROOT), 2, topInfo.role));
+                    PixelArt.textView(topInfo.displayName(), 2, topInfo.role));
         } else {
             discardCountBadge.getChildren().setAll(
-                    PixelArt.textView(discardSize + " DISCARDED", 2, GameTheme.SAND));
+                    PixelArt.textView(Texts.get("discard.count", discardSize), 2, GameTheme.SAND));
         }
     }
 
@@ -1246,8 +1194,8 @@ public final class GamePlayView extends StackPane
             int nameColor = out ? DIM_TEXT : current ? GameTheme.BRASS_BRIGHT : GameTheme.CREAM;
             double textW = plaqueW - 22 - 30;
             Node name = seatName(seat.getName(), textW, nameColor);
-            String detail = out ? chronicleLine("seat.out")
-                    : chronicleLine("seat.cards", seat.getHandSize());
+            String detail = out ? Texts.get("seat.out")
+                    : Texts.get("seat.cards", seat.getHandSize());
             int detailColor = out ? GameTheme.DANGER : current ? GameTheme.AMBER : GameTheme.MUTED;
             VBox text = new VBox(3, name, PixelArt.textView(detail, 1, detailColor));
             text.setAlignment(Pos.CENTER_LEFT);
@@ -1264,8 +1212,8 @@ public final class GamePlayView extends StackPane
             plaque.setAlignment(Pos.CENTER_LEFT);
             plaque.setPadding(new Insets(6, 10, 6, 10));
             fixSize(plaque, plaqueW, 42);
-            plaque.setAccessibleText(seat.getName() + ", " + detail.toLowerCase(Locale.ROOT)
-                    + (current ? ", current turn" : ""));
+            plaque.setAccessibleText(Texts.get(current ? "seat.accessible.current" : "seat.accessible",
+                    seat.getName(), detail.toLowerCase(Texts.locale())));
             if (current) {
                 StackPane marker = new StackPane(plaque, turnTag(winner ? "seat.winner" : "seat.turn"));
                 StackPane.setAlignment(marker.getChildren().get(1), Pos.TOP_RIGHT);
@@ -1278,15 +1226,15 @@ public final class GamePlayView extends StackPane
     }
 
     private Node turnTag(String key) {
-        StackPane tag = new StackPane(PixelArt.textView(chronicleLine(key), 1, GameTheme.PLATE));
+        StackPane tag = new StackPane(PixelArt.textView(Texts.get(key), 1, GameTheme.PLATE));
         tag.getStyleClass().add("seat-turn-tag");
         tag.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         return tag;
     }
 
     private Node seatName(String rawName, double available, int color) {
-        String text = rawName == null ? "" : rawName.trim().toUpperCase(Locale.ROOT);
-        if (PixelArt.canRender(text)) {
+        String text = rawName == null ? "" : rawName.trim();
+        if (!text.isEmpty()) {
             for (int scale = 2; scale >= 1; scale--) {
                 if (PixelArt.textWidth(text, scale) <= available) {
                     return PixelArt.textView(text, scale, color);
@@ -1305,7 +1253,7 @@ public final class GamePlayView extends StackPane
         drawButton.setVisible(!danger);
         deckStackHolder.setDisable(blocked);
         deckStackHolder.setTranslateY(0);
-        drawButton.setGraphic(PixelArt.textView("DRAW", 3, blocked ? DIM_TEXT : GameTheme.PLATE));
+        drawButton.setGraphic(PixelArt.textView(Texts.get("button.draw"), 3, blocked ? DIM_TEXT : GameTheme.PLATE));
 
         // The phase chip, the Kitten button and the chronicle already explain the danger state.
         drawHintHolder.getChildren().clear();
@@ -1320,13 +1268,13 @@ public final class GamePlayView extends StackPane
 
     private StackPane buildVictoryOverlay() {
         ImageView seal = PixelArt.textView(
-                CHRONICLE_TEXT.getString("victory.seal").toUpperCase(Locale.ROOT), 2, GameTheme.BRASS);
+                Texts.get("victory.seal"), 2, GameTheme.BRASS);
         ImageView crown = PixelArt.view(PixelArt.sprite(PixelData.CROWN, 4, PixelArt.TAVERN_PALETTE));
         ImageView cat = PixelArt.view(PixelArt.sprite(PixelData.HEAD_OPEN, 5, PixelArt.TAVERN_PALETTE));
         VBox crowned = new VBox(-2, crown, cat);
         crowned.setAlignment(Pos.CENTER);
         ImageView title = PixelArt.textView(
-                CHRONICLE_TEXT.getString("victory.title").toUpperCase(Locale.ROOT), 3, GameTheme.SAND);
+                Texts.get("victory.title"), 3, GameTheme.SAND);
         Region rule = new Region();
         rule.getStyleClass().add("victory-rule");
         fixSize(rule, 300, 4);
@@ -1382,10 +1330,10 @@ public final class GamePlayView extends StackPane
     private Node victoryStat(int value, String labelKey, int color) {
         VBox stat = new VBox(6,
                 PixelArt.textView(String.valueOf(value), 4, color),
-                PixelArt.textView(CHRONICLE_TEXT.getString(labelKey).toUpperCase(Locale.ROOT), 1,
+                PixelArt.textView(Texts.get(labelKey), 1,
                         GameTheme.MUTED));
         stat.setAlignment(Pos.CENTER);
-        stat.setAccessibleText(value + " " + CHRONICLE_TEXT.getString(labelKey));
+        stat.setAccessibleText(value + " " + Texts.get(labelKey));
         return stat;
     }
 
@@ -1421,18 +1369,19 @@ public final class GamePlayView extends StackPane
             return;
         }
         futureTitleHolder.getChildren().setAll(
-                PixelArt.textView("TOP " + futureCards.size() + " IN DECK", 2, GameTheme.SAND));
-        String[] ordinals = {"1ST", "2ND", "3RD"};
+                PixelArt.textView(Texts.get("future.title", futureCards.size()), 2, GameTheme.SAND));
+        String[] ordinals = {Texts.get("future.ordinal.1"), Texts.get("future.ordinal.2"),
+                Texts.get("future.ordinal.3")};
         for (int i = 0; i < futureCards.size(); i++) {
             CardCatalog.Info info = CardCatalog.lookup(futureCards.get(i).name());
-            String ord = i < ordinals.length ? ordinals[i] : "#" + (i + 1);
+            String ord = i < ordinals.length ? ordinals[i] : Texts.get("future.ordinal.other", i + 1);
             ImageView mini = PixelArt.view(CardCatalog.face(info, true, CardCatalog.Face.READY));
             mini.setFitWidth(28);
             mini.setPreserveRatio(true);
             double offset = i - (futureCards.size() - 1) / 2.0;
             mini.setRotate(offset * 12);
             mini.setTranslateY(Math.abs(offset) * 4);
-            Label name = new Label(info.name);
+            Label name = new Label(info.displayName());
             name.getStyleClass().add("chip-name");
             name.setWrapText(true);
             name.setTextAlignment(TextAlignment.CENTER);
@@ -1440,7 +1389,7 @@ public final class GamePlayView extends StackPane
             VBox chip = new VBox(3, mini, PixelArt.textView(ord, 1, info.role), name);
             chip.setAlignment(Pos.TOP_CENTER);
             chip.getStyleClass().add("future-chip");
-            chip.setAccessibleText(ord + ": " + info.name);
+            chip.setAccessibleText(ord + ": " + info.displayName());
             chip.setPrefWidth(70);
             chip.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(chip, Priority.ALWAYS);
@@ -1596,13 +1545,13 @@ public final class GamePlayView extends StackPane
         cardsPlayed++;
         String line;
         if (type.isCatCard()) {
-            line = chronicleLine("played.pair", actor, info.name, lastTargetName);
-        } else if (CHRONICLE_TEXT.containsKey("played." + type.name())) {
-            line = chronicleLine("played." + type.name(), actor);
+            line = Texts.get("chronicle.played.pair", actor, info.displayName(), lastTargetName);
+        } else if (NARRATED_PLAYS.contains(type)) {
+            line = Texts.get("chronicle.played." + type.name(), actor);
         } else if (type == CardType.SNIFF_TEST) {
             return;
         } else {
-            line = chronicleLine("played.card", actor, info.name);
+            line = Texts.get("chronicle.played.card", actor, info.displayName());
         }
         chronicle.add(Math.max(0, Math.min(mark, chronicle.size())), line);
         while (chronicle.size() > CHRONICLE_LINES) {
@@ -1639,7 +1588,7 @@ public final class GamePlayView extends StackPane
         }
 
         boolean locked = danger || turnActionsDisabled;
-        String chipText = locked ? "LOCKED" : String.valueOf(hand.size());
+        String chipText = locked ? Texts.get("hud.locked") : String.valueOf(hand.size());
         handChip.getChildren().setAll(PixelArt.textView(
                 chipText, 2, locked ? GameTheme.DANGER : GameTheme.AMBER));
         handChip.pseudoClassStateChanged(DANGER, locked);
@@ -1740,7 +1689,7 @@ public final class GamePlayView extends StackPane
         int h = CardCatalog.cardHeight(compact);
         ImageView face = PixelArt.view(CardCatalog.face(info, compact, rest));
 
-        Label name = new Label(info.name.replace("-", "-\n"));
+        Label name = new Label(info.displayName().replace("-", "-\n"));
         name.getStyleClass().add("card-name");
         if (compact) {
             name.getStyleClass().add("compact");
@@ -1763,7 +1712,7 @@ public final class GamePlayView extends StackPane
         if (status != Status.READY) {
             int badgeColor = status == Status.LOCKED ? GameTheme.DANGER
                     : status == Status.AUTO ? GameTheme.ROLE_SAFETY : GameTheme.AMBER;
-            StackPane badge = new StackPane(PixelArt.textView(status.name(), 1, badgeColor));
+            StackPane badge = new StackPane(PixelArt.textView(Texts.get("status." + status.name()), 1, badgeColor));
             badge.getStyleClass().add("card-badge");
             badge.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             StackPane.setAlignment(badge, Pos.TOP_RIGHT);
@@ -1778,11 +1727,10 @@ public final class GamePlayView extends StackPane
         button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         button.setPadding(Insets.EMPTY);
         fixSize(button, w, h);
-        button.setAccessibleText(info.name + ", " + info.tag.toLowerCase(Locale.ROOT) + " card"
-                + (status == Status.SOON ? ", not available yet"
-                : status == Status.LOCKED ? ", locked"
-                : status == Status.AUTO ? ", used automatically" : ""));
-        button.setAccessibleHelp(info.effect);
+        String accessibleKey = status == Status.READY ? "card.accessible" : "card.accessible." + status.name();
+        button.setAccessibleText(Texts.get(accessibleKey, info.displayName(),
+                info.tagText().toLowerCase(Texts.locale())));
+        button.setAccessibleHelp(info.effectText());
 
         button.setOnMouseEntered(event -> {
             face.setImage(CardCatalog.face(info, compact, raised));
@@ -1860,9 +1808,9 @@ public final class GamePlayView extends StackPane
         iconSlot.setStyle(notchedStyle(info.role, GameTheme.PLATE));
         fixSize(iconSlot, 52, 52);
 
-        Node name = bodyText(info.name, 3, INK_DARK, textW - 150, "parchment-title");
+        Node name = bodyText(info.displayName(), 3, INK_DARK, textW - 150, "parchment-title");
 
-        HBox tag = new HBox(PixelArt.textView(info.tag, 2, info.role));
+        HBox tag = new HBox(PixelArt.textView(info.tagText(), 2, info.role));
         tag.setAlignment(Pos.CENTER);
         tag.setMaxWidth(Region.USE_PREF_SIZE);
         tag.setStyle(notchedStyle(info.role, GameTheme.PLATE, 2));
@@ -1875,7 +1823,7 @@ public final class GamePlayView extends StackPane
             CardType activeType = hand.get(activeCardIndex);
             long matchCount = hand.stream().filter(c -> c == activeType).count();
             if (matchCount >= 2) {
-                HBox pairBadge = new HBox(PixelArt.textView("PAIR X" + matchCount, 2, GameTheme.AMBER));
+                HBox pairBadge = new HBox(PixelArt.textView(Texts.get("pair.count", matchCount), 2, GameTheme.AMBER));
                 pairBadge.setAlignment(Pos.CENTER);
                 pairBadge.setMaxWidth(Region.USE_PREF_SIZE);
                 pairBadge.setStyle(notchedStyle(GameTheme.AMBER, GameTheme.PLATE, 2));
@@ -1883,7 +1831,7 @@ public final class GamePlayView extends StackPane
             }
         }
 
-        Node effect = bodyText(info.effect, 2, INK_DARK, textW, "parchment-body");
+        Node effect = bodyText(info.effectText(), 2, INK_DARK, textW, "parchment-body");
 
         HBox statusRow = new HBox(8);
         statusRow.setAlignment(Pos.CENTER_LEFT);
@@ -1892,22 +1840,22 @@ public final class GamePlayView extends StackPane
                 .filter(card -> CardCatalog.lookup(card.name()).key.equals(info.key)).count();
         if (shownStatus == Status.READY && catCard && sameCats < 2) {
             statusRow.getChildren().add(PixelArt.textView(
-                    chronicleLine("hint.lone-cat").toUpperCase(Locale.ROOT), 2, 0xFF6E5641));
+                    Texts.get("hint.lone-cat"), 2, 0xFF6E5641));
         } else if (shownStatus == Status.READY) {
-            String hint = catCard ? chronicleLine("hint.pair").toUpperCase(Locale.ROOT)
-                    : "CLICK OR ENTER TO PLAY";
+            String hint = catCard ? Texts.get("hint.pair")
+                    : Texts.get("hint.play");
             statusRow.getChildren().addAll(
                     PixelArt.view(PixelArt.mono(PixelData.ARROW, 2, INK_ACCENT)),
                     PixelArt.textView(hint, 2, INK_ACCENT));
         } else if (shownStatus == Status.SOON) {
             statusRow.getChildren().add(
-                    PixelArt.textView("NOT AVAILABLE YET", 2, 0xFF6E5641));
+                    PixelArt.textView(Texts.get("hint.soon"), 2, 0xFF6E5641));
         } else if (shownStatus == Status.AUTO) {
             statusRow.getChildren().add(
-                    PixelArt.textView("USED AUTOMATICALLY WHEN A KITTEN IS DRAWN", 2, 0xFF2E7D5B));
+                    PixelArt.textView(Texts.get("hint.auto"), 2, 0xFF2E7D5B));
         } else {
             statusRow.getChildren().add(
-                    PixelArt.textView(danger ? "LOCKED: PLACE KITTEN FIRST" : "LOCKED", 2, INK_DANGER));
+                    PixelArt.textView(Texts.get(danger ? "hint.locked-kitten" : "hint.locked"), 2, INK_DANGER));
         }
 
         VBox copy = new VBox(5, titleLine, effect, statusRow);
@@ -1923,7 +1871,7 @@ public final class GamePlayView extends StackPane
 
     private Node bodyText(String text, int scale, int color, double maxWidth, String fallbackClass) {
         String safe = text == null ? "" : text;
-        if (PixelArt.canRender(safe.toUpperCase(Locale.ROOT))) {
+        if (!safe.isBlank()) {
             return PixelArt.paragraphView(safe, scale, color, (int) Math.max(60, maxWidth));
         }
         Label fallback = new Label(safe);

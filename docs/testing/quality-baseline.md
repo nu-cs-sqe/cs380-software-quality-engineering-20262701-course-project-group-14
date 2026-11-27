@@ -49,7 +49,7 @@ The complete report remains available so that the exclusions do not hide unteste
 
 ## PIT
 
-- Initial mutation targets: `domain.*` and `controller.*`
+- Initial mutation targets: `domain.*` and `controller.*`; `localization.*` was added with the i18n work (31 mutants, all killed)
 - Excluded enums:
     - `CardType`
     - `TurnPhase`

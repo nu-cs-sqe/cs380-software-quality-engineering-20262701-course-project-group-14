@@ -81,7 +81,7 @@ same way that extra Defuse and Exploding Kitten cards are added today.
 | `Deck()` keeps the 56-card deck (`Deck39`) | PR #49 → `main` | Done |
 | Card face: paw icon, `ROLE_SNIFF` colour, effect text in `CardCatalog` | PR #49 → `main` | Done |
 | Registration in `TurnEngineFactory` (`TEF-07`, `TEF-08`) | `feature/sniff-test-wiring`, stacked on the turn-engine branches | Done; reaches `main` with the turn engine |
-| Result feedback in `GamePlayController` (`GPC-SN-01`–`GPC-SN-05`) and text in `SniffTestMessages.properties` | `feature/sniff-test-wiring` | Done |
+| Result feedback in `GamePlayController` (`GPC-SN-01`–`GPC-SN-05`) and text in `i18n/labels.properties` (`sniff.*` keys) | `feature/sniff-test-wiring` | Done |
 | Copies added to the game during setup | — | Waiting for the team decision below |
 
 After a sniffed Kitten moves to the bottom, the controller shows

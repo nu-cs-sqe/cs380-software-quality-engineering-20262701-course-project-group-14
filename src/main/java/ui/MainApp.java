@@ -18,7 +18,7 @@ public final class MainApp extends Application {
         Scene scene = new Scene(view, 900, 760);
         configureSetup(scene, view);
 
-        stage.setTitle("Exploding Kittens");
+        stage.setTitle(Texts.get("window.title"));
         stage.setMinWidth(780);
         stage.setMinHeight(700);
         stage.setScene(scene);
@@ -72,7 +72,7 @@ public final class MainApp extends Application {
         try {
             state = new GameSetupController().startGame(playerCountText);
         } catch (IllegalArgumentException exception) {
-            showError.accept(exception.getMessage());
+            showError.accept(Texts.get(exception.getMessage()));
             return;
         }
         openGameplay.accept(state);

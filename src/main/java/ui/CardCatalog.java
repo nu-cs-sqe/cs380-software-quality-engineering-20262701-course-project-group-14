@@ -19,21 +19,39 @@ final class CardCatalog {
 
     enum Face { READY, HOVER, SOON, LOCKED }
 
+    /**
+     * Look of one card type. {@code key} and {@code tag} are stable identifiers; the name, tag
+     * and effect text are looked up in the current language each time they are shown.
+     */
     static final class Info {
         final String key;
-        final String name;
         final String tag;
         final int role;
-        final String effect;
         final Icon icon;
+        private final String messageKey;
+        private final String effectKey;
+        private final String fallbackName;
 
-        Info(String key, String name, String tag, int role, String effect, Icon icon) {
-            this.key = key;
-            this.name = name;
+        Info(String messageKey, String tag, int role, Icon icon, String effectKey, String fallbackName) {
+            this.key = messageKey.replaceAll("[^A-Za-z]", "").toUpperCase(Locale.ROOT);
             this.tag = tag;
             this.role = role;
-            this.effect = effect;
             this.icon = icon;
+            this.messageKey = messageKey;
+            this.effectKey = effectKey;
+            this.fallbackName = fallbackName;
+        }
+
+        String displayName() {
+            return fallbackName != null ? fallbackName : Texts.get("card." + messageKey + ".name");
+        }
+
+        String effectText() {
+            return Texts.get(effectKey);
+        }
+
+        String tagText() {
+            return Texts.get("tag." + tag);
         }
     }
 
@@ -42,36 +60,24 @@ final class CardCatalog {
     // Cards that are never played from the hand; the engine uses them automatically.
     static final Set<String> AUTOMATIC = Set.of("DEFUSE", "EXPLODINGKITTEN");
 
-    private static final String CAT_TEXT =
-            "No effect on its own. Play a matching pair to steal a random card.";
+    private static final String CAT_EFFECT = "card.cat.effect";
     private static final Map<String, Info> INFO = new HashMap<>();
 
     static {
-        add("EXPLODINGKITTEN", "Exploding Kitten", "DANGER", GameTheme.ROLE_DANGER, Icon.BOMB,
-                "Draw it and you explode, unless you can play a Defuse.");
-        add("DEFUSE", "Defuse", "SAFETY", GameTheme.ROLE_SAFETY, Icon.SCISSORS,
-                "Cancels an Exploding Kitten. Secretly put the Kitten back anywhere in the draw pile.");
-        add("ATTACK", "Attack", "TEMPO", GameTheme.ROLE_ATTACK, Icon.CLAW,
-                "End your turn without drawing. The next player takes two turns in a row.");
-        add("SKIP", "Skip", "TEMPO", GameTheme.ROLE_SKIP, Icon.SKIP,
-                "End your current turn without drawing a card.");
-        add("FAVOR", "Favor", "PLAYER", GameTheme.ROLE_FAVOR, Icon.GIFT,
-                "Pick a player. They choose one card from their hand and give it to you.");
-        add("SHUFFLE", "Shuffle", "DECK", GameTheme.ROLE_SHUFFLE, Icon.SHUFFLE,
-                "Shuffle the draw pile. Nobody learns what is in it.");
-        add("SEETHEFUTURE", "See The Future", "DECK", GameTheme.ROLE_FUTURE, Icon.EYE,
-                "Privately look at the top 3 cards of the draw pile. The order stays the same.");
-        add("NOPE", "Nope", "PLAYER", GameTheme.ROLE_NOPE, Icon.NOPE,
-                "Cancel an action. It does not work on Exploding Kitten or Defuse.");
-        add("SNIFFTEST", "Sniff Test", "DECK", GameTheme.ROLE_SNIFF, Icon.PAW,
-                "Sniff the top card. If it is an Exploding Kitten, move it to the bottom. "
-                        + "Your turn continues.");
-        add("TACOCAT", "Tacocat", "CAT", GameTheme.ROLE_CAT, Icon.CAT_TACO, CAT_TEXT);
-        add("CATTERMELON", "Cattermelon", "CAT", GameTheme.ROLE_CAT, Icon.CAT_MELON, CAT_TEXT);
-        add("HAIRYPOTATOCAT", "Hairy Potato Cat", "CAT", GameTheme.ROLE_CAT, Icon.CAT_POTATO, CAT_TEXT);
-        add("BEARDCAT", "Beard Cat", "CAT", GameTheme.ROLE_CAT, Icon.CAT_BEARD, CAT_TEXT);
-        add("RAINBOWRALPHINGCAT", "Rainbow-Ralphing Cat", "CAT", GameTheme.ROLE_CAT,
-                Icon.CAT_RAINBOW, CAT_TEXT);
+        add("EXPLODING_KITTEN", "DANGER", GameTheme.ROLE_DANGER, Icon.BOMB);
+        add("DEFUSE", "SAFETY", GameTheme.ROLE_SAFETY, Icon.SCISSORS);
+        add("ATTACK", "TEMPO", GameTheme.ROLE_ATTACK, Icon.CLAW);
+        add("SKIP", "TEMPO", GameTheme.ROLE_SKIP, Icon.SKIP);
+        add("FAVOR", "PLAYER", GameTheme.ROLE_FAVOR, Icon.GIFT);
+        add("SHUFFLE", "DECK", GameTheme.ROLE_SHUFFLE, Icon.SHUFFLE);
+        add("SEE_THE_FUTURE", "DECK", GameTheme.ROLE_FUTURE, Icon.EYE);
+        add("NOPE", "PLAYER", GameTheme.ROLE_NOPE, Icon.NOPE);
+        add("SNIFF_TEST", "DECK", GameTheme.ROLE_SNIFF, Icon.PAW);
+        addCat("TACOCAT", Icon.CAT_TACO);
+        addCat("CATTERMELON", Icon.CAT_MELON);
+        addCat("HAIRY_POTATO_CAT", Icon.CAT_POTATO);
+        addCat("BEARD_CAT", Icon.CAT_BEARD);
+        addCat("RAINBOW_RALPHING_CAT", Icon.CAT_RAINBOW);
     }
 
     private static final Map<String, WritableImage> FACES = new HashMap<>();
@@ -80,8 +86,16 @@ final class CardCatalog {
     private CardCatalog() {
     }
 
-    private static void add(String key, String name, String tag, int role, Icon icon, String effect) {
-        INFO.put(key, new Info(key, name, tag, role, effect, icon));
+    private static void add(String type, String tag, int role, Icon icon) {
+        put(new Info(type, tag, role, icon, "card." + type + ".effect", null));
+    }
+
+    private static void addCat(String type, Icon icon) {
+        put(new Info(type, "CAT", GameTheme.ROLE_CAT, icon, CAT_EFFECT, null));
+    }
+
+    private static void put(Info info) {
+        INFO.put(info.key, info);
     }
 
     static Info lookup(String enumName) {
@@ -90,8 +104,8 @@ final class CardCatalog {
         if (known != null) {
             return known;
         }
-        return new Info(key, titleCase(enumName), "CARD", GameTheme.ROLE_CAT,
-                "No description is available for this card yet.", Icon.CAT_BEARD);
+        return new Info(enumName, "CARD", GameTheme.ROLE_CAT, Icon.CAT_BEARD, "card.unknown.effect",
+                titleCase(enumName));
     }
 
     static boolean isWired(Info info) {

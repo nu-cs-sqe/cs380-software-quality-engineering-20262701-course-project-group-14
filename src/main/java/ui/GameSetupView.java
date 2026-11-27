@@ -10,23 +10,33 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import localization.Language;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public final class GameSetupView extends StackPane {
 
     private static final int CARD_WIDTH = 360;
 
+    private final ComboBox<Language> languageBox = new ComboBox<>();
+    private final ImageView languageLabel = new ImageView();
+    private final ImageView title = new ImageView();
+    private final ImageView subtitleText = new ImageView();
+    private final ImageView instruction = new ImageView();
     private final TextField playerCountInput = new TextField();
     private final Button startGameButton = new Button();
     private final Label messageLabel = new Label();
@@ -54,28 +64,23 @@ public final class GameSetupView extends StackPane {
         Group mascotHolder = new Group(mascotBody);
 
         // ---- title and subtitle (bitmap font) ----
-        ImageView title = PixelArt.view(PixelArt.textImage(
-                "EXPLODING KITTENS", 5, PixelArt.CREAM, PixelArt.AMBER, 4, PixelArt.VIOLET_SHADOW));
+        title.setSmooth(false);
 
         ImageView heartLeft = PixelArt.view(PixelArt.sprite(PixelData.HEART, 3));
         ImageView heartRight = PixelArt.view(PixelArt.sprite(PixelData.HEART, 3));
-        ImageView subtitleText = PixelArt.view(PixelArt.textImage(
-                "SET UP A NEW GAME", 2, PixelArt.LILAC, PixelArt.LILAC, 7, 0xFF0B0819));
+        subtitleText.setSmooth(false);
         HBox subtitle = new HBox(14, heartLeft, subtitleText, heartRight);
         subtitle.setAlignment(Pos.CENTER);
         subtitle.setMaxWidth(Region.USE_PREF_SIZE);
 
         // ---- setup card (same controls as before) ----
-        ImageView instruction = PixelArt.view(PixelArt.textImage(
-                "NUMBER OF PLAYERS", 2, PixelArt.CREAM, PixelArt.CREAM, 7, 0));
+        instruction.setSmooth(false);
+        languageLabel.setSmooth(false);
+        HBox languageRow = buildLanguageRow();
 
-        playerCountInput.setPromptText("Enter 2-5");
         playerCountInput.setMaxWidth(Double.MAX_VALUE);
 
-        startGameButton.setGraphic(PixelArt.view(PixelArt.textImage(
-                "START GAME", 3, PixelArt.INK, PixelArt.INK, 7, 0)));
         startGameButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        startGameButton.setAccessibleText("Start Game");
         startGameButton.setMaxWidth(Double.MAX_VALUE);
         startGameButton.setDefaultButton(true);
 
@@ -85,6 +90,7 @@ public final class GameSetupView extends StackPane {
 
         VBox setupCard = new VBox(
                 16,
+                languageRow,
                 instruction,
                 playerCountInput,
                 startGameButton,
@@ -130,6 +136,61 @@ public final class GameSetupView extends StackPane {
         });
 
         startIdleAnimations(mascotBody, mascotView, sparkView, mascotOpen, mascotBlink, sparkA, sparkB);
+        applyTexts();
+    }
+
+    /** The language menu; the whole game uses the language chosen here. */
+    private HBox buildLanguageRow() {
+        languageBox.getItems().setAll(Texts.languages());
+        languageBox.setValue(Texts.language());
+        languageBox.getStyleClass().add("language-box");
+        languageBox.setCellFactory(list -> new LanguageCell());
+        languageBox.setButtonCell(new LanguageCell());
+        languageBox.setMaxWidth(Double.MAX_VALUE);
+        languageBox.valueProperty().addListener((property, previous, chosen) -> {
+            if (chosen != null && !chosen.equals(previous)) {
+                Texts.use(chosen);
+                applyTexts();
+            }
+        });
+        HBox.setHgrow(languageBox, Priority.ALWAYS);
+        HBox row = new HBox(14, languageLabel, languageBox);
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
+    /** Shows every setup text in the chosen language. */
+    private void applyTexts() {
+        Texts.applyFont(this);
+        // Pixel CJK glyphs need one step more than the 7-pixel bitmap font to match its size here.
+        int labelScale = PixelArt.needsFallback(Texts.get("setup.players")) ? 3 : 2;
+        title.setImage(PixelArt.textImage(
+                Texts.get("setup.title"), 5, PixelArt.CREAM, PixelArt.AMBER, 4, PixelArt.VIOLET_SHADOW));
+        subtitleText.setImage(PixelArt.textImage(
+                Texts.get("setup.subtitle"), labelScale, PixelArt.LILAC, PixelArt.LILAC, 7, 0xFF0B0819));
+        languageLabel.setImage(PixelArt.textImage(
+                Texts.get("setup.language"), labelScale, PixelArt.CREAM, PixelArt.CREAM, 7, 0));
+        instruction.setImage(PixelArt.textImage(
+                Texts.get("setup.players"), labelScale, PixelArt.CREAM, PixelArt.CREAM, 7, 0));
+        playerCountInput.setPromptText(Texts.get("setup.players.prompt"));
+        startGameButton.setGraphic(PixelArt.view(PixelArt.textImage(
+                Texts.get("setup.start"), 3, PixelArt.INK, PixelArt.INK, 7, 0)));
+        startGameButton.setAccessibleText(Texts.get("setup.start.accessible"));
+        languageBox.setAccessibleText(Texts.get("setup.language"));
+        messageLabel.setText("");
+        if (getScene() != null && getScene().getWindow() instanceof Stage) {
+            ((Stage) getScene().getWindow()).setTitle(Texts.get("window.title"));
+        }
+    }
+
+    /** Language names are drawn with the bundled pixel font so every script looks alike. */
+    private static final class LanguageCell extends ListCell<Language> {
+        @Override
+        protected void updateItem(Language language, boolean empty) {
+            super.updateItem(language, empty);
+            setText(empty || language == null ? "" : language.getDisplayName());
+            setStyle("-fx-font-family: '" + FallbackFont.family() + "';");
+        }
     }
 
     public String getPlayerCountInput() {

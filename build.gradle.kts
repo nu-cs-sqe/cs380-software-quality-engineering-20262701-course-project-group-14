@@ -58,8 +58,8 @@ tasks.jacocoTestReport {
 pitest {
     pitestVersion.set("1.15.8")
     junit5PluginVersion.set("1.2.1")
-    targetClasses.set(setOf("domain.*", "controller.*"))
-    targetTests.set(setOf("domain.*", "controller.*", "integration.*", "ui.*"))
+    targetClasses.set(setOf("domain.*", "controller.*", "localization.*"))
+    targetTests.set(setOf("domain.*", "controller.*", "localization.*", "integration.*", "ui.*"))
     excludedClasses.set(setOf(
         "domain.CardType", "domain.TurnPhase", "domain.DrawStatus",
         "domain.PlayStatus", "domain.PlayFailure", "domain.DefuseResult",
