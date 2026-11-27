@@ -126,6 +126,12 @@ public interface PendingAction {
 engine derives the public phase from that slot or from the game-over state.
 Attack turn debt is stored independently.
 
+`PendingDefuse` is the Defuse-placement implementation. It holds the drawn
+Kitten and reports `AWAITING_DEFUSE_POSITION`. While it occupies the slot, draw
+and play keep the Week 6 results `REJECTED_PENDING_DEFUSE` and
+`DEFUSE_RESOLUTION_REQUIRED`; `resolveDefuse(...)` returns
+`NOT_AWAITING_DEFUSE` when the slot does not hold a `PendingDefuse`.
+
 | Phase | Permitted state-changing entry | Resolution |
 |---|---|---|
 | `ACTIONS_ALLOWED` | `draw()`, either `playCard(...)` entry | Performs an action or installs a pending action. |

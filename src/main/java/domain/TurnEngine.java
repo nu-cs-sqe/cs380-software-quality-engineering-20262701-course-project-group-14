@@ -13,7 +13,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     private final ExplodingKittenResolver resolver;
     private final Map<CardType, CardEffect> effects;
     private final RandomSource random;
-    private Card pendingKitten;
+    private PendingAction pendingAction;
     private int remainingTurns = 1;
     private boolean attackTurnsActive;
     private boolean gameOver;
@@ -98,20 +98,21 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         if (gameOver) {
             return TurnPhase.GAME_OVER;
         }
-        return pendingKitten == null
+        return pendingAction == null
                 ? TurnPhase.ACTIONS_ALLOWED
-                : TurnPhase.AWAITING_DEFUSE_POSITION;
+                : pendingAction.getPhase();
     }
 
     @Override
     public DefuseResult resolveDefuse(int position) {
-        if (pendingKitten == null) {
+        if (!(pendingAction instanceof PendingDefuse)) {
             return DefuseResult.NOT_AWAITING_DEFUSE;
         }
+        Card kitten = ((PendingDefuse) pendingAction).getKitten();
         DefuseResult result = resolver.defuse(
-                state.getCurrentPlayer(), pendingKitten, state.getDeck(), position);
+                state.getCurrentPlayer(), kitten, state.getDeck(), position);
         if (result == DefuseResult.DEFUSED) {
-            pendingKitten = null;
+            pendingAction = null;
             finishOneTurn();
         }
         return result;
@@ -122,7 +123,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         if (gameOver) {
             return DrawResult.gameOver();
         }
-        if (pendingKitten != null) {
+        if (pendingAction != null) {
             return DrawResult.rejectedPendingDefuse();
         }
         Deck deck = state.getDeck();
@@ -144,7 +145,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         ExplosionOutcome outcome = resolver.begin(state.getCurrentPlayer(), kitten);
         Card drawnKitten = deck.drawCard();
         if (outcome == ExplosionOutcome.DEFUSE_POSITION_REQUIRED) {
-            pendingKitten = drawnKitten;
+            pendingAction = new PendingDefuse(drawnKitten);
             return DrawResult.defuseRequired();
         }
         advanceAfterElimination();
@@ -157,7 +158,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
             return PlayResult.rejected(PlayFailure.GAME_OVER);
         }
         if (handIndex < 0) {
-            PlayFailure failure = pendingKitten != null
+            PlayFailure failure = pendingAction != null
                     ? PlayFailure.DEFUSE_RESOLUTION_REQUIRED
                     : PlayFailure.INVALID_HAND_INDEX;
             return PlayResult.rejected(failure);
@@ -196,7 +197,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         if (gameOver) {
             return PlayResult.rejected(PlayFailure.GAME_OVER);
         }
-        if (pendingKitten != null) {
+        if (pendingAction != null) {
             return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
         }
         if (command.getSecondHandIndex().isEmpty()) {

@@ -1,5 +1,9 @@
 # TurnEngine BVA
 
+The engine keeps at most one pending action in a single slot. While a drawn
+Exploding Kitten waits for a Defuse position, the slot holds a `PendingDefuse`
+(see `PendingDefuse.md`) and the phase is derived from it.
+
 ## Constructor under test: `TurnEngine(GameState, DiscardPile, ExplodingKittenResolver, Map<CardType, CardEffect>)`
 
 | ID | State of the system | Input | Expected output | Implemented? |
@@ -20,7 +24,7 @@
 | TE-09 | Phase is `ACTIONS_ALLOWED`; deck is empty. | None | Returns `EMPTY_DECK`; hand, discard pile, phase, and current player do not change. | :white_check_mark: |
 | TE-10 | Phase is `ACTIONS_ALLOWED`; deck top is a non-Kitten card; at least two players are alive. | None | Drawn card enters the current player's hand, deck size decreases by one, current player advances exactly once, and result is `NORMAL_CARD_DRAWN` with the card type. | :white_check_mark: (turn advancement tested with a GameState stub) |
 | TE-11 | Phase is `AWAITING_DEFUSE_POSITION`. | None | Returns `REJECTED_PENDING_DEFUSE`; no card is drawn and no state changes. | :white_check_mark: (waiting state reached with a resolver stub) |
-| TE-12 | Deck top is an Exploding Kitten; resolver returns `DEFUSE_POSITION_REQUIRED`. | None | Saves the pending Kitten, returns `DEFUSE_POSITION_REQUIRED`, changes phase to `AWAITING_DEFUSE_POSITION`, and does not advance the player. | :white_check_mark: (tested with a resolver stub) |
+| TE-12 | Deck top is an Exploding Kitten; resolver returns `DEFUSE_POSITION_REQUIRED`. | None | Stores the Kitten as a `PendingDefuse` in the pending-action slot, returns `DEFUSE_POSITION_REQUIRED`, changes phase to `AWAITING_DEFUSE_POSITION`, and does not advance the player. | :white_check_mark: (tested with a resolver stub) |
 | TE-13 | Deck top is an Exploding Kitten; resolver returns `PLAYER_ELIMINATED`. | None | Returns `PLAYER_ELIMINATED` and advances to the next living player exactly once. | :white_check_mark: (tested with resolver and GameState stubs) |
 
 ## Method under test: `playCard(int handIndex)`
@@ -50,14 +54,14 @@
 | TE-22 | No Kitten is pending. | Any position | Returns `NOT_AWAITING_DEFUSE`; state does not change. | :white_check_mark: |
 | TE-23 | A Kitten is pending; resolver returns `INVALID_POSITION`. | Invalid position | Returns `INVALID_POSITION`; pending Kitten and current player remain unchanged. | :white_check_mark: (tested with a resolver stub) |
 | TE-24 | A Kitten is pending; resolver returns `DEFUSE_NOT_FOUND`. | A position in range | Returns `DEFUSE_NOT_FOUND`; pending Kitten and current player remain unchanged. | :white_check_mark: (tested with a resolver stub) |
-| TE-25 | A Kitten is pending; resolver returns `DEFUSED`; at least two players are alive. | A valid position | Returns `DEFUSED`, clears the pending Kitten, changes phase to `ACTIONS_ALLOWED`, and advances exactly once. | :white_check_mark: (tested with resolver and GameState stubs) |
+| TE-25 | A Kitten is pending; resolver returns `DEFUSED`; at least two players are alive. | A valid position | Returns `DEFUSED`, clears the pending-action slot, changes phase to `ACTIONS_ALLOWED`, and advances exactly once. | :white_check_mark: (tested with resolver and GameState stubs) |
 
 ## Method under test: `getPhase()`
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| TE-26 | No Kitten is pending. | None | Returns `ACTIONS_ALLOWED`. | implemented in TE-01 |
-| TE-27 | A Kitten is pending. | None | Returns `AWAITING_DEFUSE_POSITION`. | implemented in TE-12 |
+| TE-26 | The pending-action slot is empty and the game is not over. | None | Returns `ACTIONS_ALLOWED`. | implemented in TE-01 |
+| TE-27 | The pending-action slot holds a `PendingDefuse`. | None | Returns the slot's phase, `AWAITING_DEFUSE_POSITION`. | implemented in TE-12 |
 
 ## Method under test: `getSnapshot()`
 
