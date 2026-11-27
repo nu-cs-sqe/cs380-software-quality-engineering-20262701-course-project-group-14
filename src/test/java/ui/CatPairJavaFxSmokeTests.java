@@ -13,7 +13,6 @@ import domain.TurnEngine;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -28,7 +27,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -44,17 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CatPairJavaFxSmokeTests {
     @BeforeAll
     static void startJavaFx() throws Exception {
-        CompletableFuture<Void> started = new CompletableFuture<>();
-        Platform.startup(() -> {
-            Platform.setImplicitExit(false);
-            started.complete(null);
-        });
-        started.get(10, TimeUnit.SECONDS);
-    }
-
-    @AfterAll
-    static void stopJavaFx() {
-        Platform.exit();
+        JavaFxToolkit.start();
     }
 
     @Test
@@ -130,16 +118,7 @@ class CatPairJavaFxSmokeTests {
     }
 
     private static void runInJavaFx(Runnable exercise) throws Exception {
-        CompletableFuture<Void> finished = new CompletableFuture<>();
-        Platform.runLater(() -> {
-            try {
-                exercise.run();
-                finished.complete(null);
-            } catch (Throwable failure) {
-                finished.completeExceptionally(failure);
-            }
-        });
-        finished.get(20, TimeUnit.SECONDS);
+        JavaFxToolkit.run(exercise);
     }
 
     private static void exerciseWinner(BiConsumer<Scene, GamePlayController> afterGameOver) {
