@@ -20,6 +20,7 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     private int remainingTurns = 1;
     private boolean attackTurnsActive;
     private boolean gameOver;
+    private WinReason winReason;
     private final Map<Player, Integer> defuseCounts = new HashMap<>();
 
     public TurnEngine(
@@ -90,7 +91,8 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
         return GameSnapshot.create(currentPlayer.getName(), hand, state.getDeck().size(),
                 discardPile.size(), Math.toIntExact(alivePlayers), getPhase())
                 .withTurnDetails(summaries, players.indexOf(currentPlayer), remainingTurns)
-                .withTopDiscard(discardPile.top().map(Card::getType).orElse(null));
+                .withTopDiscard(discardPile.top().map(Card::getType).orElse(null))
+                .withWinReason(winReason);
     }
 
     private static PlayerSummary playerSummary(int seat, Player player) {
@@ -294,6 +296,9 @@ public final class TurnEngine implements TurnActions, CommandPlayActions {
     private void advanceAfterElimination() {
         attackTurnsActive = false;
         gameOver = state.advanceCurrentPlayer() == AdvanceResult.ONE_PLAYER_REMAINS;
+        if (gameOver) {
+            winReason = WinReason.LAST_SURVIVOR;
+        }
         remainingTurns = gameOver ? 0 : 1;
     }
 }
