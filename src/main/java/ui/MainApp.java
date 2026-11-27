@@ -72,7 +72,14 @@ public final class MainApp extends Application {
 
     static void startNamedGame(List<String> playerNames, Consumer<GameState> openGameplay,
                                Consumer<String> showError) {
-        openGameplay.accept(new GameSetupController().startNamedGame(playerNames));
+        GameState state;
+        try {
+            state = new GameSetupController().startNamedGame(playerNames);
+        } catch (IllegalArgumentException exception) {
+            showError.accept(Texts.get(exception.getMessage()));
+            return;
+        }
+        openGameplay.accept(state);
     }
 
     static void startGame(

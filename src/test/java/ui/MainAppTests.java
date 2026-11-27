@@ -59,6 +59,17 @@ public class MainAppTests {
     }
 
     @Test
+    public void StartNamedGame_WithDuplicateNames_ReportsErrorWithoutOpeningGameplay() {
+        List<GameState> openedGames = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        MainApp.startNamedGame(List.of("Ada", "ada"), openedGames::add, errors::add);
+
+        assertEquals(List.of(), openedGames);
+        assertEquals(List.of("Two players cannot share a name."), errors);
+    }
+
+    @Test
     public void StartGame_WithCountBelowMinimum_ReportsErrorWithoutOpeningGameplay() {
         List<GameState> openedGames = new ArrayList<>();
         List<String> errors = new ArrayList<>();

@@ -72,4 +72,4 @@ The setup screen asks for the player count first and then shows one name row per
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
 | NAV-11 | The name step is open for two players. | `["Ada", "Bo"]` | Sends the initialized game to the gameplay screen; `Ada` is the current player. | :white_check_mark: |
-| NAV-12 | The name step is open for two players. | `["Ada", "ada"]` | Reports the translated duplicate-name error and opens no game. | :x: |
+| NAV-12 | The name step is open for two players. | `["Ada", "ada"]` | Reports the translated duplicate-name error and opens no game. | :white_check_mark: |
