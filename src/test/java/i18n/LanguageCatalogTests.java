@@ -87,6 +87,14 @@ public class LanguageCatalogTests {
                 exception.getMessage());
     }
 
+    @Test
+    public void FromProperties_WithNullConfiguration_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> LanguageCatalog.fromProperties(null));
+
+        assertEquals("Language configuration must not be null.", exception.getMessage());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {

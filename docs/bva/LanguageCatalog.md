@@ -25,7 +25,7 @@ Adding a language means adding its code and name here and a
 | LC-07 | No catalog exists. | `languages=en,en` | Throws `IllegalArgumentException` with `"Duplicate language: en"`. | :white_check_mark: |
 | LC-08 | No catalog exists. | `default=fr`, `fr` not listed | Throws `IllegalArgumentException` with `"Default language must be one of the supported languages: fr"`. | :white_check_mark: |
 | LC-09 | No catalog exists. | No `default` entry | Throws `IllegalArgumentException` with `"Default language must be one of the supported languages: null"`. | :white_check_mark: |
-| LC-10 | No catalog exists. | `properties = null` | Throws `NullPointerException` with `"Language configuration must not be null."`. | :x: |
+| LC-10 | No catalog exists. | `properties = null` | Throws `NullPointerException` with `"Language configuration must not be null."`. | :white_check_mark: |
 
 ## Method under test: `getLanguages()`
 

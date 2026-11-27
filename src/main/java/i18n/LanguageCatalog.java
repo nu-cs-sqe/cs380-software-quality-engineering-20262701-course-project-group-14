@@ -2,6 +2,7 @@ package i18n;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 public final class LanguageCatalog {
@@ -14,6 +15,7 @@ public final class LanguageCatalog {
     }
 
     public static LanguageCatalog fromProperties(Properties properties) {
+        Objects.requireNonNull(properties, "Language configuration must not be null.");
         String list = properties.getProperty("languages");
         if (list == null || list.isBlank()) {
             throw new IllegalArgumentException("Language list must not be empty.");
