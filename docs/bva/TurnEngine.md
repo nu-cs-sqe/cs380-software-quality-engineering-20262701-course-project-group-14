@@ -155,4 +155,4 @@ for a Defuse position and moves the Kitten to the bottom of the deck.
 |---|---|---|---|---|
 | TE-DM-01 | Two players; Player 1 has completed one Defuse. | Player 1 defuses a second Kitten | Returns `DEFUSED`; phase is `GAME_OVER`; the winner is Player 1's seat; zero turns remain; the turn does not pass to Player 2. | :white_check_mark: |
 | TE-DM-02 | Two players; no Defuse completed yet. | Player 1 defuses a first Kitten | Returns `DEFUSED`; the game continues and Player 2 becomes current. | :white_check_mark: |
-| TE-DM-03 | Two players; Player 1 has completed one Defuse. | Player 2 defuses a first Kitten | The game continues: counts are per player, so two Defuses in total by different players do not end the game. | :x: |
+| TE-DM-03 | Two players; Player 1 has completed one Defuse. | Player 2 defuses a first Kitten | The game continues: counts are per player, so two Defuses in total by different players do not end the game. | :white_check_mark: |

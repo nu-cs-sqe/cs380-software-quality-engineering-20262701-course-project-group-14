@@ -817,6 +817,24 @@ public class TurnEngineTests {
         assertEquals(0, engine.getSnapshot().getRemainingTurns());
     }
 
+    @Test
+    public void ResolveDefuse_FirstDefuseOfEachPlayer_KeepsGameGoing() {
+        Player first = new Player("Player 1");
+        Player second = new Player("Player 2");
+        GameState state = new GameState(List.of(first, second),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.EXPLODING_KITTEN));
+        TurnEngine engine = defuseMasterEngine(state);
+        engine.draw();
+        engine.resolveDefuse(0);
+
+        engine.draw();
+        DefuseResult result = engine.resolveDefuse(0);
+
+        assertEquals(DefuseResult.DEFUSED, result);
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(first, state.getCurrentPlayer());
+    }
+
     private static Deck deckOf(CardType... types) {
         Deck deck = createEmptyDeck();
         for (CardType type : types) {
