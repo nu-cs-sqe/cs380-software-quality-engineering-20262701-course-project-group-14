@@ -23,6 +23,10 @@ public class GameSetupController {
     private static final String NAME_DUPLICATE_ERROR_MESSAGE = "setup.error.name-duplicate";
     private static final String NAME_BLANK_ERROR_MESSAGE = "setup.error.name-blank";
     private static final String NAME_CHARACTERS_ERROR_MESSAGE = "setup.error.name-characters";
+    /** Character types that cannot be shown: invisible formatting, private use, unassigned. */
+    private static final Set<Integer> HIDDEN_CHARACTER_TYPES = Set.of(
+            (int) Character.FORMAT, (int) Character.PRIVATE_USE,
+            (int) Character.UNASSIGNED, (int) Character.SURROGATE);
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
@@ -57,7 +61,8 @@ public class GameSetupController {
 
     private static boolean isDisplayable(int codePoint) {
         return !Character.isSupplementaryCodePoint(codePoint)
-                && !Character.isISOControl(codePoint);
+                && !Character.isISOControl(codePoint)
+                && !HIDDEN_CHARACTER_TYPES.contains(Character.getType(codePoint));
     }
 
     private GameState setUp(List<Player> players) {

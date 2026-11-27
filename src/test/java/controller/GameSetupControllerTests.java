@@ -322,6 +322,16 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithZeroWidthSpaceOnly_ThrowsNameCharactersKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada", "\u200B")));
+
+        assertEquals("setup.error.name-characters", exception.getMessage());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 
