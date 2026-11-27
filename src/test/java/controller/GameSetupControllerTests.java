@@ -273,6 +273,16 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithNullList_ThrowsNullPointerException() {
+        GameSetupController controller = new GameSetupController();
+
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> controller.startNamedGame(null));
+
+        assertEquals("Player names must not be null.", exception.getMessage());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 

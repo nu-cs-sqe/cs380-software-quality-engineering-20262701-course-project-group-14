@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 public class GameSetupController {
@@ -28,6 +29,7 @@ public class GameSetupController {
     }
 
     public GameState startNamedGame(List<String> playerNames) {
+        Objects.requireNonNull(playerNames, "Player names must not be null.");
         validatePlayerCount(playerNames.size());
         List<Player> players = new ArrayList<>();
         Set<String> seen = new HashSet<>();
