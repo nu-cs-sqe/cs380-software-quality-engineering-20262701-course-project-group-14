@@ -25,6 +25,17 @@ public class MainAppTests {
     }
 
     @Test
+    public void CheckPlayerCount_WithThree_ReportsCountForNameStep() {
+        List<Integer> counts = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        MainApp.checkPlayerCount("3", counts::add, errors::add);
+
+        assertEquals(List.of(3), counts);
+        assertEquals(List.of(), errors);
+    }
+
+    @Test
     public void StartGame_WithCountBelowMinimum_ReportsErrorWithoutOpeningGameplay() {
         List<GameState> openedGames = new ArrayList<>();
         List<String> errors = new ArrayList<>();

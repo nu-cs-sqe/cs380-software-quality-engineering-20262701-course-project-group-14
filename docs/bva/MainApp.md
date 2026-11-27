@@ -64,7 +64,7 @@ The setup screen asks for the player count first and then shows one name row per
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| NAV-09 | The setup screen is open and no game has started. | `"3"` | Reports `3` so the view can show three name rows; no error. | :x: |
+| NAV-09 | The setup screen is open and no game has started. | `"3"` | Reports `3` so the view can show three name rows; no error. | :white_check_mark: |
 | NAV-10 | The setup screen is open and no game has started. | `"6"` | Reports the player-count error and no count. | :x: |
 
 ## Method under test: `startNamedGame(List<String>, Consumer<GameState>, Consumer<String>)`

@@ -7,6 +7,7 @@ import domain.GameState;
 import domain.TurnEngineFactory;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -61,6 +62,11 @@ public final class MainApp extends Application {
             scene.setRoot(setup);
         });
         controller.initialize();
+    }
+
+    static void checkPlayerCount(String playerCountText, IntConsumer showNameStep,
+                                 Consumer<String> showError) {
+        startGame(playerCountText, state -> showNameStep.accept(state.getPlayers().size()), showError);
     }
 
     static void startGame(
