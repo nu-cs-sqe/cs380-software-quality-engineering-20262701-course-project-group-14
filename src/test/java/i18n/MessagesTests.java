@@ -1,5 +1,6 @@
 package i18n;
 
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,6 +51,17 @@ public class MessagesTests {
                 () -> english().text(null));
 
         assertEquals("Message key must not be null.", exception.getMessage());
+    }
+
+    @Test
+    public void ForLanguage_EnglishOnChineseSystem_UsesEnglishBaseBundle() {
+        Locale systemLocale = Locale.getDefault();
+        Locale.setDefault(Locale.SIMPLIFIED_CHINESE);
+        try {
+            assertEquals("Hello", english().text("greeting"));
+        } finally {
+            Locale.setDefault(systemLocale);
+        }
     }
 
     private static Messages english() {

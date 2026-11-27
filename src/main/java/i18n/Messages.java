@@ -19,7 +19,9 @@ public final class Messages {
     }
 
     static Messages forLanguage(String bundleName, Language language) {
-        return new Messages(language, ResourceBundle.getBundle(bundleName, language.getLocale()));
+        ResourceBundle bundle = ResourceBundle.getBundle(bundleName, language.getLocale(),
+                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES));
+        return new Messages(language, bundle);
     }
 
     public Language getLanguage() {
