@@ -9,18 +9,20 @@ public final class Language {
     private final Locale locale;
 
     public Language(String code, String displayName) {
-        this.code = Objects.requireNonNull(code, "Language code must not be null.");
-        if (code.isBlank()) {
-            throw new IllegalArgumentException("Language code must not be blank.");
-        }
-        this.displayName = Objects.requireNonNull(displayName, "Language display name must not be null.");
-        if (displayName.isBlank()) {
-            throw new IllegalArgumentException("Language display name must not be blank.");
-        }
+        this.code = requireText(code, "Language code");
+        this.displayName = requireText(displayName, "Language display name");
         this.locale = Locale.forLanguageTag(code);
         if (locale.getLanguage().isEmpty()) {
             throw new IllegalArgumentException("Language code must be a language tag: " + code);
         }
+    }
+
+    private static String requireText(String value, String name) {
+        Objects.requireNonNull(value, name + " must not be null.");
+        if (value.isBlank()) {
+            throw new IllegalArgumentException(name + " must not be blank.");
+        }
+        return value;
     }
 
     public String getCode() {
