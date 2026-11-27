@@ -15,6 +15,9 @@ public final class Language {
         }
         this.displayName = displayName;
         this.locale = Locale.forLanguageTag(code);
+        if (locale.getLanguage().isEmpty()) {
+            throw new IllegalArgumentException("Language code must be a language tag: " + code);
+        }
     }
 
     public String getCode() {

@@ -42,4 +42,12 @@ public class LanguageTests {
 
         assertEquals("Language code must not be blank.", exception.getMessage());
     }
+
+    @Test
+    public void Constructor_WithInvalidTag_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> new Language("not a tag", "English"));
+
+        assertEquals("Language code must be a language tag: not a tag", exception.getMessage());
+    }
 }

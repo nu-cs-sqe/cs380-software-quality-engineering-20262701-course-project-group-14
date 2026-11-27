@@ -11,7 +11,7 @@ language menu, and the matching `Locale`.
 | LG-02 | No language exists. | `code = "zh-CN"`, `displayName = "简体中文"` | Keeps the code and name; the locale has language `zh` and country `CN`. | :white_check_mark: |
 | LG-03 | No language exists. | `code = null` | Throws `NullPointerException` with `"Language code must not be null."`. | :white_check_mark: |
 | LG-04 | No language exists. | `code = "  "` | Throws `IllegalArgumentException` with `"Language code must not be blank."`. | :white_check_mark: |
-| LG-05 | No language exists. | `code = "not a tag"` | Throws `IllegalArgumentException` with `"Language code must be a language tag: not a tag"`. | :x: |
+| LG-05 | No language exists. | `code = "not a tag"` | Throws `IllegalArgumentException` with `"Language code must be a language tag: not a tag"`. | :white_check_mark: |
 | LG-06 | No language exists. | `displayName = null` | Throws `NullPointerException` with `"Language display name must not be null."`. | :x: |
 | LG-07 | No language exists. | `displayName = ""` | Throws `IllegalArgumentException` with `"Language display name must not be blank."`. | :x: |
 
