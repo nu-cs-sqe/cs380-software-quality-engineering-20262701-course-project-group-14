@@ -166,9 +166,12 @@ public interface GamePlayViewPort {
 }
 ```
 GamePlayController.initialize() binds the three input callbacks before rendering the initial snapshot. GamePlayView implements these registration methods.
-```
+
 `GamePlayController` depends only on `TurnActions` and `GamePlayViewPort`.
 Tests provide hand-written adapters for those two interfaces.
+MainApp.startGameplay assembles the turn engine, discard pile, resolver
+and effect map, then initializes GamePlayController with the gameplay view.
+Skip is registered in the startup effect map.
 
 ## Ownership
 
