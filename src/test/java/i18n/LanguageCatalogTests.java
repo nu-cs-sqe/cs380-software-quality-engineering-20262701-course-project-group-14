@@ -105,6 +105,15 @@ public class LanguageCatalogTests {
         assertEquals(List.of("en", "zh-CN"), codes(catalog));
     }
 
+    @Test
+    public void Load_BundledConfiguration_ListsEnglishAndSimplifiedChinese() {
+        LanguageCatalog catalog = LanguageCatalog.load();
+
+        assertEquals(List.of("en", "zh-CN"), codes(catalog));
+        assertEquals("简体中文", catalog.getLanguages().get(1).getDisplayName());
+        assertEquals("en", catalog.getDefaultLanguage().getCode());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
