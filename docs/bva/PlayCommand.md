@@ -31,7 +31,7 @@ distinct pair indices, matching card types, and legal targets.
 | PC-11 | No command exists. | `firstHandIndex = -1`, `secondHandIndex = 0`, `targetPlayerIndex = 0` | Throws `IllegalArgumentException` with `"Hand index must not be negative."`; no command is created. | :white_check_mark: |
 | PC-12 | No command exists. | `firstHandIndex = 0`, `secondHandIndex = -1`, `targetPlayerIndex = 0` | Throws `IllegalArgumentException` with `"Second hand index must not be negative."`; no command is created. | :white_check_mark: |
 | PC-13 | No command exists. | `firstHandIndex = 0`, `secondHandIndex = 1`, `targetPlayerIndex = -1` | Throws `IllegalArgumentException` with `"Target player index must not be negative."`; no command is created. | :white_check_mark: |
-| PC-14 | No command exists. | `firstHandIndex = 1`, `secondHandIndex = 0`, `targetPlayerIndex = 0` | Creates the command; `0` is the smallest valid second hand index. | :x: |
+| PC-14 | No command exists. | `firstHandIndex = 1`, `secondHandIndex = 0`, `targetPlayerIndex = 0` | Creates the command; `0` is the smallest valid second hand index. | :white_check_mark: |
 
 ## Getter coverage
 

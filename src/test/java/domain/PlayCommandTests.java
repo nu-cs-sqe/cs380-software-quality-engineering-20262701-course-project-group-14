@@ -102,6 +102,15 @@ public class PlayCommandTests {
     }
 
     @Test
+    public void Pair_WithSecondIndexZero_CreatesCommand() {
+        PlayCommand command = PlayCommand.pair(1, 0, 0);
+
+        assertEquals(1, command.getFirstHandIndex());
+        assertEquals(0, command.getSecondHandIndex().orElseThrow());
+        assertEquals(0, command.getTargetPlayerIndex().orElseThrow());
+    }
+
+    @Test
     public void Pair_WithDuplicateIndices_PreservesCommandForEngineValidation() {
         PlayCommand command = PlayCommand.pair(1, 1, 0);
 
