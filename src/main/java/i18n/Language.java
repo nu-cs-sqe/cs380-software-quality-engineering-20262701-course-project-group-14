@@ -1,6 +1,7 @@
 package i18n;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public final class Language {
     private final String code;
@@ -8,7 +9,7 @@ public final class Language {
     private final Locale locale;
 
     public Language(String code, String displayName) {
-        this.code = code;
+        this.code = Objects.requireNonNull(code, "Language code must not be null.");
         this.displayName = displayName;
         this.locale = Locale.forLanguageTag(code);
     }

@@ -3,6 +3,7 @@ package i18n;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LanguageTests {
 
@@ -24,5 +25,13 @@ public class LanguageTests {
         assertEquals("简体中文", language.getDisplayName());
         assertEquals("zh", language.getLocale().getLanguage());
         assertEquals("CN", language.getLocale().getCountry());
+    }
+
+    @Test
+    public void Constructor_WithNullCode_ThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> new Language(null, "English"));
+
+        assertEquals("Language code must not be null.", exception.getMessage());
     }
 }
