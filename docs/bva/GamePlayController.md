@@ -71,3 +71,39 @@
 - State: Valid actions and view exist. The snapshot has 4 cards in the deck. The view selects position 2 and the actions return DEFUSED.
 - Input: Initialize the controller, then trigger the view's position-selection event.
 - Expected: The view is asked for a position in [0, 4], resolveDefuse(2) is called once, the success message appears, and the snapshot is rendered. Total render count is 2.
+
+## Method under test: `handlePlayCard(int handIndex)` for Cat Card selection
+
+These cases use the proposed Week 9 view and command interfaces. The controller
+collects selections and presents results. The engine validates each submitted
+command and applies all game rules. Use a hand-written view adapter and exercise
+the public controller entry. Each cancellation case starts with a fresh fixture.
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GPC-CAT-01 | The current hand is `[TACOCAT, SKIP, TACOCAT, BEARD_CAT]`. | Click hand index `0`. | The view starts an inline selection with original index `2` as its only candidate. | :white_check_mark: |
+| GPC-CAT-02 | A matching second card is available. | Click the first card and cancel the inline selection. | Neither the target chooser nor a play entry is invoked. | :white_check_mark: |
+| GPC-CAT-03 | Seat `0` is current, seat `1` is eliminated, seat `2` is active with an empty hand, and seat `3` is active with cards. | Select the second matching card. | The target chooser receives only seat `3` and receives no private card identities. | :white_check_mark: |
+| GPC-CAT-04 | A second card and an eligible target are available. | Choose the second card and close the target chooser. | No play command or legacy single-card play is submitted. | :white_check_mark: |
+| GPC-CAT-05 | Hand indices `0` and `2` match. Eligible targets are seats `2` and `3`, in that order. | Click `0`, choose `2`, then select seat `3` from the target chooser. | Submits `PlayCommand.pair(0, 2, 3)` exactly once and renders the latest snapshot when the result is `CONTINUE_TURN`. | :white_check_mark: |
+| GPC-CAT-06 | A submitted pair is rejected with `INVALID_TARGET`. | Confirm both choices. | Shows localized rejection feedback, renders the latest snapshot, and submits no replacement command. | :white_check_mark: |
+| GPC-CAT-07 | The legacy play entry rejects a single Cat Card with `INVALID_SELECTION`. | Click hand index `0` before the pair chooser is connected. | Shows the existing `play.card-not-playable` message and renders the latest snapshot. | :white_check_mark: |
+| GPC-CAT-08 | The selected target's hand empties before submission and the engine returns `TARGET_HAND_EMPTY`. | Confirm the original choices. | Shows the existing rejection feedback, renders the latest snapshot, and submits once. | :white_check_mark: |
+| GPC-CAT-09 | A second Cat Card matches and all other active players are empty-handed. | Choose the second card. | Shows the existing rejection feedback without opening a target chooser or submitting a play. | :white_check_mark: |
+
+Use the same interaction for all five Cat Card types. Cover the production
+assembly and all five types in [W9-IT05](../testing/cat-pair-integration.md).
+
+## Gameplay events after a winner is declared
+
+| ID | Method under test | State and input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GPC-GO-01 | `handleDraw()` | The game has ended and a draw event reaches the controller. | Refreshes the terminal snapshot and preserves the winner message. | :white_check_mark: |
+| GPC-GO-02 | `handlePlayCard(int)` | The game has ended and a card click reaches the controller. | Refreshes the terminal snapshot and preserves the winner message. | :white_check_mark: |
+| GPC-GO-03 | `setOnReturnToSetup(Runnable)`, `handleReturnToSetup()` | The terminal view displays the winner. Register the setup callback and click the return button. | Runs the callback and returns to a fresh setup screen, preserving the old game. | :white_check_mark: |
+| GPC-GO-04 | `handleReturnToSetup()` | A game is still in progress. A return event reaches the controller. | Leaves the active game in place. | :white_check_mark: |
+| GPC-GO-05 | `setOnReturnToSetup(Runnable)` | A controller exists. Supply `null`. | Throws `NullPointerException`. | :white_check_mark: |
+
+The JavaFX smoke test continues GPC-GO-03 by entering `2` on the setup screen
+and starting a new game. It verifies that the same window shows eight starting
+cards and enables drawing. The finished game's state is preserved.

@@ -30,6 +30,7 @@
 | TE-14 | Phase is `ACTIONS_ALLOWED`; hand is non-empty. | `handIndex = -1` | Returns `REJECTED` with `INVALID_HAND_INDEX`; state does not change. | :white_check_mark: |
 | TE-15 | Phase is `ACTIONS_ALLOWED`; hand size is `n`. | `handIndex = n` | Returns `REJECTED` with `INVALID_HAND_INDEX`; state does not change. | :white_check_mark: |
 | TE-16 | Phase is `AWAITING_DEFUSE_POSITION`. | Any hand index | Returns `REJECTED` with `DEFUSE_RESOLUTION_REQUIRED`; state does not change. | :white_check_mark: (waiting state reached with a resolver stub) |
+| TE-35 | Phase is `AWAITING_DEFUSE_POSITION`. | `handIndex = -1` | Returns `REJECTED` with `DEFUSE_RESOLUTION_REQUIRED` rather than `INVALID_HAND_INDEX`; hand, deck, pending Kitten and current player do not change. | :white_check_mark: |
 | TE-17 | Selected card has no registered effect. | A valid hand index | Returns `REJECTED` with `CARD_NOT_PLAYABLE`; state does not change. | :white_check_mark: |
 | TE-18 | Selected effect is registered but `canPlay` returns `false`. | A valid hand index | Returns `REJECTED` with `PRECONDITION_NOT_MET`; state does not change. | :white_check_mark: |
 | TE-19 | Selected effect can play and returns `endsTurn = false`. | A valid hand index | Removes the selected card, executes the effect once, discards the played card, preserves revealed-card order, and does not advance the player. | :white_check_mark: (tested with effect and discard pile stubs) |
@@ -70,6 +71,18 @@
 
 - Method under test: `TurnEngine.draw()`
 - Implemented: :white_check_mark:
+
+## Game-over cases on the draft-engine baseline
+
+The tests substitute the resolver's elimination outcome. The reviewed resolver
+must still be exercised in the final integration round.
+
+| ID | Method(s) under test | State and input | Expected output | Implemented? |
+|---|---|---|---|---|
+| TE-GO-01 | `draw()`, `getPhase()`, `getSnapshot()` | Two players remain. The current player draws an Exploding Kitten and is eliminated by the resolver. | Reports `PLAYER_ELIMINATED` for that draw. The engine reaches `GAME_OVER`, reports the other player's stable seat as the winner, and shows zero remaining turns. | :white_check_mark: |
+| TE-GO-02 | `playCard(int)` | With a winner declared, submit the legacy entry using indices `0` and `-1`. | Both calls return `REJECTED / GAME_OVER` and preserve the final state. | :white_check_mark: |
+| TE-GO-03 | `draw()` | With a winner declared and an ordinary card still in the deck, draw again. | Returns `GAME_OVER` with no drawn card and leaves the final state unchanged. | :white_check_mark: |
+| TE-GO-04 | `resolveDefuse(int)` | With a winner declared, submit position `0`. | Returns `NOT_AWAITING_DEFUSE`, preserving the deck and the winner. | :white_check_mark: |
 
 Initial state:
 - Two living players each hold 8 cards, Player 1 is current.

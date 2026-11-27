@@ -2,6 +2,7 @@ package domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalInt;
 
 public final class GameSnapshot {
     private final String currentPlayerName;
@@ -10,6 +11,9 @@ public final class GameSnapshot {
     private final int discardPileSize;
     private final int alivePlayerCount;
     private final TurnPhase phase;
+    private final List<PlayerSummary> players;
+    private final int currentPlayerIndex;
+    private final int remainingTurns;
 
     private GameSnapshot(
             String currentPlayerName,
@@ -25,6 +29,27 @@ public final class GameSnapshot {
         this.discardPileSize = discardPileSize;
         this.alivePlayerCount = alivePlayerCount;
         this.phase = phase;
+        this.players = List.of();
+        this.currentPlayerIndex = 0;
+        this.remainingTurns = phase == TurnPhase.GAME_OVER ? 0 : 1;
+    }
+
+    private GameSnapshot(GameSnapshot base, List<PlayerSummary> players,
+                         int currentPlayerIndex, int remainingTurns) {
+        this.currentPlayerName = base.currentPlayerName;
+        this.currentPlayerHand = base.currentPlayerHand;
+        this.deckSize = base.deckSize;
+        this.discardPileSize = base.discardPileSize;
+        this.alivePlayerCount = base.alivePlayerCount;
+        this.phase = base.phase;
+        this.players = List.copyOf(players);
+        this.currentPlayerIndex = currentPlayerIndex;
+        this.remainingTurns = remainingTurns;
+    }
+
+    GameSnapshot withTurnDetails(List<PlayerSummary> players, int currentPlayerIndex,
+                                 int remainingTurns) {
+        return new GameSnapshot(this, players, currentPlayerIndex, remainingTurns);
     }
 
     public static GameSnapshot create(
@@ -105,5 +130,22 @@ public final class GameSnapshot {
 
     public TurnPhase getPhase() {
         return phase;
+    }
+
+    public List<PlayerSummary> getPlayers() {
+        return players;
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+
+    public OptionalInt getWinnerIndex() {
+        return phase == TurnPhase.GAME_OVER && !players.isEmpty()
+                ? OptionalInt.of(currentPlayerIndex) : OptionalInt.empty();
+    }
+
+    public int getRemainingTurns() {
+        return remainingTurns;
     }
 }

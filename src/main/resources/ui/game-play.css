@@ -173,6 +173,18 @@
     -fx-border-color: #FFE08C;
 }
 
+.card-button:pair-first {
+    -fx-border-color: #FFB84D;
+}
+
+.card-button:pair-match {
+    -fx-border-color: #FFF1D6;
+}
+
+.card-button:pair-unavailable {
+    -fx-opacity: 0.55;
+}
+
 .card-name {
     -fx-text-fill: #FFF1D6;
     -fx-font-size: 12px;
@@ -380,4 +392,34 @@
 
 .cancel-button:hover {
     -fx-background-color: #160D09, #160D09, #2A1C16, #2A1C16, #7A604F, #7A604F;
+}
+
+.cat-pair-dialog {
+    -fx-background-color: #2F2018;
+    -fx-border-color: #9C785E;
+    -fx-border-width: 2;
+    -fx-padding: 12;
+    -fx-pref-width: 440;
+}
+
+.cat-pair-title {
+    -fx-text-fill: #FFF1D6;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.cat-pair-dialog .list-view {
+    -fx-background-color: #1E130E;
+}
+
+.cat-pair-dialog .list-cell {
+    -fx-background-color: #1E130E;
+    -fx-text-fill: #FFF1D6;
+    -fx-padding: 0 12;
+}
+
+.cat-pair-dialog .list-cell:filled:selected {
+    -fx-background-color: #FFB84D;
+    -fx-text-fill: #160D09;
 }

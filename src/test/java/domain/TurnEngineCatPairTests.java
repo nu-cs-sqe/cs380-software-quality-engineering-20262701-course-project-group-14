@@ -1,0 +1,413 @@
+package domain;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class TurnEngineCatPairTests {
+
+    @Test
+    void PlayCard_WithMatchingTacocatPair_TransfersSelectedCardAndContinuesTurn() {
+        Card firstCat = new Card(CardType.TACOCAT);
+        Card secondCat = new Card(CardType.TACOCAT);
+        Card held = new Card(CardType.SKIP);
+        Card leftWithTarget = new Card(CardType.ATTACK);
+        Card transferred = new Card(CardType.FAVOR);
+        Player current = playerWith("Player 1", firstCat, secondCat, held);
+        Player target = playerWith("Player 2", leftWithTarget, transferred);
+        Card deckTop = new Card(CardType.SHUFFLE);
+        Card deckBottom = new Card(CardType.NOPE);
+        Deck deck = Deck.fromTopToBottom(List.of(deckTop, deckBottom));
+        GameState state = new GameState(List.of(current, target), deck);
+        TurnEngine engine = engineFor(state, bound -> {
+            assertEquals(2, bound);
+            return 1;
+        });
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(PlayFailure.NONE, result.getFailure());
+        assertEquals(List.of(held, transferred), current.getHand());
+        assertEquals(List.of(leftWithTarget), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertEquals(2, deck.size());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(deckTop, current.getHand().get(2));
+        assertSame(target, state.getCurrentPlayer());
+        assertSame(deckBottom, deck.drawCard());
+    }
+
+    @Test
+    void PlayCard_WithPairInReverseOrder_PreservesInterveningCard() {
+        Card held = new Card(CardType.SKIP);
+        Card transferred = new Card(CardType.FAVOR);
+        Player current = playerWith("Player 1", new Card(CardType.TACOCAT),
+                held, new Card(CardType.TACOCAT));
+        Player target = playerWith("Player 2", transferred);
+        GameState state = new GameState(List.of(current, target),
+                Deck.fromTopToBottom(List.of()));
+        TurnEngine engine = engineFor(state, bound -> 0);
+
+        PlayResult result = engine.playCard(PlayCommand.pair(2, 0, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(held, transferred), current.getHand());
+        assertEquals(List.of(), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+    }
+
+    @Test
+    void PlayCard_WithDuplicatePairIndex_RejectsWithoutChangingState() {
+        Card first = new Card(CardType.TACOCAT);
+        Card second = new Card(CardType.TACOCAT);
+        Card gift = new Card(CardType.FAVOR);
+        Card deckTop = new Card(CardType.SHUFFLE);
+        Player current = playerWith("Player 1", first, second);
+        Player target = playerWith("Player 2", gift);
+        Deck deck = Deck.fromTopToBottom(List.of(deckTop));
+        GameState state = new GameState(List.of(current, target), deck);
+        TurnEngine engine = engineFor(state, bound -> {
+            throw new AssertionError("An invalid pair must not choose a target card.");
+        });
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 0, 1));
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.INVALID_SELECTION, result.getFailure());
+        assertEquals(List.of(first, second), current.getHand());
+        assertEquals(List.of(gift), target.getHand());
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(1, deck.size());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(deckTop, current.getHand().get(2));
+        assertSame(target, state.getCurrentPlayer());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CardType.class, names = {
+            "TACOCAT", "CATTERMELON", "HAIRY_POTATO_CAT", "BEARD_CAT", "RAINBOW_RALPHING_CAT"
+    })
+    void PlayCard_WithSupportedCatType_UsesSharedPairRule(CardType type) {
+        Card held = new Card(CardType.SKIP);
+        Card leftWithTarget = new Card(CardType.ATTACK);
+        Card transferred = new Card(CardType.FAVOR);
+        Card deckTop = new Card(CardType.SHUFFLE);
+        Player current = playerWith("Player 1", new Card(type), new Card(type), held);
+        Player target = playerWith("Player 2", leftWithTarget, transferred);
+        Deck deck = Deck.fromTopToBottom(List.of(deckTop));
+        GameState state = new GameState(List.of(current, target), deck);
+        TurnEngine engine = engineFor(state, bound -> 1);
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(held, transferred), current.getHand());
+        assertEquals(List.of(leftWithTarget), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(1, deck.size());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(deckTop, current.getHand().get(2));
+        assertSame(target, state.getCurrentPlayer());
+    }
+
+    @Test
+    void PlayCard_WithDifferentCatTypes_RejectsWithoutChangingState() {
+        Player current = playerWith("Player 1", new Card(CardType.TACOCAT),
+                new Card(CardType.BEARD_CAT));
+        assertRejectionPreservesGame(rejectionGame(current, eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
+    private static GameState rejectionGame(Player... players) {
+        Deck deck = Deck.fromTopToBottom(List.of(new Card(CardType.SHUFFLE),
+                new Card(CardType.NOPE)));
+        return new GameState(List.of(players), deck);
+    }
+
+    private static Player matchingCatHand() {
+        return playerWith("Player 1", new Card(CardType.TACOCAT), new Card(CardType.TACOCAT));
+    }
+
+    private static Player eligibleTarget() {
+        return playerWith("Player 2", new Card(CardType.FAVOR));
+    }
+
+    private static void assertRejectionPreservesGame(
+            GameState state, Function<TurnEngine, PlayResult> submit, PlayFailure expected
+    ) {
+        List<List<Card>> hands = state.getPlayers().stream()
+                .map(player -> List.copyOf(player.getHand()))
+                .collect(Collectors.toList());
+        Player current = state.getCurrentPlayer();
+        TurnEngine engine = engineFor(state, bound -> {
+            throw new AssertionError("A rejected selection must not use randomness.");
+        });
+        PlayResult result = submit.apply(engine);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(expected, result.getFailure());
+        assertEquals(hands, state.getPlayers().stream()
+                .map(Player::getHand).collect(Collectors.toList()));
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(2, engine.getSnapshot().getDeckSize());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(state.getPlayers().get(1), state.getCurrentPlayer());
+        assertEquals(CardType.NOPE, state.getDeck().drawCard().getType());
+    }
+
+    @Test
+    void PlayCard_WithCatAndNonCat_RejectsWithoutChangingState() {
+        Player current = playerWith("Player 1", new Card(CardType.TACOCAT),
+                new Card(CardType.SKIP));
+        assertRejectionPreservesGame(rejectionGame(current, eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
+    @Test
+    void PlayCard_WithMatchingNonCatPair_RejectsWithoutChangingState() {
+        Player current = playerWith("Player 1", new Card(CardType.SKIP),
+                new Card(CardType.SKIP));
+        assertRejectionPreservesGame(rejectionGame(current, eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
+    @Test
+    void PlayCard_WithFirstIndexAtHandSize_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(2, 1, 1)),
+                PlayFailure.INVALID_HAND_INDEX);
+    }
+
+    @Test
+    void PlayCard_WithSecondIndexAtHandSize_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 2, 1)),
+                PlayFailure.INVALID_HAND_INDEX);
+    }
+
+    @Test
+    void PlayCard_WithCurrentPlayerAsTarget_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 0)),
+                PlayFailure.INVALID_TARGET);
+    }
+
+    @Test
+    void PlayCard_WithTargetAtSeatCount_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 2)),
+                PlayFailure.INVALID_TARGET);
+    }
+
+    @Test
+    void PlayCard_WithEliminatedTarget_RejectsWithoutChangingState() {
+        Player eliminated = playerWith("Player 3", new Card(CardType.SKIP));
+        eliminated.eliminate();
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget(), eliminated),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 2)),
+                PlayFailure.INVALID_TARGET);
+    }
+
+    @Test
+    void PlayCard_WithEmptyTargetHand_RejectsWithoutChangingState() {
+        Player emptyTarget = playerWith("Player 2");
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), emptyTarget),
+                engine -> engine.playCard(PlayCommand.pair(0, 1, 1)),
+                PlayFailure.TARGET_HAND_EMPTY);
+    }
+
+    @Test
+    void PlayCard_WithSingleCatCommand_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.single(0)), PlayFailure.INVALID_SELECTION);
+    }
+
+    @Test
+    void PlayCard_WithSingleCatIndex_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(0), PlayFailure.INVALID_SELECTION);
+    }
+
+    @Test
+    void PlayCard_WithTargetedCatCommand_RejectsWithoutChangingState() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.targeted(0, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
+    @Test
+    void PlayCard_WithTargetedNonCatCommand_RejectsWithoutChangingState() {
+        Player current = playerWith("Player 1", new Card(CardType.SKIP),
+                new Card(CardType.ATTACK));
+        assertRejectionPreservesGame(rejectionGame(current, eligibleTarget()),
+                engine -> engine.playCard(PlayCommand.targeted(0, 1)),
+                PlayFailure.INVALID_SELECTION);
+    }
+
+    @Test
+    void PlayCard_WithOneTargetCard_TransfersOnlyCard() {
+        Player current = matchingCatHand();
+        Card gift = new Card(CardType.FAVOR);
+        Player target = playerWith("Player 2", gift);
+        GameState state = rejectionGame(current, target);
+        TurnEngine engine = engineFor(state, bound -> {
+            assertEquals(1, bound);
+            return 0;
+        });
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(gift), current.getHand());
+        assertEquals(List.of(), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+        assertSame(current, state.getCurrentPlayer());
+    }
+
+    @Test
+    void PlayCard_WithLastTargetIndex_LeavesOtherCardsInOrder() {
+        Player current = matchingCatHand();
+        Card first = new Card(CardType.ATTACK);
+        Card middle = new Card(CardType.SKIP);
+        Card last = new Card(CardType.FAVOR);
+        Player target = playerWith("Player 2", first, middle, last);
+        GameState state = rejectionGame(current, target);
+        TurnEngine engine = engineFor(state, bound -> {
+            assertEquals(3, bound);
+            return 2;
+        });
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(last), current.getHand());
+        assertEquals(List.of(first, middle), target.getHand());
+        assertEquals(2, engine.getSnapshot().getDiscardPileSize());
+        assertSame(current, state.getCurrentPlayer());
+    }
+
+    @Test
+    void PlayCard_WithTwoAttackTurns_RemainsCurrentUntilTwoDraws() {
+        Card gift = new Card(CardType.FAVOR);
+        Player attacker = playerWith("Player 1", new Card(CardType.ATTACK), gift);
+        Player attacked = playerWith("Player 2", new Card(CardType.TACOCAT),
+                new Card(CardType.TACOCAT));
+        GameState state = rejectionGame(attacker, attacked);
+        DiscardPile discard = new DiscardPile();
+        TurnEngine engine = new TurnEngine(state, discard, new ExplodingKittenResolver(discard),
+                Map.of(CardType.ATTACK, new AttackEffect()), bound -> 0);
+        assertEquals(PlayStatus.TURN_ENDED, engine.playCard(0).getStatus());
+        assertSame(attacked, state.getCurrentPlayer());
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 0));
+
+        assertEquals(PlayStatus.CONTINUE_TURN, result.getStatus());
+        assertEquals(List.of(gift), attacked.getHand());
+        assertEquals(3, engine.getSnapshot().getDiscardPileSize());
+        assertSame(attacked, state.getCurrentPlayer());
+        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, engine.draw().getStatus());
+        assertSame(attacked, state.getCurrentPlayer());
+        assertEquals(DrawStatus.NORMAL_CARD_DRAWN, engine.draw().getStatus());
+        assertSame(attacker, state.getCurrentPlayer());
+    }
+
+    @Test
+    void PlayCard_WithDefusePending_RejectsPairAndKeepsPendingTurn() {
+        Card first = new Card(CardType.TACOCAT);
+        Card second = new Card(CardType.TACOCAT);
+        Card defuse = new Card(CardType.DEFUSE);
+        Player current = playerWith("Player 1", first, second, defuse);
+        Player target = eligibleTarget();
+        List<Card> targetHand = List.copyOf(target.getHand());
+        Deck deck = Deck.fromTopToBottom(List.of(new Card(CardType.EXPLODING_KITTEN),
+                new Card(CardType.SHUFFLE)));
+        GameState state = new GameState(List.of(current, target), deck);
+        DiscardPile discard = new DiscardPile();
+        ExplodingKittenResolver waiting = new ExplodingKittenResolver(discard) {
+            @Override
+            public ExplosionOutcome begin(Player player, Card kitten) {
+                return ExplosionOutcome.DEFUSE_POSITION_REQUIRED;
+            }
+        };
+        TurnEngine engine = new TurnEngine(state, discard, waiting, Map.of(), bound -> {
+            throw new AssertionError("A pending Defuse must prevent card selection.");
+        });
+        assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, engine.draw().getStatus());
+
+        PlayResult result = engine.playCard(PlayCommand.pair(0, 1, 1));
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.DEFUSE_RESOLUTION_REQUIRED, result.getFailure());
+        assertEquals(List.of(first, second, defuse), current.getHand());
+        assertEquals(targetHand, target.getHand());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
+        assertEquals(DrawStatus.REJECTED_PENDING_DEFUSE, engine.draw().getStatus());
+        assertEquals(1, deck.size());
+        assertEquals(CardType.SHUFFLE, deck.drawCard().getType());
+    }
+
+    @Test
+    void PlayCard_WithNullCommand_ThrowsWithoutChangingState() {
+        Player current = matchingCatHand();
+        Player target = eligibleTarget();
+        List<Card> currentHand = List.copyOf(current.getHand());
+        List<Card> targetHand = List.copyOf(target.getHand());
+        GameState state = rejectionGame(current, target);
+        TurnEngine engine = engineFor(state, bound -> {
+            throw new AssertionError("A null command must not use randomness.");
+        });
+
+        assertThrows(NullPointerException.class, () -> engine.playCard((PlayCommand) null));
+
+        assertEquals(currentHand, current.getHand());
+        assertEquals(targetHand, target.getHand());
+        assertEquals(0, engine.getSnapshot().getDiscardPileSize());
+        assertEquals(2, engine.getSnapshot().getDeckSize());
+        assertEquals(TurnPhase.ACTIONS_ALLOWED, engine.getPhase());
+        assertSame(current, state.getCurrentPlayer());
+        assertEquals(CardType.SHUFFLE, engine.draw().getDrawnCardType().orElseThrow());
+        assertSame(target, state.getCurrentPlayer());
+        assertEquals(CardType.NOPE, state.getDeck().drawCard().getType());
+    }
+
+    @Test
+    void PlayCard_WithNegativeLegacyIndex_PreservesRejectionResult() {
+        assertRejectionPreservesGame(rejectionGame(matchingCatHand(), eligibleTarget()),
+                engine -> engine.playCard(-1), PlayFailure.INVALID_HAND_INDEX);
+    }
+
+    private static Player playerWith(String name, Card... hand) {
+        Player player = new Player(name);
+        for (Card card : hand) {
+            player.addCard(card);
+        }
+        return player;
+    }
+
+    private static TurnEngine engineFor(GameState state, RandomSource random) {
+        DiscardPile discard = new DiscardPile();
+        return new TurnEngine(state, discard, new ExplodingKittenResolver(discard),
+                Map.of(), random);
+    }
+}

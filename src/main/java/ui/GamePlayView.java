@@ -1,15 +1,21 @@
 package ui;
 
-import controller.GamePlayViewPort;
+import controller.CatPairViewPort;
+import controller.GameOverViewPort;
 import domain.CardType;
 import domain.GameSnapshot;
+import domain.PlayerSummary;
 import domain.TurnPhase;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.IntConsumer;
 import javafx.animation.Animation;
@@ -53,8 +59,11 @@ import javafx.util.Duration;
  * - Cat-pair combo lift & contextual unfurling parchment rule scroll
  */
 public final class GamePlayView extends StackPane
-        implements GamePlayViewPort {
+        implements CatPairViewPort, GameOverViewPort {
+    private static final ResourceBundle GAME_OVER_TEXT =
+            ResourceBundle.getBundle("ui.GameOverMessages");
     private static final Map<String, String> MESSAGES = Map.ofEntries(
+            Map.entry("game.over", GAME_OVER_TEXT.getString("closed")),
             Map.entry("draw.normal-card", "Card drawn. Next player's turn."),
             Map.entry("draw.empty-deck", "The draw pile is empty."),
             Map.entry(
@@ -105,6 +114,9 @@ public final class GamePlayView extends StackPane
     private static final String DEFAULT_MESSAGE =
             "Your turn. Draw a card or play one from your hand.";
     private static final PseudoClass DANGER = PseudoClass.getPseudoClass("danger");
+    private static final PseudoClass PAIR_FIRST = PseudoClass.getPseudoClass("pair-first");
+    private static final PseudoClass PAIR_MATCH = PseudoClass.getPseudoClass("pair-match");
+    private static final PseudoClass PAIR_UNAVAILABLE = PseudoClass.getPseudoClass("pair-unavailable");
     private static final double COMPACT_BELOW = 860;
     private static final int LOW_DECK_THRESHOLD = 3;
     private static final int DIM_TEXT = 0xFF8F7A68;
@@ -160,6 +172,7 @@ public final class GamePlayView extends StackPane
     private final StackPane deckCountHolder = new StackPane();
     private final HBox fuseGauge = new HBox(3);
     private final Button drawButton = new Button();
+    private final Button returnToSetupButton = new Button();
     private final StackPane drawHintHolder = new StackPane();
 
     private final Button choosePositionButton = new Button();
@@ -197,6 +210,7 @@ public final class GamePlayView extends StackPane
     // ---- state ----
     private boolean compact;
     private String playerName = "";
+    private String winnerMessage;
     private int deckSize;
     private int initialDeckMax = 20;
     private int discardSize;
@@ -211,8 +225,10 @@ public final class GamePlayView extends StackPane
     private CardCatalog.Info shownInfo;
     private Status shownStatus = Status.READY;
     private int activeCardIndex = -1;
+    private HandPairSelection handPairSelection;
 
     private Runnable onDraw = () -> { };
+    private Runnable onReturnToSetup = () -> { };
     private Runnable onChooseDefusePosition = () -> { };
     private IntConsumer onPlayCard = index -> { };
 
@@ -226,8 +242,10 @@ public final class GamePlayView extends StackPane
 
         buildBanner();
         buildTopTableStrip();
+        messageRibbon.setId("gameplay-message");
         buildTavernProps();
         buildArenaStations();
+        discardPileHolder.setId("discard-pile");
         buildParchmentScroll();
         buildHandHud();
 
@@ -245,6 +263,7 @@ public final class GamePlayView extends StackPane
                 deckCountHolder,
                 fuseGauge,
                 drawButton,
+                returnToSetupButton,
                 drawHintHolder,
                 discardPileHolder,
                 discardCountBadge,
@@ -265,6 +284,7 @@ public final class GamePlayView extends StackPane
         handFanPane.setPickOnBounds(false);
         sceneProperty().addListener((property, previousScene, scene) -> {
             if (scene == null) {
+                handPairSelection = null;
                 clearEffects();
                 hideHandoff();
             }
@@ -277,6 +297,12 @@ public final class GamePlayView extends StackPane
             background.setLightParallax((e.getX() / w) * 2.0 - 1.0, (e.getY() / h) * 2.0 - 1.0);
         });
         setOnMouseExited(event -> background.setLightParallax(0, 0));
+        addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE && handPairSelection != null) {
+                clearHandPairSelection();
+                event.consume();
+            }
+        });
 
         widthProperty().addListener((obs, oldW, newW) -> layoutStage());
         heightProperty().addListener((obs, oldH, newH) -> layoutStage());
@@ -305,12 +331,18 @@ public final class GamePlayView extends StackPane
         onPlayCard = action;
     }
 
+    @Override
+    public void setOnReturnToSetup(Runnable action) {
+        onReturnToSetup = action;
+    }
+
     public void setOnChooseDefusePosition(Runnable action) {
         onChooseDefusePosition = action;
     }
 
     @Override
     public void render(GameSnapshot snapshot) {
+        handPairSelection = null;
         String newName = snapshot.getCurrentPlayerName();
         if (!Objects.equals(newName, playerName)) {
             futureCards = List.of();
@@ -328,6 +360,13 @@ public final class GamePlayView extends StackPane
         hand = List.copyOf(snapshot.getCurrentPlayerHand());
         boolean wasDanger = danger;
         danger = snapshot.getPhase() == TurnPhase.AWAITING_DEFUSE_POSITION;
+        turnActionsDisabled = snapshot.getPhase() == TurnPhase.GAME_OVER;
+        winnerMessage = turnActionsDisabled
+                ? MessageFormat.format(GAME_OVER_TEXT.getString("winner"), playerName)
+                : null;
+        if (turnActionsDisabled) {
+            currentWarning = false;
+        }
 
         background.setTension(danger, deckSize <= LOW_DECK_THRESHOLD);
         refreshCatSprite();
@@ -362,7 +401,35 @@ public final class GamePlayView extends StackPane
         }
     }
 
+    @Override
+    public void requestSecondCard(int firstHandIndex, List<Integer> matchingHandIndices,
+                                  IntConsumer onMatchSelected) {
+        handPairSelection = new HandPairSelection(firstHandIndex, matchingHandIndices, onMatchSelected);
+        layoutStage();
+    }
+
+    @Override
+    public OptionalInt requestTargetPlayer(List<PlayerSummary> candidates) {
+        Map<Integer, String> options = new LinkedHashMap<>();
+        for (PlayerSummary player : candidates) {
+            options.put(player.getPlayerIndex(), CatPairChoiceDialog.text("target.option",
+                    player.getName(), player.getHandSize()));
+        }
+        return requestCatPairChoice("target.title", options);
+    }
+
+    private OptionalInt requestCatPairChoice(String titleKey, Map<Integer, String> options) {
+        Window owner = getScene() == null ? null : getScene().getWindow();
+        dimOverlay.setVisible(true);
+        try {
+            return CatPairChoiceDialog.show(owner, stylesheetUrl, titleKey, options);
+        } finally {
+            dimOverlay.setVisible(false);
+        }
+    }
+
     public void showHandoff(String nextPlayerName, Runnable onReady) {
+        clearHandPairSelection();
         futureCards = List.of();
         updateFuture();
         showEmptyInfo();
@@ -531,9 +598,16 @@ public final class GamePlayView extends StackPane
         fuseGauge.setAlignment(Pos.CENTER);
 
         drawButton.getStyleClass().add("draw-button");
+        drawButton.setId("draw-card");
         drawButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         drawButton.setAccessibleText("Draw Card");
         drawButton.setOnAction(event -> triggerDrawWithFlight());
+
+        returnToSetupButton.setId("return-to-setup");
+        returnToSetupButton.getStyleClass().add("draw-button");
+        returnToSetupButton.setText(GAME_OVER_TEXT.getString("return-to-setup"));
+        returnToSetupButton.setOnAction(event -> onReturnToSetup.run());
+        returnToSetupButton.setVisible(false);
 
         drawHintHolder.setAlignment(Pos.CENTER);
 
@@ -734,6 +808,7 @@ public final class GamePlayView extends StackPane
         double defuseBtnW = 310;
         double defuseBtnH = 50;
         choosePositionButton.resizeRelocate(Math.round(centerX - defuseBtnW * 0.5), deckY + deckBoxH + 28, defuseBtnW, defuseBtnH);
+        returnToSetupButton.resizeRelocate(Math.round(centerX - 110), deckY + deckBoxH + 28, 220, 48);
 
         double futureW = 248;
         futureOverlay.resizeRelocate(deckX - 104, deckY - 20,
@@ -776,13 +851,24 @@ public final class GamePlayView extends StackPane
         double warningWidth = currentWarning
                 ? messageIcon.getImage().getWidth() + messageRibbon.getSpacing() : 0;
         double maxTextW = ribbonWidth - insets.getLeft() - insets.getRight() - warningWidth;
-        String text = turnActionsDisabled && DEFAULT_MESSAGE.equals(currentMessage)
-                ? "Your starting hand is ready." : currentMessage;
+        String text = messageText();
+        messageRibbon.setAccessibleText(text);
         messageHolder.getChildren().setAll(
                 bodyText(text, 2, GameTheme.CREAM, maxTextW, "msg-text"));
         messageRibbon.pseudoClassStateChanged(DANGER, currentWarning);
         messageIcon.setVisible(currentWarning);
         messageIcon.setManaged(currentWarning);
+    }
+
+    private String messageText() {
+        if (winnerMessage != null) {
+            return winnerMessage;
+        }
+        if (handPairSelection != null) {
+            return CatPairChoiceDialog.text("hand.select-match");
+        }
+        return turnActionsDisabled && DEFAULT_MESSAGE.equals(currentMessage)
+                ? "Your starting hand is ready." : currentMessage;
     }
 
     private void updateBanner() {
@@ -902,6 +988,8 @@ public final class GamePlayView extends StackPane
         for (int i = 0; i < knownCount; i++) {
             CardCatalog.Info info = CardCatalog.lookup(recentDiscards.get(i).name());
             ImageView face = PixelArt.view(CardCatalog.face(info, true, CardCatalog.Face.READY));
+            face.getStyleClass().add("discard-face");
+            face.setAccessibleText(info.name);
             int slot = fillerCount + i;
             face.setLayoutX(baseX + (slot - totalVisible * 0.5) * spreadX);
             face.setLayoutY(baseY - i * 3);
@@ -947,6 +1035,7 @@ public final class GamePlayView extends StackPane
         drawHintHolder.setVisible(danger);
         choosePositionButton.setDisable(turnActionsDisabled);
         choosePositionButton.setVisible(danger);
+        returnToSetupButton.setVisible(winnerMessage != null);
     }
 
     private void updateFuture() {
@@ -992,6 +1081,7 @@ public final class GamePlayView extends StackPane
         if (danger || turnActionsDisabled) {
             return;
         }
+        clearHandPairSelection();
         int previousDeckSize = deckSize;
         int previousDiscardSize = discardSize;
         onDraw.run();
@@ -1107,21 +1197,61 @@ public final class GamePlayView extends StackPane
     }
 
     private void playCard(int handIndex, CardType type, CardCatalog.Info info, Button source) {
+        HandPairSelection selection = handPairSelection;
+        if (selection == null) {
+            playWithDiscardFeedback(type, info, source, () -> onPlayCard.accept(handIndex));
+        } else if (handIndex == selection.firstIndex) {
+            clearHandPairSelection();
+        } else if (selection.matches.contains(handIndex)) {
+            playWithDiscardFeedback(type, info, source, () -> {
+                clearHandPairSelection();
+                selection.onMatchSelected.accept(handIndex);
+            });
+        }
+    }
+
+    private void clearHandPairSelection() {
+        if (handPairSelection != null) {
+            handPairSelection = null;
+            layoutStage();
+        }
+    }
+
+    private void playWithDiscardFeedback(CardType type, CardCatalog.Info info, Button source,
+                                         Runnable submit) {
         int previousDiscardSize = discardSize;
         List<CardType> previousDiscards = List.copyOf(recentDiscards);
         double startX = handFanPane.getLayoutX() + source.getLayoutX() + source.getTranslateX();
         double startY = handFanPane.getLayoutY() + source.getLayoutY() + source.getTranslateY();
         double angle = source.getRotate();
-        onPlayCard.accept(handIndex);
-        if (discardSize == previousDiscardSize + 1) {
-            recentDiscards.addAll(previousDiscards);
-            recentDiscards.add(type);
-            if (recentDiscards.size() > DISPLAYED_DISCARDS) {
-                recentDiscards.remove(0);
-            }
-            updateDiscard();
+        submit.run();
+        int discarded = discardSize - previousDiscardSize;
+        if (discarded == 1 || (discarded == 2 && type.isCatCard())) {
+            showPlayedCards(previousDiscards, type, discarded);
             launchPlayCardFlight(info, startX, startY, angle);
         }
+    }
+
+    private static final class HandPairSelection {
+        private final int firstIndex;
+        private final Set<Integer> matches;
+        private final IntConsumer onMatchSelected;
+
+        private HandPairSelection(int firstIndex, List<Integer> matches, IntConsumer onMatchSelected) {
+            this.firstIndex = firstIndex;
+            this.matches = Set.copyOf(matches);
+            this.onMatchSelected = onMatchSelected;
+        }
+    }
+
+    private void showPlayedCards(List<CardType> previousDiscards, CardType type, int count) {
+        recentDiscards.addAll(previousDiscards);
+        recentDiscards.addAll(Collections.nCopies(count, type));
+        int excess = recentDiscards.size() - DISPLAYED_DISCARDS;
+        if (excess > 0) {
+            recentDiscards.subList(0, excess).clear();
+        }
+        updateDiscard();
     }
 
     // ------------------------------------------------------------------
@@ -1195,9 +1325,15 @@ public final class GamePlayView extends StackPane
         }
         for (int i = 0; i < n; i++) {
             Button btn = cardButtons.get(i);
-            boolean active = i == activeCardIndex;
-            boolean twin = isCatPairTwin(i);
-            btn.setViewOrder(active ? -n : -i);
+            boolean selecting = handPairSelection != null;
+            boolean first = selecting && i == handPairSelection.firstIndex;
+            boolean match = selecting && handPairSelection.matches.contains(i);
+            boolean active = selecting ? first : i == activeCardIndex;
+            boolean twin = selecting ? match : isCatPairTwin(i);
+            btn.pseudoClassStateChanged(PAIR_FIRST, first);
+            btn.pseudoClassStateChanged(PAIR_MATCH, match);
+            btn.pseudoClassStateChanged(PAIR_UNAVAILABLE, selecting && !first && !match);
+            btn.setViewOrder(active ? -n : match ? -n + 0.5 : -i);
             if (active) {
                 btn.setRotate(0);
                 btn.setTranslateY(-28);
@@ -1271,6 +1407,7 @@ public final class GamePlayView extends StackPane
 
         Button button = new Button();
         button.getStyleClass().add("card-button");
+        button.setId("hand-card-" + handIndex);
         button.setGraphic(card);
         button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         button.setPadding(Insets.EMPTY);

@@ -1,13 +1,22 @@
 package controller;
 
+import domain.Card;
 import domain.CardType;
+import domain.CommandPlayActions;
+import domain.Deck;
 import domain.DefuseResult;
 import domain.DrawResult;
 import domain.GameSnapshot;
+import domain.GameState;
+import domain.PlayCommand;
 import domain.PlayFailure;
 import domain.PlayResult;
+import domain.Player;
+import domain.PlayerSummary;
 import domain.TurnActions;
+import domain.TurnEngineFactory;
 import domain.TurnPhase;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
@@ -254,6 +263,21 @@ public class GamePlayControllerTests {
     }
 
     @Test
+    public void HandlePlay_InvalidSelection_ShowsFailureAndRenders() {
+        GameSnapshot snapshot = createSnapshot(7);
+        StubActions actions = new StubActions(snapshot);
+        actions.playResult = PlayResult.rejected(PlayFailure.INVALID_SELECTION);
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+
+        controller.handlePlayCard(0);
+
+        assertEquals("play.card-not-playable", view.messageKey);
+        assertEquals(1, view.renderCalls);
+        assertSame(snapshot, view.renderedSnapshot);
+    }
+
+    @Test
     public void HandlePlay_PreconditionNotMet_ShowsFailureAndRenders() {
         GameSnapshot snapshot = createSnapshot(7);
         StubActions actions = new StubActions(snapshot);
@@ -422,6 +446,221 @@ public class GamePlayControllerTests {
     }
 
 
+    @Test
+    public void HandlePlay_CatCard_OffersOnlyItsMatchingOriginalHandIndex() {
+        PairActions actions = new PairActions(catPairSnapshot());
+        PairRecordingView view = new PairRecordingView();
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(List.of(2), view.matchingHandIndices);
+    }
+
+    @Test
+    public void HandlePlay_CloseSecondCardChooser_SubmitsNoPlay() {
+        PairActions actions = new PairActions(catPairSnapshot());
+        PairRecordingView view = new PairRecordingView();
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(List.of(2), view.matchingHandIndices);
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertNull(view.targetCandidates);
+    }
+
+    @Test
+    public void HandlePlay_CatPair_OffersOnlyEligibleTargetAtOriginalSeat() {
+        Player eliminated = playerWith("Eliminated", CardType.FAVOR);
+        eliminated.eliminate();
+        Player empty = playerWith("Empty");
+        Player target = playerWith("Target", CardType.ATTACK);
+        PairActions actions = new PairActions(catPairSnapshot(eliminated, empty, target));
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(1, view.targetCandidates.size());
+        PlayerSummary candidate = view.targetCandidates.get(0);
+        assertEquals(3, candidate.getPlayerIndex());
+        assertEquals("Target", candidate.getName());
+        assertEquals(1, candidate.getHandSize());
+    }
+
+    @Test
+    public void HandlePlay_CloseTargetChooser_SubmitsNoPlay() {
+        Player target = playerWith("Target", CardType.ATTACK);
+        PairActions actions = new PairActions(catPairSnapshot(target));
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(1, view.targetCandidates.size());
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertEquals(0, ((RecordingView) view).renderCalls);
+    }
+
+    @Test
+    public void HandlePlay_ConfirmCatPair_SubmitsOnceWithOriginalIndicesAndRenders() {
+        GameSnapshot initial = catPairSnapshot(playerWith("Empty"),
+                playerWith("Second target", CardType.ATTACK),
+                playerWith("Chosen target", CardType.FAVOR));
+        GameSnapshot latest = GameSnapshot.create("Player 1",
+                List.of(CardType.SKIP, CardType.BEARD_CAT, CardType.FAVOR),
+                initial.getDeckSize(), 2, 4, TurnPhase.ACTIONS_ALLOWED);
+        PairActions actions = new PairActions(initial);
+        actions.commandResult = PlayResult.continueTurn(List.of());
+        actions.afterPlay = latest;
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+        view.targetSeat = OptionalInt.of(3);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(1, actions.commandCalls);
+        assertEquals(0, actions.submitted.getFirstHandIndex());
+        assertEquals(2, actions.submitted.getSecondHandIndex().orElseThrow());
+        assertEquals(3, actions.submitted.getTargetPlayerIndex().orElseThrow());
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertEquals(1, ((RecordingView) view).renderCalls);
+        assertSame(latest, ((RecordingView) view).renderedSnapshot);
+    }
+
+    @Test
+    public void HandlePlay_RejectedCatPair_ShowsFeedbackAndDoesNotRetry() {
+        assertPairRejectionShowsFeedback(PlayFailure.INVALID_TARGET);
+    }
+
+    @Test
+    public void HandlePlay_CatPairTargetNowEmpty_ShowsFeedbackAndDoesNotRetry() {
+        assertPairRejectionShowsFeedback(PlayFailure.TARGET_HAND_EMPTY);
+    }
+
+    private static void assertPairRejectionShowsFeedback(PlayFailure failure) {
+        GameSnapshot snapshot = catPairSnapshot(playerWith("Target", CardType.ATTACK));
+        PairActions actions = new PairActions(snapshot);
+        actions.commandResult = PlayResult.rejected(failure);
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+        view.targetSeat = OptionalInt.of(1);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals(1, actions.commandCalls);
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertEquals("play.card-not-playable", ((RecordingView) view).messageKey);
+        assertSame(snapshot, ((RecordingView) view).renderedSnapshot);
+        assertEquals(1, ((RecordingView) view).renderCalls);
+    }
+
+    @Test
+    public void HandlePlay_CatPairWithoutEligibleTarget_ShowsFeedbackAndDoesNotPlay() {
+        PairActions actions = new PairActions(catPairSnapshot(playerWith("Empty")));
+        PairRecordingView view = new PairRecordingView();
+        view.secondCard = OptionalInt.of(2);
+
+        new GamePlayController(actions, view).handlePlayCard(0);
+
+        assertEquals("play.card-not-playable", ((RecordingView) view).messageKey);
+        assertNull(view.targetCandidates);
+        assertEquals(0, ((StubActions) actions).playCardCalls);
+        assertEquals(0, actions.commandCalls);
+    }
+
+    private static GameSnapshot catPairSnapshot(Player... others) {
+        List<Player> players = new ArrayList<>();
+        players.add(playerWith("Player 1", CardType.TACOCAT, CardType.SKIP,
+                CardType.TACOCAT, CardType.BEARD_CAT));
+        players.addAll(List.of(others));
+        return TurnEngineFactory.create(new GameState(players, new Deck())).getSnapshot();
+    }
+
+    private static Player playerWith(String name, CardType... types) {
+        Player player = new Player(name);
+        for (CardType type : types) {
+            player.addCard(new Card(type));
+        }
+        return player;
+    }
+
+    private static final class PairActions extends StubActions implements CommandPlayActions {
+        private PlayResult commandResult;
+        private PlayCommand submitted;
+        private GameSnapshot afterPlay;
+        private int commandCalls;
+
+        private PairActions(GameSnapshot snapshot) {
+            super(snapshot);
+            super.playResult = PlayResult.rejected(PlayFailure.INVALID_SELECTION);
+        }
+
+        @Override
+        public PlayResult playCard(PlayCommand command) {
+            if (commandResult == null) {
+                throw new AssertionError("No play is expected in this scenario.");
+            }
+            commandCalls++;
+            submitted = command;
+            return commandResult;
+        }
+
+        @Override
+        public GameSnapshot getSnapshot() {
+            if (commandCalls > 0 && afterPlay != null) {
+                return afterPlay;
+            }
+            return super.getSnapshot();
+        }
+    }
+
+    private static final class PairRecordingView extends RecordingView implements CatPairViewPort {
+        private List<Integer> matchingHandIndices;
+        private OptionalInt secondCard = OptionalInt.empty();
+        private OptionalInt targetSeat = OptionalInt.empty();
+        private List<PlayerSummary> targetCandidates;
+
+        @Override
+        public void requestSecondCard(int firstHandIndex, List<Integer> candidates,
+                                      IntConsumer onMatchSelected) {
+            matchingHandIndices = candidates;
+            secondCard.ifPresent(onMatchSelected);
+        }
+
+        @Override
+        public OptionalInt requestTargetPlayer(List<PlayerSummary> candidates) {
+            targetCandidates = candidates;
+            return targetSeat;
+        }
+    }
+
+    @Test
+    public void HandleReturnToSetup_WhilePlaying_DoesNotNavigate() {
+        StubActions actions = new StubActions(createSnapshot(7));
+        RecordingView view = new RecordingView();
+        GamePlayController controller = new GamePlayController(actions, view);
+        controller.setOnReturnToSetup(() -> {
+            throw new AssertionError("An active game must not return to setup.");
+        });
+
+        controller.handleReturnToSetup();
+
+        assertEquals(0, actions.playCardCalls);
+        assertEquals(0, actions.drawCalls);
+        assertEquals(0, view.renderCalls);
+    }
+
+    @Test
+    public void SetOnReturnToSetup_WithNullAction_Throws() {
+        GamePlayController controller = new GamePlayController(
+                new StubActions(createSnapshot(7)), new RecordingView());
+
+        NullPointerException error = assertThrows(NullPointerException.class,
+                () -> controller.setOnReturnToSetup(null));
+
+        assertEquals("Return-to-setup action must not be null.", error.getMessage());
+    }
+
     private static GameSnapshot createSnapshot(int deckSize) {
         return GameSnapshot.create(
                 "Player 1",
@@ -433,7 +672,7 @@ public class GamePlayControllerTests {
         );
     }
 
-    private static final class StubActions implements TurnActions {
+    private static class StubActions implements TurnActions {
         private final GameSnapshot snapshot;
         private final DrawResult drawResult;
         private PlayResult playResult;
@@ -493,7 +732,7 @@ public class GamePlayControllerTests {
         }
     }
 
-    private static final class RecordingView implements GamePlayViewPort {
+    private static class RecordingView implements GamePlayViewPort {
         private Runnable drawAction = () -> { };
         private IntConsumer playCardAction = index -> { };
         private Runnable chooseDefusePositionAction = () -> { };

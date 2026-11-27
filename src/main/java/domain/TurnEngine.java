@@ -3,22 +3,36 @@ package domain;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public final class TurnEngine implements TurnActions {
+public final class TurnEngine implements TurnActions, CommandPlayActions {
     private final GameState state;
     private final DiscardPile discardPile;
     private final ExplodingKittenResolver resolver;
     private final Map<CardType, CardEffect> effects;
+    private final RandomSource random;
     private Card pendingKitten;
     private int remainingTurns = 1;
     private boolean attackTurnsActive;
+    private boolean gameOver;
 
     public TurnEngine(
             GameState state,
             DiscardPile discardPile,
             ExplodingKittenResolver resolver,
             Map<CardType, CardEffect> effects
+    ) {
+        this(state, discardPile, resolver, effects, new Random()::nextInt);
+    }
+
+    TurnEngine(
+            GameState state,
+            DiscardPile discardPile,
+            ExplodingKittenResolver resolver,
+            Map<CardType, CardEffect> effects,
+            RandomSource random
     ) {
         this.state = Objects.requireNonNull(
                 state,
@@ -52,6 +66,7 @@ public final class TurnEngine implements TurnActions {
         }
 
         this.effects = Map.copyOf(checkedEffects);
+        this.random = Objects.requireNonNull(random, "Random source must not be null.");
     }
 
     @Override
@@ -60,16 +75,29 @@ public final class TurnEngine implements TurnActions {
         List<CardType> hand = currentPlayer.getHand().stream()
                 .map(Card::getType)
                 .collect(Collectors.toList());
-        long alivePlayers = state.getPlayers().stream()
-                .filter(player -> !player.isEliminated())
+        List<Player> players = state.getPlayers();
+        List<PlayerSummary> summaries = IntStream.range(0, players.size())
+                .mapToObj(index -> playerSummary(index, players.get(index)))
+                .collect(Collectors.toList());
+        long alivePlayers = summaries.stream()
+                .filter(summary -> !summary.isEliminated())
                 .count();
 
         return GameSnapshot.create(currentPlayer.getName(), hand, state.getDeck().size(),
-                discardPile.size(), Math.toIntExact(alivePlayers), getPhase());
+                discardPile.size(), Math.toIntExact(alivePlayers), getPhase())
+                .withTurnDetails(summaries, players.indexOf(currentPlayer), remainingTurns);
+    }
+
+    private static PlayerSummary playerSummary(int seat, Player player) {
+        return PlayerSummary.create(seat, player.getName(), player.getHand().size(),
+                player.isEliminated());
     }
 
     @Override
     public TurnPhase getPhase() {
+        if (gameOver) {
+            return TurnPhase.GAME_OVER;
+        }
         return pendingKitten == null
                 ? TurnPhase.ACTIONS_ALLOWED
                 : TurnPhase.AWAITING_DEFUSE_POSITION;
@@ -91,6 +119,9 @@ public final class TurnEngine implements TurnActions {
 
     @Override
     public DrawResult draw() {
+        if (gameOver) {
+            return DrawResult.gameOver();
+        }
         if (pendingKitten != null) {
             return DrawResult.rejectedPendingDefuse();
         }
@@ -122,14 +153,19 @@ public final class TurnEngine implements TurnActions {
 
     @Override
     public PlayResult playCard(int handIndex) {
-        if (pendingKitten != null) {
-            return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
+        if (gameOver) {
+            return PlayResult.rejected(PlayFailure.GAME_OVER);
         }
-        Player currentPlayer = state.getCurrentPlayer();
-        int handSize = currentPlayer.getHand().size();
-        if (handIndex < 0 || handIndex >= handSize) {
-            return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
+        if (handIndex < 0) {
+            PlayFailure failure = pendingKitten != null
+                    ? PlayFailure.DEFUSE_RESOLUTION_REQUIRED
+                    : PlayFailure.INVALID_HAND_INDEX;
+            return PlayResult.rejected(failure);
         }
+        return playCard(PlayCommand.single(handIndex));
+    }
+
+    private PlayResult playRegisteredEffect(Player currentPlayer, int handIndex) {
         Card selectedCard = currentPlayer.getHand().get(handIndex);
         CardEffect effect = effects.get(selectedCard.getType());
         if (effect == null) {
@@ -154,6 +190,78 @@ public final class TurnEngine implements TurnActions {
         return PlayResult.continueTurn(outcome.getRevealedCards());
     }
 
+    @Override
+    public PlayResult playCard(PlayCommand command) {
+        Objects.requireNonNull(command, "Play command must not be null.");
+        if (gameOver) {
+            return PlayResult.rejected(PlayFailure.GAME_OVER);
+        }
+        if (pendingKitten != null) {
+            return PlayResult.rejected(PlayFailure.DEFUSE_RESOLUTION_REQUIRED);
+        }
+        if (command.getSecondHandIndex().isEmpty()) {
+            return playSingleCommand(command);
+        }
+        return playCatPair(command);
+    }
+
+    private PlayResult playSingleCommand(PlayCommand command) {
+        int handIndex = command.getFirstHandIndex();
+        Player player = state.getCurrentPlayer();
+        List<Card> hand = player.getHand();
+        if (handIndex >= hand.size()) {
+            return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
+        }
+        if (hand.get(handIndex).getType().isCatCard()
+                || command.getTargetPlayerIndex().isPresent()) {
+            return PlayResult.rejected(PlayFailure.INVALID_SELECTION);
+        }
+        return playRegisteredEffect(player, handIndex);
+    }
+
+    private PlayResult playCatPair(PlayCommand command) {
+        Player player = state.getCurrentPlayer();
+        int first = command.getFirstHandIndex();
+        int second = command.getSecondHandIndex().getAsInt();
+        List<Card> hand = player.getHand();
+        if (first >= hand.size() || second >= hand.size()) {
+            return PlayResult.rejected(PlayFailure.INVALID_HAND_INDEX);
+        }
+        Card firstCard = hand.get(first);
+        Card secondCard = hand.get(second);
+        if (first == second || !isMatchingCatPair(firstCard, secondCard)) {
+            return PlayResult.rejected(PlayFailure.INVALID_SELECTION);
+        }
+        return transferCatPair(player, command.getTargetPlayerIndex().getAsInt(),
+                first, second);
+    }
+
+    private static boolean isMatchingCatPair(Card first, Card second) {
+        return first.getType().isCatCard() && first.getType() == second.getType();
+    }
+
+    private PlayResult transferCatPair(Player player, int seat, int first, int second) {
+        List<Player> players = state.getPlayers();
+        if (seat >= players.size()) {
+            return PlayResult.rejected(PlayFailure.INVALID_TARGET);
+        }
+        Player target = players.get(seat);
+        if (target == player || target.isEliminated()) {
+            return PlayResult.rejected(PlayFailure.INVALID_TARGET);
+        }
+        int targetHandSize = target.getHand().size();
+        if (targetHandSize == 0) {
+            return PlayResult.rejected(PlayFailure.TARGET_HAND_EMPTY);
+        }
+        int stolenIndex = random.nextInt(targetHandSize);
+        Card stolen = target.removeCardAt(stolenIndex);
+        Card higher = player.removeCardAt(Math.max(first, second));
+        Card lower = player.removeCardAt(Math.min(first, second));
+        discardPile.discardAll(List.of(lower, higher));
+        player.addCard(stolen);
+        return PlayResult.continueTurn(List.of());
+    }
+
     private void finishOneTurn() {
         remainingTurns--;
         if (remainingTurns == 0) {
@@ -173,8 +281,8 @@ public final class TurnEngine implements TurnActions {
     }
 
     private void advanceAfterElimination() {
-        remainingTurns = 1;
         attackTurnsActive = false;
-        state.advanceCurrentPlayer();
+        gameOver = state.advanceCurrentPlayer() == AdvanceResult.ONE_PLAYER_REMAINS;
+        remainingTurns = gameOver ? 0 : 1;
     }
 }

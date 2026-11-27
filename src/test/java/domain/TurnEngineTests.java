@@ -9,8 +9,36 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TurnEngineTests {
+
+    @Test
+    public void GetSnapshot_WithEliminatedSeat_PreservesSeatOrderAndCounts() {
+        Player first = new Player("First");
+        Player eliminated = new Player("Eliminated");
+        eliminated.eliminate();
+        Player current = new Player("Current");
+        current.addCard(new Card(CardType.TACOCAT));
+        GameState state = new GameState(List.of(first, eliminated, current), new Deck());
+        state.advanceCurrentPlayer();
+        TurnActions engine = TurnEngineFactory.create(state);
+
+        GameSnapshot snapshot = engine.getSnapshot();
+
+        List<PlayerSummary> players = snapshot.getPlayers();
+        assertEquals(3, players.size());
+        assertEquals(0, players.get(0).getPlayerIndex());
+        assertEquals(1, players.get(1).getPlayerIndex());
+        assertEquals(2, players.get(2).getPlayerIndex());
+        assertTrue(players.get(1).isEliminated());
+        assertEquals("Current", players.get(2).getName());
+        assertEquals(2, snapshot.getCurrentPlayerIndex());
+        assertThrows(UnsupportedOperationException.class, () -> players.remove(0));
+        current.addCard(new Card(CardType.SKIP));
+        assertEquals(1, players.get(2).getHandSize());
+        assertEquals(2, engine.getSnapshot().getPlayers().get(2).getHandSize());
+    }
 
     @Test
     public void Constructor_WithValidDependencies_StartsWithActionsAllowed() {
@@ -397,6 +425,33 @@ public class TurnEngineTests {
         assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, engine.draw().getStatus());
 
         PlayResult result = engine.playCard(0);
+
+        assertEquals(PlayStatus.REJECTED, result.getStatus());
+        assertEquals(PlayFailure.DEFUSE_RESOLUTION_REQUIRED, result.getFailure());
+        assertEquals(List.of(skip, defuse), firstPlayer.getHand());
+        assertEquals(0, deck.size());
+        assertEquals(0, effect.canPlayCalls);
+        assertEquals(0, effect.playCalls);
+        assertSame(firstPlayer, state.getCurrentPlayer());
+        assertEquals(TurnPhase.AWAITING_DEFUSE_POSITION, engine.getPhase());
+    }
+    @Test
+    public void PlayCard_WithNegativeIndexWhenDefuseIsPending_ReportsDefuseRequired() {
+        Player firstPlayer = new Player("Player 1");
+        Card skip = new Card(CardType.SKIP);
+        Card defuse = new Card(CardType.DEFUSE);
+        firstPlayer.addCard(skip);
+        firstPlayer.addCard(defuse);
+        Deck deck = createEmptyDeck();
+        deck.addCards(List.of(new Card(CardType.EXPLODING_KITTEN)));
+        GameState state = new GameState(List.of(firstPlayer), deck);
+        DiscardPile discardPile = new DiscardPile();
+        StubEffect effect = new StubEffect();
+        TurnEngine engine = new TurnEngine(
+                state, discardPile, waitingResolver(discardPile), Map.of(CardType.SKIP, effect));
+        assertEquals(DrawStatus.DEFUSE_POSITION_REQUIRED, engine.draw().getStatus());
+
+        PlayResult result = engine.playCard(-1);
 
         assertEquals(PlayStatus.REJECTED, result.getStatus());
         assertEquals(PlayFailure.DEFUSE_RESOLUTION_REQUIRED, result.getFailure());
