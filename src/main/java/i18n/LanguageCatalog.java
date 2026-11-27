@@ -15,7 +15,7 @@ public final class LanguageCatalog {
 
     public static LanguageCatalog fromProperties(Properties properties) {
         String list = properties.getProperty("languages");
-        if (list == null) {
+        if (list == null || list.isBlank()) {
             throw new IllegalArgumentException("Language list must not be empty.");
         }
         List<Language> languages = new ArrayList<>();

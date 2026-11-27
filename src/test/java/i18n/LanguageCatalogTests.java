@@ -45,6 +45,14 @@ public class LanguageCatalogTests {
         assertEquals("Language list must not be empty.", exception.getMessage());
     }
 
+    @Test
+    public void FromProperties_WithBlankLanguageList_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> LanguageCatalog.fromProperties(config("", "en", "en", "English")));
+
+        assertEquals("Language list must not be empty.", exception.getMessage());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
