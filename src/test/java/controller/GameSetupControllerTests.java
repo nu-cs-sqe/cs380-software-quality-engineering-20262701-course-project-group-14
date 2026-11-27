@@ -292,6 +292,16 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithComposedAndDecomposedAccent_ThrowsDuplicateKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("\u00e9", "e\u0301")));
+
+        assertEquals("setup.error.name-duplicate", exception.getMessage());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 

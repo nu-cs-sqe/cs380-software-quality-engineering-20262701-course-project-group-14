@@ -2,6 +2,7 @@ package controller;
 
 import domain.*;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +35,7 @@ public class GameSetupController {
         List<Player> players = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (String name : playerNames) {
-            String trimmed = name.replaceAll("\\s+", " ").trim();
+            String trimmed = Normalizer.normalize(name, Normalizer.Form.NFC).replaceAll("\\s+", " ").trim();
             if (trimmed.isEmpty()) {
                 throw new IllegalArgumentException(NAME_BLANK_ERROR_MESSAGE);
             }
