@@ -22,6 +22,11 @@ public class MessagesTests {
         assertEquals(CHINESE, messages.getLanguage());
     }
 
+    @Test
+    public void Text_ChineseKeyMissingTranslation_FallsBackToEnglish() {
+        assertEquals("Goodbye", Messages.forLanguage(TEST_BUNDLE, CHINESE).text("farewell"));
+    }
+
     private static Messages english() {
         return Messages.forLanguage(TEST_BUNDLE, ENGLISH);
     }
