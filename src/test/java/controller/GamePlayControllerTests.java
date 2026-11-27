@@ -623,13 +623,13 @@ public class GamePlayControllerTests {
         @Override
         public void requestSecondCard(int firstHandIndex, List<Integer> candidates,
                                       IntConsumer onMatchSelected) {
-            matchingHandIndices = candidates;
+            matchingHandIndices = List.copyOf(candidates);
             secondCard.ifPresent(onMatchSelected);
         }
 
         @Override
         public OptionalInt requestTargetPlayer(List<PlayerSummary> candidates) {
-            targetCandidates = candidates;
+            targetCandidates = List.copyOf(candidates);
             return targetSeat;
         }
     }

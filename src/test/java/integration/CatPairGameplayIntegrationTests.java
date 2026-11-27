@@ -140,7 +140,7 @@ class CatPairGameplayIntegrationTests {
         @Override
         public void requestSecondCard(int firstHandIndex, List<Integer> indices,
                                       IntConsumer onMatchSelected) {
-            handIndices = indices;
+            handIndices = List.copyOf(indices);
             onMatchSelected.accept(2);
         }
 
