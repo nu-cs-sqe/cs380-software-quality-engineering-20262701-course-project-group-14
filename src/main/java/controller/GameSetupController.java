@@ -19,6 +19,7 @@ public class GameSetupController {
     private static final int MAXIMUM_NAME_LENGTH = 12;
     private static final String NAME_LENGTH_ERROR_MESSAGE = "setup.error.name-length";
     private static final String NAME_DUPLICATE_ERROR_MESSAGE = "setup.error.name-duplicate";
+    private static final String NAME_BLANK_ERROR_MESSAGE = "setup.error.name-blank";
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
@@ -31,6 +32,9 @@ public class GameSetupController {
         Set<String> seen = new HashSet<>();
         for (String name : playerNames) {
             String trimmed = name.trim();
+            if (trimmed.isEmpty()) {
+                throw new IllegalArgumentException(NAME_BLANK_ERROR_MESSAGE);
+            }
             if (trimmed.length() > MAXIMUM_NAME_LENGTH) {
                 throw new IllegalArgumentException(NAME_LENGTH_ERROR_MESSAGE);
             }

@@ -243,6 +243,16 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithBlankName_ThrowsNameBlankKey() {
+        GameSetupController controller = new GameSetupController();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.startNamedGame(List.of("Ada", "   ")));
+
+        assertEquals("setup.error.name-blank", exception.getMessage());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 
