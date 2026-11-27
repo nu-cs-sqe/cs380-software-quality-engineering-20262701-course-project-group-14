@@ -11,7 +11,7 @@ Test bundles live in `src/test/resources/i18n/test-messages*.properties`.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| MS-01 | English messages; the base bundle has `greeting=Hello`. | `"greeting"` | Returns `Hello`. | :x: |
+| MS-01 | English messages; the base bundle has `greeting=Hello`. | `"greeting"` | Returns `Hello`. | :white_check_mark: |
 | MS-02 | Simplified Chinese messages; the Chinese bundle has `greeting=你好`. | `"greeting"` | Returns `你好`. | :x: |
 | MS-03 | Simplified Chinese messages; `farewell` exists only in the base bundle. | `"farewell"` | Falls back to the English `Goodbye`. | :x: |
 | MS-04 | English messages; no bundle has `missing`. | `"missing"` | Returns the key `missing`. | :x: |
