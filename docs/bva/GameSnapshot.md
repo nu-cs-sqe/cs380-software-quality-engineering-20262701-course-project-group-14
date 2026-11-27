@@ -79,3 +79,15 @@ These cases use the local draft-engine baseline for controller integration.
 | GSP-26 | A snapshot was created with `create(...)` only. | None | Returns `Optional.empty()`. | :white_check_mark: |
 | GSP-27 | Player 1 played Skip through `TurnEngine`; the discard pile was empty before. | Read the gameplay snapshot. | Returns `SKIP`. | :white_check_mark: |
 | GSP-28 | A Defuse resolved a Kitten after Player 1 played Skip, so Defuse is the newest discard. | Read the gameplay snapshot. | Returns `DEFUSE`, the newest discard, not the earlier Skip. | :white_check_mark: |
+
+## Method under test: `getWinReason()`
+
+`WinReason` has two values: `LAST_SURVIVOR` (Original Edition rule) and
+`DEFUSE_MASTER` (the team's additional win condition, see `docs/requirements/game-rules.md`).
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| GSP-29 | A snapshot was created with `create(...)` only. | None | Returns `Optional.empty()`. | :x: |
+| GSP-30 | The last opponent was eliminated through `TurnEngine`. | Read the terminal snapshot. | Returns `LAST_SURVIVOR`. | :x: |
+| GSP-31 | Player 1 completed a second Defuse through `TurnEngine`. | Read the terminal snapshot. | Returns `DEFUSE_MASTER`. | :x: |
+| GSP-32 | Player 1 completed a first Defuse; the game continues. | Read the gameplay snapshot. | Returns `Optional.empty()`. | :x: |
