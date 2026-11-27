@@ -332,6 +332,15 @@ public class GameSetupControllerTests {
     }
 
     @Test
+    public void StartNamedGame_WithTwelveChineseCharacters_KeepsName() {
+        GameSetupController controller = new GameSetupController();
+
+        GameState gameState = controller.startNamedGame(List.of("一二三四五六七八九十甲乙", "Bo"));
+
+        assertEquals("一二三四五六七八九十甲乙", gameState.getPlayers().get(0).getName());
+    }
+
+    @Test
     public void StartGame_WithSurroundingWhitespace_ReturnsReadyGameState() {
         GameSetupController controller = new GameSetupController();
 
