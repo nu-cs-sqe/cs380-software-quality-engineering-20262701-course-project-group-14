@@ -57,3 +57,19 @@
 - State: The fixed session is initialized, and Player 1 holds Attack at index 3.
 - Input: Play Attack, then trigger the draw event twice.
 - Expected: Attack leaves Player 1's hand, and one card enters the discard pile. Player 2 stays current after the first draw and holds both drawn cards after the second. Player 1 then becomes current.
+
+## Method under test: `checkPlayerCount(String, IntConsumer, Consumer<String>)`
+
+The setup screen asks for the player count first and then shows one name row per player.
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| NAV-09 | The setup screen is open and no game has started. | `"3"` | Reports `3` so the view can show three name rows; no error. | :x: |
+| NAV-10 | The setup screen is open and no game has started. | `"6"` | Reports the player-count error and no count. | :x: |
+
+## Method under test: `startNamedGame(List<String>, Consumer<GameState>, Consumer<String>)`
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| NAV-11 | The name step is open for two players. | `["Ada", "Bo"]` | Sends the initialized game to the gameplay screen; `Ada` is the current player. | :x: |
+| NAV-12 | The name step is open for two players. | `["Ada", "ada"]` | Reports the translated duplicate-name error and opens no game. | :x: |
