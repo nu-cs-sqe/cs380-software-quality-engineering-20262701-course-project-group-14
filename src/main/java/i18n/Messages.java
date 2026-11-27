@@ -25,6 +25,9 @@ public final class Messages {
     }
 
     public String text(String key, Object... arguments) {
+        if (!bundle.containsKey(key)) {
+            return key;
+        }
         return bundle.getString(key);
     }
 }

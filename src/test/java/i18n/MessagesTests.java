@@ -27,6 +27,11 @@ public class MessagesTests {
         assertEquals("Goodbye", Messages.forLanguage(TEST_BUNDLE, CHINESE).text("farewell"));
     }
 
+    @Test
+    public void Text_KeyMissingEverywhere_ReturnsKey() {
+        assertEquals("missing", english().text("missing"));
+    }
+
     private static Messages english() {
         return Messages.forLanguage(TEST_BUNDLE, ENGLISH);
     }

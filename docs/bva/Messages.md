@@ -14,7 +14,7 @@ Test bundles live in `src/test/resources/i18n/test-messages*.properties`.
 | MS-01 | English messages; the base bundle has `greeting=Hello`. | `"greeting"` | Returns `Hello`. | :white_check_mark: |
 | MS-02 | Simplified Chinese messages; the Chinese bundle has `greeting=你好`. | `"greeting"` | Returns `你好`. | :white_check_mark: |
 | MS-03 | Simplified Chinese messages; `farewell` exists only in the base bundle. | `"farewell"` | Falls back to the English `Goodbye`. | :white_check_mark: |
-| MS-04 | English messages; no bundle has `missing`. | `"missing"` | Returns the key `missing`. | :x: |
+| MS-04 | English messages; no bundle has `missing`. | `"missing"` | Returns the key `missing`. | :white_check_mark: |
 | MS-05 | English messages; `cards={0,choice,0#no cards\|1#1 card\|1<{0} cards}`. | `"cards"`, `1` and `3` | Returns `1 card` and `3 cards`. | :x: |
 | MS-06 | English messages; `apostrophe=Don't stop`. | `"apostrophe"` with no arguments | Returns `Don't stop` unchanged. | :x: |
 | MS-07 | Any messages. | `key = null` | Throws `NullPointerException` with `"Message key must not be null."`. | :x: |
