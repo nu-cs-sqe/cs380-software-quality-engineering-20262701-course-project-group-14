@@ -23,11 +23,11 @@ public class MessagesBundleTests {
 
     @Test
     public void EveryLanguageBundle_DefinesExactlyTheEnglishKeys() throws IOException {
-        Set<String> englishKeys = keys("/i18n/messages.properties");
+        Set<String> englishKeys = keys("/i18n/labels.properties");
         LanguageCatalog catalog = LanguageCatalog.load();
         for (Language language : catalog.getLanguages()) {
             if (language != catalog.getDefaultLanguage()) {
-                String resource = "/i18n/messages_" + language.getLocale() + ".properties";
+                String resource = "/i18n/labels_" + language.getLocale() + ".properties";
                 assertEquals(englishKeys, keys(resource), resource);
             }
         }

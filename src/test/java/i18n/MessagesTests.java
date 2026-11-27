@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MessagesTests {
-    private static final String TEST_BUNDLE = "i18n.test-messages";
+    private static final String TEST_BUNDLE = "i18n.test-labels";
     private static final Language ENGLISH = new Language("en", "English");
     private static final Language CHINESE = new Language("zh-CN", "简体中文");
 

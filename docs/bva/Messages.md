@@ -1,11 +1,11 @@
 # Messages BVA
 
 Looks up player-visible text for one language. The base bundle
-`i18n/messages.properties` is English; other languages add
-`messages_<locale>.properties`. Text is formatted with `MessageFormat` only when
+`i18n/labels.properties` is English; other languages add
+`labels_<locale>.properties`. Text is formatted with `MessageFormat` only when
 arguments are given, so plain text may contain apostrophes as written.
 
-Test bundles live in `src/test/resources/i18n/test-messages*.properties`.
+Test bundles live in `src/test/resources/i18n/test-labels*.properties`.
 
 ## Method under test: `text(String key, Object... arguments)`
 
@@ -31,8 +31,8 @@ Test bundles live in `src/test/resources/i18n/test-messages*.properties`.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| MB-01 | Every non-default language listed in `languages.properties`. | Compare the keys of its `messages_<locale>.properties` with the base bundle | The key sets are equal: no missing and no extra keys. | :white_check_mark: |
-| MB-02 | Every language whose `ui.font` is `fallback`. | Check each character of its `messages_<locale>.properties` against the bundled Ark Pixel font | Every non-ASCII character exists in the font, so no text shows as empty boxes. | :white_check_mark: |
+| MB-01 | Every non-default language listed in `languages.properties`. | Compare the keys of its `labels_<locale>.properties` with the base bundle | The key sets are equal: no missing and no extra keys. | :white_check_mark: |
+| MB-02 | Every language whose `ui.font` is `fallback`. | Check each character of its `labels_<locale>.properties` against the bundled Ark Pixel font | Every non-ASCII character exists in the font, so no text shows as empty boxes. | :white_check_mark: |
 
 ## Getter coverage
 

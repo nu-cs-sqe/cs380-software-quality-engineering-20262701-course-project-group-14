@@ -10,7 +10,7 @@ name.zh-CN=简体中文
 ```
 
 Adding a language means adding its code and name here and a
-`messages_<locale>.properties` file; no Java code changes.
+`labels_<locale>.properties` file; no Java code changes.
 
 ## Method under test: `fromProperties(Properties)`
 

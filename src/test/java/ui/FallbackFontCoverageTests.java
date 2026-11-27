@@ -46,7 +46,7 @@ public class FallbackFontCoverageTests {
     }
 
     private static Properties bundle(Language language) throws IOException {
-        String resource = "/i18n/messages_" + language.getLocale() + ".properties";
+        String resource = "/i18n/labels_" + language.getLocale() + ".properties";
         try (InputStream input = FallbackFontCoverageTests.class.getResourceAsStream(resource)) {
             assertNotNull(input, resource);
             Properties properties = new Properties();

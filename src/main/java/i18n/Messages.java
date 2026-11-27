@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public final class Messages {
-    private static final String BUNDLE = "i18n.messages";
+    private static final String BUNDLE = "i18n.labels";
     private final Language language;
     private final ResourceBundle bundle;
 
