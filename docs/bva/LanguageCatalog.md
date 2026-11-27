@@ -23,7 +23,7 @@ Adding a language means adding its code and name here and a
 | LC-05 | No catalog exists. | `languages=` (blank) | Throws `IllegalArgumentException` with `"Language list must not be empty."`. | :white_check_mark: |
 | LC-06 | No catalog exists. | `languages=en,fr` without `name.fr` | Throws `IllegalArgumentException` with `"Missing display name for language: fr"`. | :white_check_mark: |
 | LC-07 | No catalog exists. | `languages=en,en` | Throws `IllegalArgumentException` with `"Duplicate language: en"`. | :white_check_mark: |
-| LC-08 | No catalog exists. | `default=fr`, `fr` not listed | Throws `IllegalArgumentException` with `"Default language must be one of the supported languages: fr"`. | :x: |
+| LC-08 | No catalog exists. | `default=fr`, `fr` not listed | Throws `IllegalArgumentException` with `"Default language must be one of the supported languages: fr"`. | :white_check_mark: |
 | LC-09 | No catalog exists. | No `default` entry | Throws `IllegalArgumentException` with `"Default language must be one of the supported languages: null"`. | :x: |
 | LC-10 | No catalog exists. | `properties = null` | Throws `NullPointerException` with `"Language configuration must not be null."`. | :x: |
 

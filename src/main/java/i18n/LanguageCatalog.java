@@ -37,6 +37,10 @@ public final class LanguageCatalog {
                 defaultLanguage = language;
             }
         }
+        if (defaultLanguage == null) {
+            throw new IllegalArgumentException(
+                    "Default language must be one of the supported languages: " + defaultCode);
+        }
         return new LanguageCatalog(languages, defaultLanguage);
     }
 

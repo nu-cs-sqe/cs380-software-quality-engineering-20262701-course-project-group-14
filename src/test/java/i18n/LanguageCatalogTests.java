@@ -69,6 +69,15 @@ public class LanguageCatalogTests {
         assertEquals("Duplicate language: en", exception.getMessage());
     }
 
+    @Test
+    public void FromProperties_WithUnlistedDefault_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> LanguageCatalog.fromProperties(config("en", "fr", "en", "English")));
+
+        assertEquals("Default language must be one of the supported languages: fr",
+                exception.getMessage());
+    }
+
     private static Properties config(String languages, String defaultCode, String... names) {
         Properties properties = new Properties();
         if (languages != null) {
