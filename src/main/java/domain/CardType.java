@@ -9,6 +9,7 @@ public enum CardType {
     SHUFFLE,
     SEE_THE_FUTURE,
     NOPE,
+    SNIFF_TEST,
     TACOCAT(true),
     CATTERMELON(true),
     HAIRY_POTATO_CAT(true),

@@ -486,6 +486,20 @@ final class PixelData {
         "...........",
     };
 
+    static final String[] ICON_PAW = {
+        "...........",
+        "..cc...cc..",
+        "..cc...cc..",
+        "cc.......cc",
+        "cc..ccc..cc",
+        "...ccccc...",
+        "..ccccccc..",
+        "..ccccccc..",
+        "...ccccc...",
+        "...........",
+        "...........",
+    };
+
     static final String[] ICON_GIFT = {
         "..ccc.ccc..",
         ".c...c...c.",
