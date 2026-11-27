@@ -850,6 +850,18 @@ public class TurnEngineTests {
         assertEquals(Optional.of(WinReason.DEFUSE_MASTER), engine.getSnapshot().getWinReason());
     }
 
+    @Test
+    public void GetSnapshot_FirstDefuse_ReportsNoWinReason() {
+        GameState state = new GameState(List.of(new Player("Player 1"), new Player("Player 2")),
+                deckOf(CardType.EXPLODING_KITTEN, CardType.TACOCAT));
+        TurnEngine engine = defuseMasterEngine(state);
+        engine.draw();
+
+        engine.resolveDefuse(0);
+
+        assertEquals(Optional.empty(), engine.getSnapshot().getWinReason());
+    }
+
     private static Deck deckOf(CardType... types) {
         Deck deck = createEmptyDeck();
         for (CardType type : types) {
