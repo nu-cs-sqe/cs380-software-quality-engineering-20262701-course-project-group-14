@@ -7,13 +7,13 @@ import java.util.Set;
 import javafx.scene.image.WritableImage;
 
 /**
- * Everything the view knows about the 13 card types: display name, role colour,
+ * Everything the view knows about the 14 card types: display name, role colour,
  * effect text and icon, rendered as tactile parchment-and-brass tavern cards.
  */
 final class CardCatalog {
 
     enum Icon {
-        BOMB, SCISSORS, CLAW, SKIP, GIFT, SHUFFLE, EYE, NOPE,
+        BOMB, SCISSORS, CLAW, SKIP, GIFT, SHUFFLE, EYE, NOPE, PAW,
         CAT_TACO, CAT_MELON, CAT_POTATO, CAT_BEARD, CAT_RAINBOW
     }
 
@@ -37,7 +37,7 @@ final class CardCatalog {
         }
     }
 
-    static final Set<String> NOT_WIRED_YET = Set.of("FAVOR", "NOPE");
+    static final Set<String> NOT_WIRED_YET = Set.of("FAVOR", "NOPE", "SNIFFTEST");
 
     private static final String CAT_TEXT =
             "No effect on its own. Play a matching pair to steal a random card.";
@@ -60,6 +60,9 @@ final class CardCatalog {
                 "Privately look at the top 3 cards of the draw pile. The order stays the same.");
         add("NOPE", "Nope", "PLAYER", GameTheme.ROLE_NOPE, Icon.NOPE,
                 "Cancel an action. It does not work on Exploding Kitten or Defuse.");
+        add("SNIFFTEST", "Sniff Test", "DECK", GameTheme.ROLE_SNIFF, Icon.PAW,
+                "Sniff the top card. If it is an Exploding Kitten, move it to the bottom. "
+                        + "Your turn continues.");
         add("TACOCAT", "Tacocat", "CAT", GameTheme.ROLE_CAT, Icon.CAT_TACO, CAT_TEXT);
         add("CATTERMELON", "Cattermelon", "CAT", GameTheme.ROLE_CAT, Icon.CAT_MELON, CAT_TEXT);
         add("HAIRYPOTATOCAT", "Hairy Potato Cat", "CAT", GameTheme.ROLE_CAT, Icon.CAT_POTATO, CAT_TEXT);
@@ -276,6 +279,8 @@ final class CardCatalog {
                 return PixelData.ICON_EYE;
             case NOPE:
                 return PixelData.ICON_NOPE;
+            case PAW:
+                return PixelData.ICON_PAW;
             default:
                 return PixelData.HEAD_OPEN;
         }
