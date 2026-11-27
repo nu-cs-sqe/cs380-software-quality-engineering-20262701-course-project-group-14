@@ -145,3 +145,14 @@ Expected result:
 - Expected: EMPTY_DECK with no drawn card; both hands, current player,
   deck, discard pile and phase remain unchanged.
 - Implemented: :white_check_mark:
+
+## Defuse Master win condition (`resolveDefuse(int)`, `getPhase()`, `getSnapshot()`)
+
+See `docs/requirements/game-rules.md`. Each case uses a resolver stub that asks
+for a Defuse position and moves the Kitten to the bottom of the deck.
+
+| ID | State of the system | Input | Expected output | Implemented? |
+|---|---|---|---|---|
+| TE-DM-01 | Two players; Player 1 has completed one Defuse. | Player 1 defuses a second Kitten | Returns `DEFUSED`; phase is `GAME_OVER`; the winner is Player 1's seat; zero turns remain; the turn does not pass to Player 2. | :x: |
+| TE-DM-02 | Two players; no Defuse completed yet. | Player 1 defuses a first Kitten | Returns `DEFUSED`; the game continues and Player 2 becomes current. | :x: |
+| TE-DM-03 | Two players; Player 1 has completed one Defuse. | Player 2 defuses a first Kitten | The game continues: counts are per player, so two Defuses in total by different players do not end the game. | :x: |
