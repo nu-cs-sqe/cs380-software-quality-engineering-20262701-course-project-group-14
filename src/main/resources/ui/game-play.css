@@ -84,6 +84,20 @@
     -fx-opacity: 0.78;
 }
 
+.seat-plaque:targetable {
+    -fx-background-color: #120A07, #120A07, #FF9B3D, #FF9B3D, #4A2414, #4A2414;
+    -fx-effect: dropshadow(gaussian, rgba(255, 155, 61, 0.85), 18, 0.3, 0, 0);
+    -fx-cursor: hand;
+}
+
+.seat-plaque:targetable:hover {
+    -fx-background-color: #120A07, #120A07, #FFE08C, #FFE08C, #6A3418, #6A3418;
+}
+
+.seat-plaque:untargetable {
+    -fx-opacity: 0.4;
+}
+
 .seat-turn-tag {
     -fx-background-color: #FFB84D;
     -fx-border-color: #160D09;
@@ -237,14 +251,6 @@
 
 .card-button:pair-first {
     -fx-border-color: #FFB84D;
-}
-
-.card-button:pair-match {
-    -fx-border-color: #FFF1D6;
-}
-
-.card-button:pair-unavailable {
-    -fx-opacity: 0.55;
 }
 
 .card-name {
@@ -476,32 +482,3 @@
     -fx-background-color: #160D09, #160D09, #2A1C16, #2A1C16, #7A604F, #7A604F;
 }
 
-.cat-pair-dialog {
-    -fx-background-color: #2F2018;
-    -fx-border-color: #9C785E;
-    -fx-border-width: 2;
-    -fx-padding: 12;
-    -fx-pref-width: 440;
-}
-
-.cat-pair-title {
-    -fx-text-fill: #FFF1D6;
-    -fx-font-size: 17px;
-    -fx-font-weight: bold;
-    -fx-wrap-text: true;
-}
-
-.cat-pair-dialog .list-view {
-    -fx-background-color: #1E130E;
-}
-
-.cat-pair-dialog .list-cell {
-    -fx-background-color: #1E130E;
-    -fx-text-fill: #FFF1D6;
-    -fx-padding: 0 12;
-}
-
-.cat-pair-dialog .list-cell:filled:selected {
-    -fx-background-color: #FFB84D;
-    -fx-text-fill: #160D09;
-}

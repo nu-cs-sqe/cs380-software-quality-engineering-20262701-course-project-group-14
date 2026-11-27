@@ -18,6 +18,7 @@ import java.util.OptionalInt;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.IntConsumer;
+import java.util.stream.Collectors;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -28,7 +29,9 @@ import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.css.PseudoClass;
+import javafx.event.EventTarget;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
@@ -40,6 +43,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -122,8 +127,10 @@ public final class GamePlayView extends StackPane
     private static final PseudoClass CURRENT = PseudoClass.getPseudoClass("current");
     private static final PseudoClass OUT = PseudoClass.getPseudoClass("out");
     private static final PseudoClass PAIR_FIRST = PseudoClass.getPseudoClass("pair-first");
-    private static final PseudoClass PAIR_MATCH = PseudoClass.getPseudoClass("pair-match");
-    private static final PseudoClass PAIR_UNAVAILABLE = PseudoClass.getPseudoClass("pair-unavailable");
+    private static final PseudoClass TARGETABLE = PseudoClass.getPseudoClass("targetable");
+    private static final PseudoClass UNTARGETABLE = PseudoClass.getPseudoClass("untargetable");
+    private static final String SEAT_KEY = "seat";
+    private static final Object NO_TARGET = new Object();
     private static final double COMPACT_BELOW = 860;
     private static final int LOW_DECK_THRESHOLD = 3;
     private static final int DIM_TEXT = 0xFF8F7A68;
@@ -251,7 +258,11 @@ public final class GamePlayView extends StackPane
     private CardCatalog.Info shownInfo;
     private Status shownStatus = Status.READY;
     private int activeCardIndex = -1;
-    private HandPairSelection handPairSelection;
+    // Cards of a Cat Card pair waiting for a target, and the seat choice in progress.
+    private Set<Integer> pendingPair = Set.of();
+    private Set<Integer> targetSeats = Set.of();
+    private Object targetChoice;
+    private boolean swallowGesture;
 
     private Runnable onDraw = () -> { };
     private Runnable onReturnToSetup = () -> { };
@@ -313,15 +324,40 @@ public final class GamePlayView extends StackPane
         handFanPane.setPickOnBounds(false);
         sceneProperty().addListener((property, previousScene, scene) -> {
             if (scene == null) {
-                handPairSelection = null;
+                finishTargetChoice(NO_TARGET);
                 clearEffects();
                 hideHandoff();
             }
         });
 
         addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.ESCAPE && handPairSelection != null) {
-                clearHandPairSelection();
+            if (targetChoice != null) {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    finishTargetChoice(NO_TARGET);
+                }
+                event.consume();
+            }
+        });
+        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (targetChoice == null) {
+                swallowGesture = false;
+                return;
+            }
+            event.consume();
+            swallowGesture = true;
+            Integer seat = seatAt(event.getTarget());
+            boolean chosen = event.getButton() == MouseButton.PRIMARY
+                    && seat != null && targetSeats.contains(seat);
+            finishTargetChoice(chosen ? seat : NO_TARGET);
+        });
+        addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+            if (swallowGesture) {
+                event.consume();
+            }
+        });
+        addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (swallowGesture) {
+                swallowGesture = false;
                 event.consume();
             }
         });
@@ -364,7 +400,6 @@ public final class GamePlayView extends StackPane
 
     @Override
     public void render(GameSnapshot snapshot) {
-        handPairSelection = null;
         String newName = snapshot.getCurrentPlayerName();
         boolean turnChanged = !playerName.isEmpty() && !Objects.equals(newName, playerName);
         if (!Objects.equals(newName, playerName)) {
@@ -460,19 +495,32 @@ public final class GamePlayView extends StackPane
     @Override
     public void requestSecondCard(int firstHandIndex, List<Integer> matchingHandIndices,
                                   IntConsumer onMatchSelected) {
-        handPairSelection = new HandPairSelection(firstHandIndex, matchingHandIndices, onMatchSelected);
-        layoutStage();
+        if (matchingHandIndices.isEmpty()) {
+            return;
+        }
+        // Cat Cards of one type are identical, so the nearest match completes the pair at once.
+        int second = matchingHandIndices.stream()
+                .min((a, b) -> Integer.compare(Math.abs(a - firstHandIndex), Math.abs(b - firstHandIndex)))
+                .orElseThrow();
+        pendingPair = Set.of(firstHandIndex, second);
+        applyFanElevation();
+        try {
+            onMatchSelected.accept(second);
+        } finally {
+            pendingPair = Set.of();
+            applyFanElevation();
+        }
     }
 
     @Override
     public OptionalInt requestTargetPlayer(List<PlayerSummary> candidates) {
-        Map<Integer, String> options = new LinkedHashMap<>();
-        for (PlayerSummary player : candidates) {
-            options.put(player.getPlayerIndex(), CatPairChoiceDialog.text("target.option",
-                    player.getName(), player.getHandSize()));
-        }
-        OptionalInt choice = requestCatPairChoice("target.title", options);
         lastTargetName = "";
+        if (candidates.isEmpty()) {
+            return OptionalInt.empty();
+        }
+        OptionalInt choice = candidates.size() == 1
+                ? OptionalInt.of(candidates.get(0).getPlayerIndex())
+                : chooseTargetSeat(candidates);
         choice.ifPresent(seat -> candidates.stream()
                 .filter(player -> player.getPlayerIndex() == seat)
                 .findFirst()
@@ -480,18 +528,48 @@ public final class GamePlayView extends StackPane
         return choice;
     }
 
-    private OptionalInt requestCatPairChoice(String titleKey, Map<Integer, String> options) {
-        Window owner = getScene() == null ? null : getScene().getWindow();
-        dimOverlay.setVisible(true);
+    /** Lets the player click one of the glowing seat plaques; Esc or a click elsewhere cancels. */
+    private OptionalInt chooseTargetSeat(List<PlayerSummary> candidates) {
+        targetSeats = candidates.stream().map(PlayerSummary::getPlayerIndex)
+                .collect(Collectors.toUnmodifiableSet());
+        Object key = new Object();
+        targetChoice = key;
+        showEmptyInfo();
+        updateSeats();
+        layoutStage();
+        Object result;
         try {
-            return CatPairChoiceDialog.show(owner, stylesheetUrl, titleKey, options);
+            result = Platform.enterNestedEventLoop(key);
         } finally {
-            dimOverlay.setVisible(false);
+            targetChoice = null;
+            targetSeats = Set.of();
+            updateSeats();
+            layoutStage();
+        }
+        return result instanceof Integer ? OptionalInt.of((Integer) result) : OptionalInt.empty();
+    }
+
+    private void finishTargetChoice(Object result) {
+        Object key = targetChoice;
+        if (key != null) {
+            targetChoice = null;
+            Platform.exitNestedEventLoop(key, result);
         }
     }
 
+    private static Integer seatAt(EventTarget target) {
+        Node node = target instanceof Node ? (Node) target : null;
+        while (node != null) {
+            Object seat = node.getProperties().get(SEAT_KEY);
+            if (seat instanceof Integer) {
+                return (Integer) seat;
+            }
+            node = node.getParent();
+        }
+        return null;
+    }
+
     public void showHandoff(String nextPlayerName, Runnable onReady) {
-        clearHandPairSelection();
         futureCards = List.of();
         updateFuture();
         showEmptyInfo();
@@ -999,8 +1077,8 @@ public final class GamePlayView extends StackPane
         if (winnerMessage != null) {
             return winnerMessage;
         }
-        if (handPairSelection != null) {
-            return CatPairChoiceDialog.text("hand.select-match");
+        if (targetChoice != null) {
+            return chronicleLine("target.prompt");
         }
         return currentMessage != null ? currentMessage : chronicleLine("prompt", playerName);
     }
@@ -1177,6 +1255,12 @@ public final class GamePlayView extends StackPane
             plaque.getStyleClass().add("seat-plaque");
             plaque.pseudoClassStateChanged(CURRENT, current);
             plaque.pseudoClassStateChanged(OUT, out);
+            boolean choosing = targetChoice != null;
+            boolean targetable = choosing && targetSeats.contains(seat.getPlayerIndex());
+            plaque.pseudoClassStateChanged(TARGETABLE, targetable);
+            plaque.pseudoClassStateChanged(UNTARGETABLE, choosing && !targetable);
+            plaque.getProperties().put(SEAT_KEY, seat.getPlayerIndex());
+            plaque.setId("seat-" + seat.getPlayerIndex());
             plaque.setAlignment(Pos.CENTER_LEFT);
             plaque.setPadding(new Insets(6, 10, 6, 10));
             fixSize(plaque, plaqueW, 42);
@@ -1372,7 +1456,6 @@ public final class GamePlayView extends StackPane
         if (danger || turnActionsDisabled) {
             return;
         }
-        clearHandPairSelection();
         int previousDeckSize = deckSize;
         int previousDiscardSize = discardSize;
         onDraw.run();
@@ -1488,24 +1571,7 @@ public final class GamePlayView extends StackPane
     }
 
     private void playCard(int handIndex, CardType type, CardCatalog.Info info, Button source) {
-        HandPairSelection selection = handPairSelection;
-        if (selection == null) {
-            playWithDiscardFeedback(type, info, source, () -> onPlayCard.accept(handIndex));
-        } else if (handIndex == selection.firstIndex) {
-            clearHandPairSelection();
-        } else if (selection.matches.contains(handIndex)) {
-            playWithDiscardFeedback(type, info, source, () -> {
-                clearHandPairSelection();
-                selection.onMatchSelected.accept(handIndex);
-            });
-        }
-    }
-
-    private void clearHandPairSelection() {
-        if (handPairSelection != null) {
-            handPairSelection = null;
-            layoutStage();
-        }
+        playWithDiscardFeedback(type, info, source, () -> onPlayCard.accept(handIndex));
     }
 
     private void playWithDiscardFeedback(CardType type, CardCatalog.Info info, Button source,
@@ -1543,18 +1609,6 @@ public final class GamePlayView extends StackPane
             chronicle.remove(0);
         }
         layoutStage();
-    }
-
-    private static final class HandPairSelection {
-        private final int firstIndex;
-        private final Set<Integer> matches;
-        private final IntConsumer onMatchSelected;
-
-        private HandPairSelection(int firstIndex, List<Integer> matches, IntConsumer onMatchSelected) {
-            this.firstIndex = firstIndex;
-            this.matches = Set.copyOf(matches);
-            this.onMatchSelected = onMatchSelected;
-        }
     }
 
     private void showPlayedCards(List<CardType> previousDiscards, CardType type, int count) {
@@ -1637,17 +1691,14 @@ public final class GamePlayView extends StackPane
         if (n == 0 || baseAngles.size() != n) {
             return;
         }
+        boolean pairPending = !pendingPair.isEmpty();
         for (int i = 0; i < n; i++) {
             Button btn = cardButtons.get(i);
-            boolean selecting = handPairSelection != null;
-            boolean first = selecting && i == handPairSelection.firstIndex;
-            boolean match = selecting && handPairSelection.matches.contains(i);
-            boolean active = selecting ? first : i == activeCardIndex;
-            boolean twin = selecting ? match : isCatPairTwin(i);
-            btn.pseudoClassStateChanged(PAIR_FIRST, first);
-            btn.pseudoClassStateChanged(PAIR_MATCH, match);
-            btn.pseudoClassStateChanged(PAIR_UNAVAILABLE, selecting && !first && !match);
-            btn.setViewOrder(active ? -n : match ? -n + 0.5 : -i);
+            boolean paired = pendingPair.contains(i);
+            boolean active = pairPending ? paired : i == activeCardIndex;
+            boolean twin = !pairPending && isCatPairTwin(i);
+            btn.pseudoClassStateChanged(PAIR_FIRST, paired);
+            btn.setViewOrder(active ? -n : twin ? -n + 0.5 : -i);
             if (active) {
                 btn.setRotate(0);
                 btn.setTranslateY(-28);
@@ -1666,7 +1717,7 @@ public final class GamePlayView extends StackPane
                 btn.setTranslateY(0);
                 btn.setScaleX(1.0);
                 btn.setScaleY(1.0);
-                if (activeCardIndex >= 0 && Math.abs(i - activeCardIndex) == 1) {
+                if (!pairPending && activeCardIndex >= 0 && Math.abs(i - activeCardIndex) == 1) {
                     btn.setTranslateX(i < activeCardIndex ? -12 : 12);
                 } else {
                     btn.setTranslateX(0);
@@ -1836,10 +1887,18 @@ public final class GamePlayView extends StackPane
 
         HBox statusRow = new HBox(8);
         statusRow.setAlignment(Pos.CENTER_LEFT);
-        if (shownStatus == Status.READY) {
+        boolean catCard = "CAT".equals(info.tag);
+        long sameCats = hand.stream()
+                .filter(card -> CardCatalog.lookup(card.name()).key.equals(info.key)).count();
+        if (shownStatus == Status.READY && catCard && sameCats < 2) {
+            statusRow.getChildren().add(PixelArt.textView(
+                    chronicleLine("hint.lone-cat").toUpperCase(Locale.ROOT), 2, 0xFF6E5641));
+        } else if (shownStatus == Status.READY) {
+            String hint = catCard ? chronicleLine("hint.pair").toUpperCase(Locale.ROOT)
+                    : "CLICK OR ENTER TO PLAY";
             statusRow.getChildren().addAll(
                     PixelArt.view(PixelArt.mono(PixelData.ARROW, 2, INK_ACCENT)),
-                    PixelArt.textView("CLICK OR ENTER TO PLAY", 2, INK_ACCENT));
+                    PixelArt.textView(hint, 2, INK_ACCENT));
         } else if (shownStatus == Status.SOON) {
             statusRow.getChildren().add(
                     PixelArt.textView("NOT AVAILABLE YET", 2, 0xFF6E5641));
