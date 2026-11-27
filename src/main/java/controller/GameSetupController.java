@@ -13,6 +13,8 @@ public class GameSetupController {
     private static final int EXTRA_DEFUSES_FOR_SMALL_GAME = 2;
     /** Message key; the view shows the text in the player's language. */
     private static final String PLAYER_COUNT_ERROR_MESSAGE = "setup.error.player-count";
+    private static final int MAXIMUM_NAME_LENGTH = 12;
+    private static final String NAME_LENGTH_ERROR_MESSAGE = "setup.error.name-length";
 
     public GameState startGame(String playerCountText) {
         int playerCount = parsePlayerCount(playerCountText);
@@ -23,7 +25,11 @@ public class GameSetupController {
     public GameState startNamedGame(List<String> playerNames) {
         List<Player> players = new ArrayList<>();
         for (String name : playerNames) {
-            players.add(new Player(name.trim()));
+            String trimmed = name.trim();
+            if (trimmed.length() > MAXIMUM_NAME_LENGTH) {
+                throw new IllegalArgumentException(NAME_LENGTH_ERROR_MESSAGE);
+            }
+            players.add(new Player(trimmed));
         }
         return setUp(players);
     }
