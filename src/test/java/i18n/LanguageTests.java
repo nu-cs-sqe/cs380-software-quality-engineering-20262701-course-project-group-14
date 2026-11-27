@@ -66,4 +66,11 @@ public class LanguageTests {
 
         assertEquals("Language display name must not be blank.", exception.getMessage());
     }
+
+    @Test
+    public void ToString_ReturnsDisplayNameForTheLanguageMenu() {
+        Language language = new Language("zh-CN", "简体中文");
+
+        assertEquals("简体中文", language.toString());
+    }
 }

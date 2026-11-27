@@ -19,7 +19,7 @@ language menu, and the matching `Locale`.
 
 | ID | State of the system | Input | Expected output | Implemented? |
 |---|---|---|---|---|
-| LG-08 | A language `zh-CN` named `简体中文` exists. | None | Returns `简体中文`, the text shown in the language menu. | :x: |
+| LG-08 | A language `zh-CN` named `简体中文` exists. | None | Returns `简体中文`, the text shown in the language menu. | :white_check_mark: |
 
 ## Getter coverage
 

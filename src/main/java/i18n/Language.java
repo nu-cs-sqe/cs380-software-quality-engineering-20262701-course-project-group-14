@@ -34,4 +34,9 @@ public final class Language {
     public Locale getLocale() {
         return locale;
     }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }
