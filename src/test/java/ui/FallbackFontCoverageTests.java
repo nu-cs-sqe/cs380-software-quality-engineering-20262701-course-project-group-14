@@ -1,8 +1,8 @@
 package ui;
 
-import i18n.Language;
-import i18n.LanguageCatalog;
-import i18n.Messages;
+import localization.Language;
+import localization.LanguageCatalog;
+import localization.Messages;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package i18n;
+package localization;
 
 import java.io.IOException;
 import java.io.InputStream;

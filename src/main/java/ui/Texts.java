@@ -1,8 +1,8 @@
 package ui;
 
-import i18n.Language;
-import i18n.LanguageCatalog;
-import i18n.Messages;
+import localization.Language;
+import localization.LanguageCatalog;
+import localization.Messages;
 import java.util.List;
 import java.util.Locale;
 import javafx.scene.Parent;

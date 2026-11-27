@@ -7,11 +7,11 @@ Owner: Xiaoyi Wang. Tracked in #36.
 
 - Player-visible text lives in Java resource bundles:
   `src/main/resources/i18n/labels.properties` (English base) and
-  `labels_zh_CN.properties`. `i18n.Messages` loads them with
+  `labels_zh_CN.properties`. `localization.Messages` loads them with
   `ResourceBundle.getBundle` and never falls back to the operating system's
   language, so English stays English on a Chinese computer.
 - `src/main/resources/i18n/languages.properties` lists the languages offered on
-  the setup screen, their display names and the default. `i18n.LanguageCatalog`
+  the setup screen, their display names and the default. `localization.LanguageCatalog`
   reads it.
 - The setup screen has a language menu; the chosen language is used for the
   whole game. Views read text by key through `ui.Texts`.

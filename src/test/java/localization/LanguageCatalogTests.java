@@ -1,4 +1,4 @@
-package i18n;
+package localization;
 
 import java.util.List;
 import java.util.Properties;
